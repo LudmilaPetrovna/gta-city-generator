@@ -33,4 +33,5 @@
 * https://wiki.openstreetmap.org/wiki/RU:Blender - работа с OSM из Блендера
 * https://wiki.openstreetmap.org/wiki/RU:Blender-osm - примеры
 * https://www.youtube.com/watch?v=z2_SODMTwhM - очень красивый генератор Recreating NYC with CityBLD | NEW UE5 Procedural City Generator
-
+* https://www.youtube.com/watch?v=31DplKsnjWM - как из гуглопанорам сделать свои модельки в несколько кликов (From Google Maps to Blender, my way)
+* https://www.youtube.com/watch?v=Jhc0dzImJI8 - моделирование целого города по фоткам (I made long term solution for Buildings)
