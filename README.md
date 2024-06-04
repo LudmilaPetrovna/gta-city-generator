@@ -31,5 +31,6 @@
 * https://github.com/domlysz/BlenderGIS - перенесет за секунды карты из Google Maps в Blender
 * https://github.com/vvoovv/blosm - перенесет OSM за секунды в Blender, много хороших идей
 * https://wiki.openstreetmap.org/wiki/RU:Blender - работа с OSM из Блендера
+* https://wiki.openstreetmap.org/wiki/RU:Blender-osm - примеры
 * https://www.youtube.com/watch?v=z2_SODMTwhM - очень красивый генератор Recreating NYC with CityBLD | NEW UE5 Procedural City Generator
-* 
+
