@@ -25,3 +25,11 @@
 Умею в Сишечку, имею представления о Cleo, в виртуалке стоит SunnyBuilder3, могу писать скрипты для 3dsmax, если сильно надо, то и полноценные плагины. Умею парсить OpenStreetMaps из `Planet.pbf` и вообще работать с геоданными. Страдаю от депрессии, нежелания жить и от желания делать такие странные и никому ненужные проекты, мимолетом приходящие мне в голову. Сейчас вымучиваю свой проект фотомода https://github.com/LudmilaPetrovna/panorama-gtasa и программирую его онлайн, показывая все свои страдания: https://www.youtube.com/watch?v=ln0MwaiEq4w или https://www.youtube.com/watch?v=oPA9a1h6NeU
 
 Не уверен, что тут много людей увидят этот пост, потому приветствуются посылания меня в более подходящие места, где обитает более целевая аудитория и ее больше. Ну и другие посылания тоже приветствуются. Приветствуется все, кроме игнора.
+
+# Полезные ссылки
+
+* https://github.com/domlysz/BlenderGIS - перенесет за секунды карты из Google Maps в Blender
+* https://github.com/vvoovv/blosm - перенесет OSM за секунды в Blender, много хороших идей
+* https://wiki.openstreetmap.org/wiki/RU:Blender - работа с OSM из Блендера
+* https://www.youtube.com/watch?v=z2_SODMTwhM - очень красивый генератор Recreating NYC with CityBLD | NEW UE5 Procedural City Generator
+* 
