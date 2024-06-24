@@ -1,0 +1,39 @@
+DEFINE OBJECTS 1
+DEFINE OBJECT SANNY BUILDER 3.04      
+DEFINE MISSIONS 0
+DEFINE EXTERNAL_SCRIPTS 0 // Use -1 in order not to compile AAA script
+DEFINE UNKNOWN_EMPTY_SEGMENT 0
+DEFINE UNKNOWN_THREADS_MEMORY 0
+
+script_name 'MAIN' 
+01F0: set_max_wanted_level_to 6 
+
+04E4: refresh_game_renderer_at 0.0 0.0
+Camera.SetAtPos(0.0, 0.0, 15.0)
+Player.Create($PLAYER_CHAR, 0, 0.0, 0.0, 15.0)
+Actor.EmulateFromPlayer($PLAYER_ACTOR, $PLAYER_CHAR)
+07AF: $PLAYER_GROUP = player $PLAYER_CHAR group 
+Camera.SetBehindPlayer
+wait 0 
+set_weather 1 
+Player.SetClothes($PLAYER_CHAR, "VEST", "VEST", BodyPart.Torso)
+Player.SetClothes($PLAYER_CHAR, "JEANSDENIM", "JEANS", BodyPart.Legs)
+Player.SetClothes($PLAYER_CHAR, "SNEAKERBINCBLK", "SNEAKER", BodyPart.Shoes)
+Player.SetClothes($PLAYER_CHAR, "PLAYER_FACE", "HEAD", BodyPart.Head)
+
+Player.Build($PLAYER_CHAR)
+Player.CanMove($PLAYER_CHAR, True)
+0793: save_player_clothes 
+select_interior 0
+
+016C: restart_if_wasted_at 2027.77 -1420.52 15.99 angle 137.0 town_number 0 
+016D: restart_if_busted_at 1550.68 -1675.49 14.51 angle 90.0 town_number 0 
+
+03E6: remove_text_box 
+
+:EMPTY_LOOP
+0223: set_actor $PLAYER_ACTOR health_to 500
+wait 250
+jump @EMPTY_LOOP
+
+

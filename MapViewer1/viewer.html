@@ -1,0 +1,91 @@
+<html><body>
+
+<canvas id=canv width=1920 height=1080 style=width:1920px;height:1080px></canvas>
+
+
+<script>
+var map={};
+var inited=0;
+var center=proj0([47.8411024,56.63281]);
+var canv=document.getElementById("canv").getContext('2d');
+
+var colors=["#eee","blue","cyan","gray","seashell","gold"];
+
+fetch("map.js").then(a=>a.json()).then(a=>{map=a;inited=1;launch();});
+
+function launch(){
+
+
+
+var q,w;
+var coords;
+for(q in map.features){
+var f=map.features[q];
+if(f && f.geometry && f.geometry.type=="Point"){
+coords=proj(f.geometry.coordinates);
+canv.fillStyle="red";
+canv.fillRect(coords[0],coords[1],2,2);
+//console.log(f);
+}
+
+if(f && f.geometry && f.geometry.type=="LineString"){
+for(w in f.geometry.coordinates){
+coords=proj(f.geometry.coordinates[w]);
+if(w==0){
+canv.lineWidth="3";
+canv.strokeStyle="green";
+canv.beginPath();
+canv.moveTo(coords[0],coords[1]);
+} else {
+canv.lineTo(coords[0],coords[1]);
+}
+//console.log(f);
+}
+canv.stroke();
+}
+
+if(f && f.geometry && f.geometry.type=="MultiPolygon"){
+var e,r;
+for(r in f.geometry.coordinates){
+for(e in f.geometry.coordinates[r]){
+for(w in f.geometry.coordinates[r][e]){
+coords=proj(f.geometry.coordinates[r][e][w]);
+if(w==0){
+canv.lineWidth="1";
+canv.strokeStyle="magenta";
+canv.fillStyle=colors[r];
+canv.beginPath();
+canv.moveTo(coords[0],coords[1]);
+} else {
+canv.lineTo(coords[0],coords[1]);
+}
+//console.log(f);
+}
+canv.fill();
+canv.stroke();
+}
+}
+}
+
+
+}
+}
+
+// in: [lat, lon]
+// out: [x, y]
+function proj0(point){
+//return([(point[1]-center[1])*50000,-(point[0]-center[0])*50000]);
+var zoom=24;
+return([
+Math.floor((point[1]+180)/360*Math.pow(2,zoom)),
+Math.floor((1-Math.log(Math.tan(point[0]*Math.PI/180) + 1/Math.cos(point[0]*Math.PI/180))/Math.PI)/2 *Math.pow(2,zoom))
+]);
+
+}
+
+function proj(point){
+var c=proj0(point);
+return([c[0]-center[0],c[1]-center[1]]);
+}
+
+</script>
