@@ -71,8 +71,8 @@ print oo "DDS ".pack(
 "IIIIIIIa44",
 0x7c, #heade size,
 0x0A1007, #flags
-$width,
 $height,
+$width,
 0x200, #stride
 $depth,
 $mipmap_count*0,
