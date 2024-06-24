@@ -8,6 +8,8 @@ die "Usage: txd_unpacker.pl [source.txd] [output_dir/]";
 }
 
 mkdir $dst_dir,0777;
+mkdir $dst_dir."/dds",0777;
+mkdir $dst_dir."/png",0777;
 
 open(dd,$src_file);
 binmode(dd);
@@ -47,9 +49,10 @@ die "This is not TXD file or root node is broken!";
 }
 
 read(dd,$buf,88);
-($version,$fflags,$tex_name,$alpha_name,$alflags,$texformat,$width,$height,$depth,$mipmap_count,
-$texcode_type,$flags)=unpack("IIA32A32IISSCCCC",$buf);
-print "Found texture \"$tex_name\" (alpha \"$alpha_name\"), size $width x $height, $mipmap_count mipmap\n";
+($version,$fflags,$tex_name,$alpha_name,$alflags,
+$texformat,$width,$height,$depth,$mipmap_count,
+$texcode_type,$flags)=unpack("IIA32A32Ia4SSCCCC",$buf);
+print "Found texture \"$tex_name\" (alpha \"$alpha_name\"), $texformat size $width x $height, $mipmap_count mipmap\n";
 if($depth==8){
 read(dd,$palette,256*4);
 }
@@ -59,7 +62,10 @@ read(dd,$buf,4);
 $data_size=unpack("I",$buf);
 read(dd,$data,$data_size);
 
-open(oo,">".$dst_dir."/".$tex_name."_mipmap".$mm.".dds");
+$dds_name=$dst_dir."/dds/".$tex_name."_mipmap".$mm.".dds";
+$png_name=$dst_dir."/png/".$tex_name.".png";
+
+open(oo,">".$dds_name);
 binmode(oo);
 print oo "DDS ".pack(
 "IIIIIIIa44",
@@ -78,7 +84,7 @@ print oo pack(
 "IIA4IIIII",
 0x20, # size
 0x04, # flags
-"DXT1", #fourCC
+$texformat, #fourCC
 0,0,0,0,0 # RGB bit count and masks
 );
 
@@ -87,6 +93,13 @@ print oo pack("IIIII",0x401008,0,0,0,0);
 
 print oo $data;
 close(oo);
+
+if($mm==0){
+`convert "$dds_name" "$png_name"`;
+
+}
+
+
 
 $width>>=1;
 $height>>=1;
