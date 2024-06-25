@@ -37,6 +37,7 @@ $rot_x=$rot_y=$rot_z=0;
 $rot_w=1;
 $_=join(", ",$id,$model_name,$inter,$ox,$oy,$oz,$rot_x,$rot_y,$rot_z,$rot_w,$lod);
 }
+next;
 }
 
 if($is_dead && !$is_section){next;}

@@ -7,7 +7,7 @@ die "Usage: unpacker.pl [dst_img.img] [src_dir]";
 }
 
 opendir(dd,$src_dir);
-@files=grep{/\.(dff|col|txd|ifp)$/i}readdir(dd);
+@files=grep{/\.(col|dat|dff|ifp|ipl|txd)$/i}readdir(dd);
 closedir(dd);
 
 $entries=@files;
