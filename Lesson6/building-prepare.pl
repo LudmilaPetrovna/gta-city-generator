@@ -2,8 +2,8 @@ use Geo::Coordinates::GMap;
 
 $zoom=19;
 $meters_per_pixel=0.16;
-$center_geo=[56.6390265,47.8892554];
-$center_pix=proj0([56.6390265,47.8892554]);
+$center_geo=[56.63109683633924,47.88093660864732];
+$center_pix=proj0($center_geo);
 
 open(oo,">test.txt");
 
