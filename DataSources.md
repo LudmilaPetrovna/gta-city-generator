@@ -27,4 +27,6 @@
 * Выбираем вкладку `Экспорт` и выставляем опции как на скриншоте: ![Скриншот](./import-sasplanet-3-levels.png)
 * Забираем получившийся `yoshkar-ola-googlemaps.zip`, внутри будут тайлики в формате TMS
 
+## Типовые серии домов
 
+* https://www.kvmeter.ru/information/homes_series/
