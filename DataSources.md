@@ -24,7 +24,7 @@
 ## Карта высот Copernicus
 
 * Идем https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model - тут инструкция
-* Наш датасет: https://prism-dem-open.copernicus.eu/pd-desk-open-access/prismDownload/COP-DEM_GLO-90-DGED__2023_1/Copernicus_DSM_30_N47_00_E056_00.tar
+* Наш датасет: https://prism-dem-open.copernicus.eu/pd-desk-open-access/prismDownload/COP-DEM_GLO-90-DGED__2023_1/Copernicus_DSM_30_N56_00_E047_00.tar
 
 ## Карта высот ASTER
 
