@@ -23,18 +23,20 @@ for($e=0;$e<$entries;$e++){
 
 read(dd,$buf,32);
 ($offset,$size,$size_arch,$name)=unpack("ISSA24",$buf);
+$name=~s/\0.*//gs;
 if($size_arch!=0){
 die "Very strange!!! Size_arch must be 0 in GTA:SA!";
 }
 $offset*=2048;
 $size*=2048;
 push(@files,[$name,$offset,$size]);
-#print "$offset: $name ($size, $size_arch)\n";
+print "$offset: $name ($size, $size_arch)\n";
 }
 
 # unpacking real files
 
-mkdir $dest_dir,0777;
+`mkdir -p $dest_dir`;
+#mkdir $dest_dir,0777;
 
 
 foreach $fileinfo(@files){
