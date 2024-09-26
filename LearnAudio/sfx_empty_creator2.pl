@@ -26,6 +26,10 @@ read(dd,$look,-s(dd));
 close(dd);
 
 $bank_count=length($look)/12;
+$sound_size=3000*2;
+$bank_header=4+400*12;
+$bank_size=$bank_header+$sound_size*400;
+
 for($q=0;$q<$bank_count;$q++){
 ($package_id,$null,$bank_offset,$bank_size)=unpack("CA3II",substr($look,$q*12,12));
 if($null ne "\xCC\xCC\xCC"){
@@ -36,7 +40,7 @@ $bank_offset=$package_offsets[$q];
 $bank_size=400*12+4;
 $package_offsets[$q]+=$bank_size;
 push(@banks,[$package_id,$bank_offset]);
-print oo pack("CA3II",0,$null,0,0);
+print oo pack("CA3II",0,$null,0,$bank_size);
 }
 
 # generating empty packages with 1 bank
@@ -47,10 +51,21 @@ print STDERR "Writing empty package file $package_files[$current_id]...\n";
 
 $sounds_count=400; # max size of bank, since it actually many banks in same offset
 print oo pack("SS",$sounds_count,0);
+
+$samplerate=22000;
 for($q=0;$q<400;$q++){
-print oo pack("IiSS",0,-1,8000,0xff83);
+#($buffer_offset,$loop_offset,$sample_rate,$headroom)
+
+print oo pack("IiSS",$q*$sound_size,-1,$samplerate,0xff83);
 }
 
+for($q=0;$q<400;$q++){
+$div=rand()*rand()*80+1;
+$ph=rand()*10000;
+for($qq=0;$qq<3000;$qq++){
+print oo pack("s",int(sin($ph+$qq/$div)*30000));
+}
+}
 
 close(oo);
 

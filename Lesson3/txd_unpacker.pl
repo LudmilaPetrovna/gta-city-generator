@@ -30,6 +30,7 @@ read(dd,$buf,$len);
 
 if($images_count<1){ 
 if(-s($src_file)==2048){exit;}
+if(-s($src_file)==40){exit;}
 die "$src_file: empty file?";
 }
 
@@ -42,20 +43,20 @@ while($images_count--){
 read(dd,$buf,12);
 ($type,$len,$build)=unpack("III",$buf);
 if($type!=0x15){# txd_texture_s
-die "This is not TXD file or root node is broken!";
+die "$src_file: This is not TXD file or root node is broken!";
 }
 
 
 read(dd,$buf,12);
 ($type,$len,$build)=unpack("III",$buf);
 if($type!=0x1 || $len<0x10){# txd_texture_data_s
-die "This is not TXD file or root node is broken!";
+die "$src_file: This is not TXD file or root node is broken!";
 }
 
 read(dd,$buf,88);
 ($version,$fflags,$tex_name,$alpha_name,
 $rasterFormatId,
-$rasterCodecName,
+$rasterCodecId,
 $width,$height,$depth,$mipmap_count,
 $rasterType,$flags)=unpack("IIZ32Z32Ia4SSCCCC",$buf);
 =pod
@@ -93,18 +94,18 @@ if(!$isAlpha){
 $alpha_name="[no alpha]";
 }
 if($version!=9){
-die "We supports only GTASA PC version!";
+die "$src_file: We supports only GTASA PC version, but here $version!";
 }
 
 if(!$isCompressed){
-$rasterCodecName=unpack("I",$rasterCodecName);
+$rasterCodecNum=unpack("I",$rasterCodecId);
 }
 
-if(!$isCompressed && !($rasterCodecName==0x15 || $rasterCodecName==0x16)){
-die "Only 0x15, but have ".sprintf("%x",$rasterCodecName)."($rasterCodecName) type supported D3DFMT_A8R8G8B8=21, see https://learn.microsoft.com/ru-ru/windows/win32/direct3d9/d3dformat";
+if(!$isCompressed && !($rasterCodecNum==0x15 || $rasterCodecNum==0x16)){
+die "$src_file: Only 0x15, but have ".sprintf("%x",$rasterCodecNum)."($rasterCodecNum) type supported D3DFMT_A8R8G8B8=21, see https://learn.microsoft.com/ru-ru/windows/win32/direct3d9/d3dformat";
 }
 
-print "Found texture ${width}x${height}\@$depth \"$tex_name\" (alpha \"$alpha_name\"), codec:$rasterCodecName, $mipmap_count mipmap, format:$rasterFormatId, type:$rasterType, flags:$flags\n";
+print "Found texture ${width}x${height}\@$depth \"$tex_name\" (alpha \"$alpha_name\"), codec:$rasterCodecId, $mipmap_count mipmap, format:$rasterFormatId, type:$rasterType, flags:$flags\n";
 if($depth==8 || $depth==4){
 $paletteSize=0;
 if($rasterFormatId&0x2000){
@@ -160,7 +161,7 @@ print oo pack(
 "IIA4IIIII",
 0x20, # size
 $pixelFormatFlags, # flags
-$rasterCodecName, #fourCC
+$rasterCodecId, #fourCC
 $depth, # RGB bit count
 0xFF,0xFF0000,0xFF000000,0xFF000000 # RGB masks for R G B A
 );
@@ -172,7 +173,9 @@ print oo $data;
 close(oo);
 
 if($mm==0){
-`convert "$dds_name" -resize 32x32\! "$png_name"`;
+#`convert "$dds_name" "$png_name"`;
+#`convert "$dds_name" -resize 128x128\\\> "$png_name"`;
+`convert "$dds_name" -resize 16384\\\@\\\> -colorspace rgb "$png_name"`;
 }
 
 unlink($dds_name);
@@ -187,7 +190,7 @@ $height>>=1;
 read(dd,$buf,12);
 ($type,$len,$build)=unpack("III",$buf);
 if($type!=0x3 || $len!=0){# txd_extra_info_s
-die "This is not TXD file or root node is broken!";
+die "$src_file: This is not TXD file or root node is broken!";
 }
 
 }
