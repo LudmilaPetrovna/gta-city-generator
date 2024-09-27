@@ -26,9 +26,10 @@ read(dd,$look,-s(dd));
 close(dd);
 
 $bank_count=length($look)/12;
-$sound_size=3000*2;
+$sample_count=2200;
+$samplerate=22000;
+$sound_size=$sample_count*2;
 $bank_header=4+400*12;
-$bank_size=$bank_header+$sound_size*400;
 
 for($q=0;$q<$bank_count;$q++){
 ($package_id,$null,$bank_offset,$bank_size)=unpack("CA3II",substr($look,$q*12,12));
@@ -37,8 +38,10 @@ die "Paddings usually 0xCCCCCC! You have very strange file!";
 }
 print "Bank $q: ".$package_names[$package_id]." offset:$bank_offset, size:$bank_size\n";
 $bank_offset=$package_offsets[$q];
-$bank_size=400*12+4;
 $package_offsets[$q]+=$bank_size;
+
+$bank_size=$bank_header+$sound_size*400;
+
 push(@banks,[$package_id,$bank_offset]);
 print oo pack("CA3II",0,$null,0,$bank_size);
 }
@@ -49,21 +52,42 @@ open(oo,">".$package_files[$current_id]);
 binmode(oo);
 print STDERR "Writing empty package file $package_files[$current_id]...\n";
 
+
+# writing bank header in package
 $sounds_count=400; # max size of bank, since it actually many banks in same offset
 print oo pack("SS",$sounds_count,0);
-
-$samplerate=22000;
 for($q=0;$q<400;$q++){
 #($buffer_offset,$loop_offset,$sample_rate,$headroom)
-
-print oo pack("IiSS",$q*$sound_size,-1,$samplerate,0xff83);
+print oo pack("IiSS",$q*$sample_count*2,-1,$samplerate,0);
 }
 
-for($q=0;$q<400;$q++){
-$div=rand()*rand()*80+1;
-$ph=rand()*10000;
-for($qq=0;$qq<3000;$qq++){
-print oo pack("s",int(sin($ph+$qq/$div)*30000));
+
+@freqs=();
+@phases=();
+@amps=();
+
+$voices=5;
+
+for($q=0;$q<$sounds_count;$q++){
+print STDERR "Writing sound id: $q\n";
+
+for($e=0;$e<$voices;$e++){
+$freqs[$e]=rand()*10000+$q*200;
+$phases[$e]=rand()*10000;
+$amps[$e]=500+rand()*15000;
+}
+
+for($qq=0;$qq<$sample_count;$qq++){
+$sample=0;
+for($e=0;$e<$voices;$e++){
+$sample+=sin($phases[$e]+$qq/$samplerate*2*$freqs[$e])*$amps[$e];
+}
+
+$gph=$qq/$sample_count*3.1415926;
+$sample=int($sample*sin($gph));
+if($sample<-32768){$sample=-32768;}
+if($sample>32767){$sample=32767;}
+print oo pack("s",$sample);
 }
 }
 
