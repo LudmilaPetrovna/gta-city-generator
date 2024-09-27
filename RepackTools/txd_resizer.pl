@@ -1,18 +1,20 @@
 
 
 
-($src_file,$dst_dir)=@ARGV;
+$new_width=$new_height=32;
 
-if(!$src_file || !$dst_dir){
-die "Usage: txd_unpacker.pl [source.txd] [output_dir/]";
+($src_file,$dst_file)=@ARGV;
+
+if(!$src_file || !$dst_file){
+die "Usage: txd_resizer.pl [source.txd] [output.txd]";
 }
 
-mkdir $dst_dir,0777;
-mkdir $dst_dir."/dds",0777;
-mkdir $dst_dir."/png",0777;
+
 
 open(dd,$src_file);
 binmode(dd);
+
+
 
 read(dd,$buf,12);
 ($type,$len,$build)=unpack("III",$buf);
@@ -26,20 +28,8 @@ read(dd,$buf,12);
 if($type==1 && $len==4){ # txd_info_s
 read(dd,$buf,$len);
 ($images_count,$platform_id)=unpack("SS",$buf);
-print "we have images: $images_count, for platform $platform_id\n";
-
 }
-
-
-if($images_count<1){ 
-if(-s($src_file)==2048){exit;}
-if(-s($src_file)==40){exit;}
-die "$src_file: empty file?";
-}
-
-if($images_count<1){ 
-die "$src_file: wrong platform?";
-}
+$images_count2=$images_count;
 
 while($images_count--){
 
@@ -64,6 +54,10 @@ $rasterFormatId,
 $d3dFormatAlpha, # or alpha for GTA3/VC
 $width,$height,$depth,$mipmap_count,
 $rasterType,$flags)=unpack("ICCSZ32Z32Ia4SSCCCC",$buf);
+
+
+
+
 =pod
 Depth
 4, 8, 16 or 32; 4 and 8 usually come with palette
@@ -166,11 +160,26 @@ if(!$isAlpha){
 $alpha_name="[no alpha]";
 }
 
-print "Compressed: $isCompressed, alpha: $isAlpha\n";
+
+
 
 if(!$isCompressed && !($d3dFormatAlphaNum==0x15 || $d3dFormatAlphaNum==0x16)){
 die "$src_file: Only 0x15, but have ".sprintf("%x",$d3dFormatAlphaNum)."($d3dFormatAlpha) type supported D3DFMT_A8R8G8B8=21, see https://learn.microsoft.com/ru-ru/windows/win32/direct3d9/d3dformat";
 }
+
+
+$newheader=pack("IIZ32Z32IA4SSCCCC",
+9, # version
+0x1101, # flags
+$tex_name,"",
+$isAlpha?0x0300:0x200, # rasterFormatId
+$isAlpha?"DXT1":"DXT1", # rasterCodecId (directX 0x16=XRGB, 0x15 for ARGB)
+#$isAlpha?0x15:0x16, # rasterCodecId (directX 0x16=XRGB, 0x15 for ARGB)
+$new_width,$new_height,16,1, # $width,$height,$depth,$mipmap_count
+4, # rasterType = ????
+#$isAlpha|
+0x8  #we have alpha  + compressed
+);
 
 
 if($paletteSize){
@@ -203,13 +212,12 @@ read(dd,$buf,4);
 $data_size=unpack("I",$buf);
 read(dd,$data,$data_size);
 
-$img_name=$tex_name;
-$img_name=~s/[^a-z0-9\-\.]/_/gsi;
+if($mm==0){
 
-$dds_name=$dst_dir."/dds/".$img_name."_mipmap".$mm.".dds";
-$png_name=$dst_dir."/png/".$img_name.".png";
-$ffpng_name=$dst_dir."/png/".$img_name."-ffmpeg.png";
-$iopng_name=$dst_dir."/png/".$img_name."-io.png";
+$dds_name="tmp-src".rand().".dds";
+$resized_name="tmp-dst".rand().".dds";
+$png_name="tmp-dst".rand().".png";
+$raw_name="tmp-dst".rand().".raw";
 
 open(oo,">".$dds_name);
 binmode(oo);
@@ -236,20 +244,56 @@ $depth, # RGB bit count
 );
 
 print oo pack("IIIII",0x401008,0,0,0,0);
-
-
 print oo $data;
 close(oo);
 
-if($mm==0){
-#`convert "$dds_name" "$png_name"`;
-#`convert "$dds_name" -resize 128x128\\\> "$png_name"`;
-`convert "$dds_name" -resize 16384\\\@\\\> -colorspace srgb "$png_name"`;
-#`ffmpeg -v 0 -i "$dds_name" -y "$ffpng_name"`;
-#`oiiotool "$dds_name" -o "$iopng_name"`; # actually same as imagemagick, but very slow
+$isAlpha=0;
+
+$alpha_on="-alpha off ";
+if($isAlpha){
+$alpha_on="-alpha on ";
 }
 
-#unlink($dds_name);
+unlink($png_name); # if any
+
+$codec=$isAlpha?"dxt5":"DXT1";
+
+`convert "$dds_name" $alpha_on -resize  ${new_width}x${new_height}\\\! -define dds:mipmaps=0 -define dds:compression=$codec "$resized_name"`;
+#`convert "$dds_name" $alpha_on -resize ${new_width}x${new_height}\\\! "$png_name"`;
+#`ffmpeg -v 0 -i "$png_name" -f rawvideo -pix_fmt bgra  -s ${new_width}x${new_height} -y $raw_name`;
+#print `identify "$resized_name"`;
+
+if(!-s($resized_name)){
+die "Can't resize image!!! Imagemagick not created file!";
+}
+
+open(rr,$resized_name) or die "$resized_name: $!";
+binmode(rr);
+read(rr,$resized_data,-s(rr));
+close(rr);
+
+$codec_name=substr($resized_data,0x54,4);
+if($codec_name ne "DXT1" && $codec_name ne "DXT5"){
+die "Resized codec must be DXT1/DXT5, but we have $codec_name!";
+}
+
+$resized_data=substr($resized_data,0x80);
+
+print "Resized to codec $codec_name, got ".length($resized_data)."\n";
+
+$resized_data=$newheader.pack("I",length($resized_data)).$resized_data;
+$resized_data=pack("III",1,length($resized_data),0x1803FFFF).$resized_data;
+$resized_data.=pack("III",3,0,0x1803FFFF);
+$resized_data=pack("III",0x15,length($resized_data),0x1803FFFF).$resized_data;
+push(@to_out,$resized_data);
+
+unlink($dds_name);
+unlink($resized_name);
+unlink($png_name);
+unlink($raw_name);
+
+
+}
 
 #die;
 $width>>=1;
@@ -258,17 +302,22 @@ $height>>=1;
 }
 #printf("We at %x\n",tell(dd));
 
-$pos=tell(dd);
 read(dd,$buf,12);
 ($type,$len,$build)=unpack("III",$buf);
 if($type!=0x3 || $len!=0){# txd_extra_info_s
-die "$src_file: expects 03 extension, got $type at $pos! This is not TXD file or node is broken!";
+die "$src_file: This is not TXD file or root node is broken!";
 }
 
 }
 
 
+$resized_data=join("",@to_out);
+print "Saved $images_count2 images\n";
+$struct=pack("III",1,4,0x1803FFFF).pack("SS",$images_count2,2).$resized_data.pack("III",3,0,0x1803FFFF);
+$resized_data=pack("III",0x16,length($struct),0x1803FFFF).$struct;
 
-
+open(oo,">".$dst_file);
+binmode(oo);
+print oo $resized_data;
 
 
