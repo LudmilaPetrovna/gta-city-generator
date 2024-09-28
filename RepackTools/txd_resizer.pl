@@ -1,7 +1,7 @@
 
 
 
-$new_width=$new_height=32;
+$new_width=$new_height=16;
 
 ($src_file,$dst_file)=@ARGV;
 
@@ -161,25 +161,9 @@ $alpha_name="[no alpha]";
 }
 
 
-
-
-if(!$isCompressed && !($d3dFormatAlphaNum==0x15 || $d3dFormatAlphaNum==0x16)){
+if(!$isCompressed && $version==9 && !($d3dFormatAlphaNum==0x15 || $d3dFormatAlphaNum==0x16)){
 die "$src_file: Only 0x15, but have ".sprintf("%x",$d3dFormatAlphaNum)."($d3dFormatAlpha) type supported D3DFMT_A8R8G8B8=21, see https://learn.microsoft.com/ru-ru/windows/win32/direct3d9/d3dformat";
 }
-
-
-$newheader=pack("IIZ32Z32IA4SSCCCC",
-9, # version
-0x1101, # flags
-$tex_name,"",
-$isAlpha?0x0300:0x200, # rasterFormatId
-$isAlpha?"DXT1":"DXT1", # rasterCodecId (directX 0x16=XRGB, 0x15 for ARGB)
-#$isAlpha?0x15:0x16, # rasterCodecId (directX 0x16=XRGB, 0x15 for ARGB)
-$new_width,$new_height,16,1, # $width,$height,$depth,$mipmap_count
-4, # rasterType = ????
-#$isAlpha|
-0x8  #we have alpha  + compressed
-);
 
 
 if($paletteSize){
@@ -188,6 +172,29 @@ die "Palette!!!";
 print "Skipped $paletteSize colors\n";
 }
 
+
+print "Found texture ${width}x${height}\@$depth \"$tex_name\", codec:$d3dFormatAlphaNum/$d3dFormatAlpha, $mipmap_count mipmap, format:$rasterFormatId, type:$rasterType, flags:$flags\n";
+
+
+for($mm=0;$mm<$mipmap_count;$mm++){
+read(dd,$buf,4);
+$data_size=unpack("I",$buf);
+read(dd,$data,$data_size);
+
+if($mm==0){
+
+$dds_name="tmp-src".rand().".dds";
+$resized_name="tmp-dst".rand().".dds";
+$png_name="tmp-dst".rand().".png";
+$raw_name="tmp-dst".rand().".bin";
+
+unlink($dds_name); # if any
+unlink($resized_name); # if any
+unlink($png_name); # if any
+unlink($raw_name); # if any
+
+
+# reconstruct DDS image file
 
 $pixelFormatFlags=0;
 if($isCompressed){
@@ -203,21 +210,6 @@ $pixelFormatFlags|=0x1|0x2; # used alpha in uncompressed images
 if($version==8 && $format_codec){
 $d3dFormatAlpha=$format_codec;
 }
-
-print "Found texture ${width}x${height}\@$depth \"$tex_name\", codec:$d3dFormatAlphaNum/$d3dFormatAlpha, $mipmap_count mipmap, format:$rasterFormatId, type:$rasterType, flags:$flags\n";
-
-
-for($mm=0;$mm<$mipmap_count;$mm++){
-read(dd,$buf,4);
-$data_size=unpack("I",$buf);
-read(dd,$data,$data_size);
-
-if($mm==0){
-
-$dds_name="tmp-src".rand().".dds";
-$resized_name="tmp-dst".rand().".dds";
-$png_name="tmp-dst".rand().".png";
-$raw_name="tmp-dst".rand().".raw";
 
 open(oo,">".$dds_name);
 binmode(oo);
@@ -247,39 +239,73 @@ print oo pack("IIIII",0x401008,0,0,0,0);
 print oo $data;
 close(oo);
 
-$isAlpha=0;
+# convert image
 
 $alpha_on="-alpha off ";
 if($isAlpha){
 $alpha_on="-alpha on ";
 }
 
-unlink($png_name); # if any
+if($isCompressed){
+$new_codec=$isAlpha?"dxt5":"DXT1";
 
-$codec=$isAlpha?"dxt5":"DXT1";
+$newheader=pack("IIZ32Z32IA4SSCCCC",
+9, # version
+0x1101, # flags
+$tex_name,"",
+$isAlpha?0x0300:0x200, # rasterFormatId
+$isAlpha?"DXT5":"DXT1", # rasterCodecId (directX 0x16=XRGB, 0x15 for ARGB)
+$new_width,$new_height,16,1, # $width,$height,$depth,$mipmap_count
+4, # rasterType = ????
+$isAlpha| 0x8  #we have alpha  + compressed
+);
 
 `convert "$dds_name" $alpha_on -resize  ${new_width}x${new_height}\\\! -define dds:mipmaps=0 -define dds:compression=$codec "$resized_name"`;
-#`convert "$dds_name" $alpha_on -resize ${new_width}x${new_height}\\\! "$png_name"`;
-#`ffmpeg -v 0 -i "$png_name" -f rawvideo -pix_fmt bgra  -s ${new_width}x${new_height} -y $raw_name`;
-#print `identify "$resized_name"`;
 
-if(!-s($resized_name)){
+} else {
+
+$newheader=pack("IIZ32Z32IISSCCCC",
+9, # version
+0x1101, # flags
+$tex_name,"",
+$isAlpha?0x0500:0x600, # rasterFormatId
+$isAlpha?0x15:0x16, # rasterCodecId (directX 0x16=XRGB, 0x15 for ARGB)
+$new_width,$new_height,32,1, # $width,$height,$depth,$mipmap_count
+4, # rasterType = ????
+$isAlpha
+);
+
+print <<CODE;
+convert "$dds_name" $alpha_on -resize ${new_width}x${new_height}\\\! abgr:"$raw_name"
+CODE
+
+`convert "$dds_name" $alpha_on -resize ${new_width}x${new_height}\\\! bgra:"$raw_name"`;
+
+}
+
+$processed_file=-s($resized_name)?$resized_name:$raw_name;
+
+if(!-s($processed_file)){
 die "Can't resize image!!! Imagemagick not created file!";
 }
 
-open(rr,$resized_name) or die "$resized_name: $!";
+open(rr,$processed_file) or die "$resized_name: $!";
 binmode(rr);
-read(rr,$resized_data,-s(rr));
+read(rr,$processed_data,-s(rr));
 close(rr);
 
-$codec_name=substr($resized_data,0x54,4);
-if($codec_name ne "DXT1" && $codec_name ne "DXT5"){
+$codec_name=substr($processed_data,0x54,4);
+if($isCompressed && $codec_name ne "DXT1" && $codec_name ne "DXT5"){
 die "Resized codec must be DXT1/DXT5, but we have $codec_name!";
 }
 
-$resized_data=substr($resized_data,0x80);
-
+if($isCompressed){
+$resized_data=substr($processed_data,0x80);
 print "Resized to codec $codec_name, got ".length($resized_data)."\n";
+} else {
+$resized_data=$processed_data;
+}
+
 
 $resized_data=$newheader.pack("I",length($resized_data)).$resized_data;
 $resized_data=pack("III",1,length($resized_data),0x1803FFFF).$resized_data;
