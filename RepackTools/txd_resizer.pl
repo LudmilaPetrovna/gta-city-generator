@@ -10,6 +10,10 @@ die "Usage: txd_resizer.pl [source.txd] [output.txd]";
 }
 
 
+if($src_file=~/fonts\.txd/){
+$new_width=$new_height=128;
+}
+
 
 open(dd,$src_file);
 binmode(dd);
