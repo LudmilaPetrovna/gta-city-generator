@@ -58,7 +58,7 @@ $sounds_count=400; # max size of bank, since it actually many banks in same offs
 print oo pack("SS",$sounds_count,0);
 for($q=0;$q<400;$q++){
 #($buffer_offset,$loop_offset,$sample_rate,$headroom)
-print oo pack("IiSS",$q*$sample_count*2,-1,$samplerate,0);
+print oo pack("IiSS",$q*$sample_count*2,$q==8?0:-1,$samplerate,0);
 }
 
 
@@ -72,7 +72,7 @@ for($q=0;$q<$sounds_count;$q++){
 print STDERR "Writing sound id: $q\n";
 
 for($e=0;$e<$voices;$e++){
-$freqs[$e]=rand()*10000+$q*200;
+$freqs[$e]=rand()*10000;
 $phases[$e]=rand()*10000;
 $amps[$e]=500+rand()*15000;
 }
@@ -83,8 +83,17 @@ for($e=0;$e<$voices;$e++){
 $sample+=sin($phases[$e]+$qq/$samplerate*2*$freqs[$e])*$amps[$e];
 }
 
+if($q==8){
+$sample=int(rand()*1000);
+}
+
+
 $gph=$qq/$sample_count*3.1415926;
-$sample=int($sample*sin($gph));
+$window=sin($gph)*10;
+if($window>1){$window=1;}
+$sample=int($sample*$window);
+
+
 if($sample<-32768){$sample=-32768;}
 if($sample>32767){$sample=32767;}
 print oo pack("s",$sample);
