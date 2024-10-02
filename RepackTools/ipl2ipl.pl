@@ -51,6 +51,10 @@ if($items_offset!=0x4C){die "Items offset must be 0x4c, your file may be broken"
 print STDERR "We have $items_count items, offset: $items_offset; we have $cars_count, offset: $cars_offset\n";
 
 
+$color=int(rand()*256) | (int(rand()*256)<<8) | (int(rand()*256)<<16);
+$opacity=0x70;
+$filled_color=($opacity<<24)|$color;
+
 print oo "inst\n";
 # structs by 40 bytes
 for($q=0;$q<$items_count;$q++){
@@ -59,6 +63,7 @@ $obj_name=exists $names{$obj_id}?$names{$obj_id}:"UNKNOWN_OBJ_ID";
 
 print oo join(", ",$obj_id,$obj_name,$interrior,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_index)."\n";
 updateBB($bb,$pos_x,$pos_y,$pos_z);
+$map->setPixel(3000+$pos_x,3000-$pos_y,$color);
 
 }
 print oo "end\n";
@@ -82,6 +87,7 @@ $unk1,$unk2)=unpack("ffffIIIIIIII",substr($file,$cars_offset+$q*48,48));
 
 print oo join(", ",$pos_x,$pos_y,$pos_z,$rot_angle,$obj_id,$color_primary,$color_secondary,$force_spawn,$alarm,$locked,$unk1,$unk2)."\n";
 updateBB($bb,$pos_x,$pos_y,$pos_z);
+$map->setPixel(3000+$pos_x,3000-$pos_y,$color);
 
 }
 print oo "end\n";
@@ -96,13 +102,15 @@ print oo "end\n";
 close(oo);
 print "Bounding box for $filename: ".join(" ",@{$bb})."\n";
 
-$color=int(rand()*256) | (int(rand()*256)<<8) | (int(rand()*256)<<8);
-$opacity=0x70;
-$filled_color=($opacity<<24)|$color;
+$location_width=$bb->[3]-$bb->[0];
+$location_height=$bb->[4]-$bb->[1];
+$location_area=$location_width*$location_height;
+push(@locations,[$filename,$location_width,$location_height,int($location_area/1000000)]);
+
 $x1=$bb->[0]+3000;
-$y1=$bb->[1]+3000;
+$y2=3000-$bb->[1];
 $x2=$bb->[3]+3000;
-$y2=$bb->[4]+3000;
+$y1=3000-$bb->[4];
 $map->filledRectangle($x1,$y1,$x2,$y2,$filled_color);
 $map->rectangle($x1,$y1,$x2,$y2,$color);
 $map->string(gdSmallFont,$x1+2,$y1+2,$filename,0);
@@ -111,6 +119,10 @@ $map->string(gdSmallFont,$x1+2,$y1+2,$filename,0);
 open(oo,">binary_ipl_map.png");
 print oo $map->png(9);
 close(oo);
+
+print "We found locations:\n";
+print map{"$_->[0]: $_->[1] x $_->[2] (area $_->[3] km2)\n"}sort{$a->[3] <=> $b->[3]}@locations;
+
 
 sub updateBB{
 my $bb=shift;
