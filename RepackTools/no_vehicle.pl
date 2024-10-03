@@ -1,3 +1,6 @@
+#`rm -r gta3-dst`;
+#`mkdir gta3-dst`;
+
 
 
 $want_model="vcnmav"; #heli
@@ -16,7 +19,7 @@ if(!exists $vehicle_classes{$obj_class}){
 $vehicle_classes{$obj_class}=$replacement;
 }
 
-if($model eq "romero"){# || $vehicle_classes{$obj_class}->[1]>$replacement->[0]){
+if($vehicle_classes{$obj_class}->[1]>$replacement->[1]){
 $vehicle_classes{$obj_class}=$replacement;
 }
 
@@ -28,14 +31,14 @@ if(/^\d+\s*,\s*$want_model/){
 close(dd);
 
 open(dd,"/dev/shm/cache/Src/data/vehicles.ide");
-open(oo,">/dev/shm/cache/Dst/data/vehicles.ide");
+#open(oo,">/dev/shm/cache/Dst/data/vehicles.ide");
 while(<dd>){
 
 @fields=split(/\s*,\s*/,$_);
 
 ($vehicle_id,$model,$texture,$obj_class)=@fields;
-$obj_class="car";
-if(exists $vehicle_classes{$obj_class} && $obj_class=~/^(car)/i){
+#$obj_class="car";
+if(exists $vehicle_classes{$obj_class}){
 #if(exists $vehicle_classes{$obj_class} && $obj_class=~/^(bike|bmx|boat|car|DODO|EMPEROR|heli|mtruck|plane|quad|trailer|train|WAYFARER)/i){
 @want_fields=@{$vehicle_classes{$obj_class}->[2]};
 ($src_model,$src_texture)=($want_fields[1],$want_fields[2]);

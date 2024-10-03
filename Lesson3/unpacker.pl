@@ -1,4 +1,6 @@
-require "./size_detect.pl";
+use File::Basename;
+
+require "".dirname(__FILE__)."/size_detect.pl";
 
 ($source_img,$dest_dir)=@ARGV;
 
