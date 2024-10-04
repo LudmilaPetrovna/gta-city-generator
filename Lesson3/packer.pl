@@ -2,12 +2,15 @@ use File::Find;
 use File::Path qw(make_path remove_tree);
 use File::Basename;
 use Data::Dumper;
+use Digest::MD5 "md5_hex";
 
 ($dst_img,@sources)=@ARGV;
 
 if(!$dst_img || !@sources){
 die "Usage: packer.pl [dst_img.img] [src_dir1] [src_dir2] ...";
 }
+
+$timestamp_started=time();
 
 # read all sources
 @sources=map{readSource($_)}@sources;
@@ -20,48 +23,28 @@ $final{$k}=$src->{$k};
 }
 }
 
+%dups=();
 
-@files=sort keys %final;
+@files=sort{$final{$a}->[2] <=> $final{$b}->[2]} keys %final;
 #@files=grep{/\.(col|dat|dff|ifp|ipl|txd)$/i}@files;
 
 $entries=@files;
-
+make_path(dirname($dst_img));
 open(oo,">".$dst_img);
 binmode(oo);
-print oo pack("A4I","VER2",$entries);
 
-# writing reader
-print "Packing $entries files\n";
-$header_size=bytes2secs($entries*32+8);
-$pos=$header_size;
-
-printf("Header (in sectors): %d (in hex: %x)\n",$pos,$pos*2048);
-
-for($e=0;$e<$entries;$e++){
-$entry_name=$files[$e];
-$entry_size=$final{$entry_name}->[2];
-
-$src_size=bytes2secs($entry_size);
-$src_offset=$pos;
-$pos+=$src_size;
-
-print oo pack("ISSa24",$src_offset,$src_size,0,$entry_name);
-}
-
-print STDERR "Header size: $header_size sectors\n";
-
-$padding=$header_size*2048-($entries*32+8);
-if($padding){
-print oo "\x00" x $padding;
-}
-
-print STDERR "Padding to ".tell(oo)."\n";
+# writing "fake" reader
+$header_size=$entries*32+8;
+$header_sectors=bytes2secs($header_size);
+print oo "\x00" x ($header_sectors*2048);
 
 # writing actual data
 
+$header=pack("A4I","VER2",$entries);
+
+$cur_sect=$header_sectors;
 foreach $filename(@files){
 ($filepath,$offset,$size)=@{$final{$filename}};
-print STDERR "Packing file $filename (from $filepath)...\n";
 open(dd,$filepath);
 binmode(dd);
 read(dd,$buf,$size);
@@ -74,9 +57,33 @@ if($padding){
 $buf.="\x00" x $padding;
 }
 
+$hash=md5_hex($buf);
+if(exists $dups{$hash}){
+($sect_start,$sectors)=@{$dups{$hash}}
+} else {
+$dups{$hash}=[$cur_sect,$sectors];
+$sect_start=$cur_sect;
+$cur_sect+=$sectors;
 print oo $buf;
+}
+
+$header.=pack("ISSa24",$sect_start,$sectors,0,$filename);
+printf(STDERR "%08x: Written file % 25s, %s, (from %s)...\n",$dups{$hash}->[0]*2048,$filename,$hash,$filepath);
 
 }
+
+# updating header
+
+seek(oo,0,0);
+print oo $header;
+
+# final touch
+
+
+$timestamp_finished=time();
+print STDERR "Packed successfully for (".($timestamp_finished-$timestamp_started)." seconds)\n";
+
+
 
 
 sub bytes2secs{

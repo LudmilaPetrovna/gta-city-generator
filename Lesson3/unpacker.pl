@@ -1,4 +1,5 @@
 use File::Basename;
+use File::Path qw(make_path remove_tree);
 
 require "".dirname(__FILE__)."/size_detect.pl";
 
@@ -36,9 +37,7 @@ print "$offset: $name ($size, $size_arch)\n";
 
 # unpacking real files
 
-`mkdir -p $dest_dir`;
-#mkdir $dest_dir,0777;
-
+make_path($dest_dir);
 
 foreach $fileinfo(@files){
 ($filename,$offset,$size)=@{$fileinfo};

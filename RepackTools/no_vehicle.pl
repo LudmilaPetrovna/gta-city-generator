@@ -13,7 +13,7 @@ while(<dd>){
 @want_fields=split(/\s*,\s*/,$_);
 if($want_fields[0]!~/^\d+$/){next;}
 ($id,$model,$texture,$obj_class)=@want_fields;
-$model_size=-s("gta3-src/$model.dff");
+$model_size=-s("img_unpacked/models/gta3/$model.dff");
 $replacement=[$model,$model_size,[@want_fields]];
 if(!exists $vehicle_classes{$obj_class}){
 $vehicle_classes{$obj_class}=$replacement;
@@ -23,10 +23,11 @@ if($vehicle_classes{$obj_class}->[1]>$replacement->[1]){
 $vehicle_classes{$obj_class}=$replacement;
 }
 
-
-
-if(/^\d+\s*,\s*$want_model/){
+if($obj_class eq "train" && /vcnmav/){
+$vehicle_classes{$obj_class}=$replacement;
+$vehicle_classes{$obj_class}->[1]=0;
 }
+
 }
 close(dd);
 
@@ -42,10 +43,10 @@ if(exists $vehicle_classes{$obj_class}){
 #if(exists $vehicle_classes{$obj_class} && $obj_class=~/^(bike|bmx|boat|car|DODO|EMPEROR|heli|mtruck|plane|quad|trailer|train|WAYFARER)/i){
 @want_fields=@{$vehicle_classes{$obj_class}->[2]};
 ($src_model,$src_texture)=($want_fields[1],$want_fields[2]);
-print STDERR "Copy  ./gta3-src/$src_texture.txd gta3-dst/$texture.txd\n";
-`cp ./gta3-src/$src_texture.txd gta3-dst/$texture.txd`;
-print STDERR "Copy   ./gta3-src/$src_model.dff gta3-dst/$model.dff\n";
-`cp ./gta3-src/$src_model.dff gta3-dst/$model.dff`;
+print STDERR "Copy  ./img_unpacked/models/gta3/$src_texture.txd gta3-dst/$texture.txd\n";
+`cp ./img_unpacked/models/gta3/$src_texture.txd gta3-dst/$texture.txd`;
+print STDERR "Copy   ./img_unpacked/models/gta3/$src_model.dff gta3-dst/$model.dff\n";
+`cp ./img_unpacked/models/gta3/$src_model.dff gta3-dst/$model.dff`;
 for($q=3;$q<@want_fields;$q++){
 $fields[$q]=$want_fields[$q];
 }

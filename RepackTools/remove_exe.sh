@@ -1,0 +1,1 @@
+rm ./vorbisHooked.dll ./vorbisFile.dll ./vorbis.dll ./unins000.exe ./SALodLights.asi ./SADisplayResolutions.asi ./ogg.dll ./imfast.asi ./III.VC.SA.LimitAdjuster.asi ./gta_sa_1.exe ./gta_sa.exe ./eax.dll ./CLEO.asi ./cleo/IntOperations.cleo ./cleo/IniFiles.cleo ./cleo/FileSystemOperations.cleo ./bass.dll
