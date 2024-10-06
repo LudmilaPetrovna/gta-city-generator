@@ -3,7 +3,7 @@
 
 $new_width=$new_height=16;
 
-($src_file,$dst_file)=@ARGV;
+($src_file,$dst_file,$do_hilite)=@ARGV;
 
 if(!$src_file || !$dst_file){
 die "Usage: txd_resizer.pl [source.txd] [output.txd]";
@@ -13,6 +13,17 @@ die "Usage: txd_resizer.pl [source.txd] [output.txd]";
 if($src_file=~/fonts\.txd/){
 $new_width=$new_height=128;
 }
+
+if($src_file=~/radar\d+\.txd/){
+$new_width=$new_height=64;
+}
+
+$conv_options='';
+if($src_file=~/player.img/i){
+$conv_options='+level 5%,100% -level 0%,50%';
+}
+
+
 
 
 open(dd,$src_file);
@@ -264,7 +275,7 @@ $new_width,$new_height,16,1, # $width,$height,$depth,$mipmap_count
 $isAlpha| 0x8  #we have alpha  + compressed
 );
 
-`convert "$dds_name" $alpha_on -resize  ${new_width}x${new_height}\\\! -define dds:mipmaps=0 -define dds:compression=$codec "$resized_name"`;
+`convert "$dds_name" $alpha_on $conv_options -resize  ${new_width}x${new_height}\\\! -define dds:mipmaps=0 -define dds:compression=$codec "$resized_name"`;
 
 } else {
 
@@ -279,11 +290,7 @@ $new_width,$new_height,32,1, # $width,$height,$depth,$mipmap_count
 $isAlpha
 );
 
-print <<CODE;
-convert "$dds_name" $alpha_on -resize ${new_width}x${new_height}\\\! abgr:"$raw_name"
-CODE
-
-`convert "$dds_name" $alpha_on -resize ${new_width}x${new_height}\\\! bgra:"$raw_name"`;
+`convert "$dds_name" $alpha_on $conv_options -resize ${new_width}x${new_height}\\\! bgra:"$raw_name"`;
 
 }
 

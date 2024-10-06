@@ -1,6 +1,7 @@
 
 sub getXorKey{
-open(dd,"gta_sa_1.exe");
+my $path=shift;
+open(dd,$path || "gta_sa_1.exe") or die "Can't open EXE file!";
 binmode(dd);
 read(dd,$file,-s(dd));
 close(dd);
@@ -24,7 +25,7 @@ return($key);
 }
 
 sub getXorKeyArray{
-my $key=getXorKey();
+my $key=getXorKey(@_);
 my $q;
 my $ret=[];
 for($q=0;$q<16;$q++){
