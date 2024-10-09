@@ -45,7 +45,7 @@ foreach $fileinfo(@files){
 seek(dd,$offset,0);
 read(dd,$buf,$size);
 
-$guessed_size=guessFileSize($filename,$buf);
+$guessed_size=guessFileSize($filename,$buf,$source_img);
 $padding_size=$size-$guessed_size;
 if($padding_size>0 && $padding_size<2048){ #looks like this is a padding!
 print "$filename: guessed size: $guessed_size/$size (padding: $padding_size bytes)\n";

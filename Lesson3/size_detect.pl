@@ -3,7 +3,22 @@ use strict;
 sub guessFileSize{
 my $filename=shift;
 my $file=shift;
+my $img_file=shift;
 my $size=0;
+my $is_plaintext=0;
+
+if($img_file=~/cuts\.img/ && $filename=~/\.(cut|dat)$/i){
+$is_plaintext=1;
+}
+
+if($is_plaintext){
+my $filesize=length($file);
+my $tail=substr($file,$filesize-2048,2048);
+if($tail=~/(\x00+)/s){
+return($filesize-length($1));
+}
+}
+
 
 if($filename=~/\.ifp$/i && substr($file,0,4) eq "ANP3"){ # this is IFP file 4 (-8)
 $size=unpack("I",substr($file,4,4))+8;

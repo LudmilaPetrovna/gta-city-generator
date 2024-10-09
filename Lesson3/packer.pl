@@ -25,7 +25,7 @@ $final{$k}=$src->{$k};
 
 %dups=();
 
-@files=sort{$final{$a}->[2] <=> $final{$b}->[2]} keys %final;
+@files=sort{$final{$a}->[2] <=> $final{$b}->[2]}grep{$final{$_}->[2]>=0}keys %final;
 #@files=grep{/\.(col|dat|dff|ifp|ipl|txd)$/i}@files;
 
 $entries=@files;
@@ -116,6 +116,11 @@ if($sign eq "VER2" && $filecount<1000000){
 return(readSourceIMG($path));
 }
 
+# okay, this may be "remover" file
+
+return(readSourceRemover($path));
+
+
 }
 
 sub readSourceDir{
@@ -162,6 +167,24 @@ $tree->{lc($name)}=[$path,$offset,$size];
 close($dd);
 
 return($tree);
+}
+
+sub readSourceRemover{
+my $path=shift;
+my $tree={};
+my $dd;
+print STDERR "Reading REMOVER text $path...\n";
+open($dd,$path) or die "Can't open source file $path: $!";
+while(<$dd>){
+chomp;
+($filename,$action)=split(/\t/);
+if($action eq "!REMOVE!"){
+$tree->{lc($filename)}=["",-1,-1];
+}
+}
+close($dd);
+return($tree);
+
 }
 
 
