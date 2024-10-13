@@ -1,5 +1,8 @@
 use File::Path qw(make_path remove_tree);
 
+make_path("tree_residual");
+
+
 @trees=split(/\n/,<<CODE);
 veg_tree
 gta_tree_boak
@@ -88,6 +91,9 @@ $source_texturefile=lc($repl->[2]).".txd";
 
 `cp $source_dir/$source_modelfile $dest_dir/$modelfile`;
 `cp $source_dir/$source_texturefile $dest_dir/$texturefile`;
+
+`cp $source_dir/$modelfile tree_residual/`;
+`cp $source_dir/$texturefile tree_residual/`;
 
 }
 

@@ -1,20 +1,38 @@
+use File::Path qw(make_path remove_tree);
 use GD;
+use Data::Dumper;
+
 $map=GD::Image->new(6000,6000,1);
 $map->saveAlpha(1);
 $map->alphaBlending(0);
 $map->filledRectangle(0,0,6000,6000,0x7f000000);
 $map->alphaBlending(1);
 
+$gta3_root="/dev/shm/cache/img_unpacked/models/gta3";
+$dst_dir="ipl_unpacked";
+
+%usage=();
+%moved=();
+
+make_path($dst_dir);
+
+open(pp,"/dev/shm/cache/zones_info.txt");
+while(<pp>){
+chomp;
+($x1,$y1,$x2,$y2,$path)=split(/,/);
+push(@paths,[$x1,$y1,$x2,$y2,$path]);
+}
+close(pp);
 
 #collect names
 $files=`find Src -iname "*.ide"`;
-
+%ide=();
 foreach $filename(split(/\n/,$files)){
 open(ii,$filename);
 while(<ii>){
-if(/^\d+,.+?,/){
+if(/^\d+\s*,/){
 @fields=split(/\s*,\s*/);
-$names{$fields[0]}=$fields[1];
+$ide{$fields[0]}=[$fields[1],$fields[2]];
 }
 }
 close(ii);
@@ -22,16 +40,14 @@ close(ii);
 
 
 #ipl
-mkdir "binary_ipl";
-$files=`find gta3-src -iname "*.ipl"`;
+$files=`find $gta3_root -iname "*stream*.ipl"`;
 
 foreach $filename(split(/\n/,$files)){
 open(dd,$filename) or die;
 read(dd,$file,-s(dd));
 close(dd);
 
-$newfile=$filename;
-$newfile=~s/gta3-src/binary_ipl/s;
+$newfile=$dst_dir."/"."debug.txt";
 
 
 $bb=[];
@@ -48,7 +64,7 @@ if($q==4){$cars_offset=$offset;}
 }
 
 if($items_offset!=0x4C){die "Items offset must be 0x4c, your file may be broken";}
-print STDERR "We have $items_count items, offset: $items_offset; we have $cars_count, offset: $cars_offset\n";
+#print STDERR "We have $items_count items, offset: $items_offset; we have $cars_count, offset: $cars_offset\n";
 
 
 $color=int(rand()*256) | (int(rand()*256)<<8) | (int(rand()*256)<<16);
@@ -59,7 +75,26 @@ print oo "inst\n";
 # structs by 40 bytes
 for($q=0;$q<$items_count;$q++){
 ($pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$obj_id,$interrior,$lod_index)=unpack("fffffffIIi",substr($file,$items_offset+$q*40,40));
-$obj_name=exists $names{$obj_id}?$names{$obj_id}:"UNKNOWN_OBJ_ID";
+if(!exists $ide{$obj_id}){die "WARNING!!! Unknown ID ($obj_id), not found in IDE file!!!";}
+$obj_name=$ide{$obj_id}->[0];
+
+($model,$texture)=@{$ide{$obj_id}};
+
+$usage{lc($model.'.dff')}++;
+$usage{lc($texture.'.txd')}++;
+
+
+$path="UNKNOWN";
+
+foreach $pp(@paths){
+if($pos_x>=$pp->[0] && $pos_x<=$pp->[2] && $pos_y>=$pp->[1] && $pos_y<=$pp->[3]){
+$path=$pp->[4];
+}
+}
+
+
+$moved{lc($model.'.dff')}=$path;
+$moved{lc($texture.'.txd')}=$path;
 
 print oo join(", ",$obj_id,$obj_name,$interrior,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_index)."\n";
 updateBB($bb,$pos_x,$pos_y,$pos_z);
@@ -116,12 +151,32 @@ $map->rectangle($x1,$y1,$x2,$y2,$color);
 $map->string(gdSmallFont,$x1+2,$y1+2,$filename,0);
 }
 
-open(oo,">binary_ipl_map.png");
-print oo $map->png(9);
-close(oo);
+#open(oo,">binary_ipl_map.png");
+#print oo $map->png(9);
+#close(oo);
 
-print "We found locations:\n";
-print map{"$_->[0]: $_->[1] x $_->[2] (area $_->[3] km2)\n"}sort{$a->[3] <=> $b->[3]}@locations;
+#print "We found locations:\n";
+#rint map{"$_->[0]: $_->[1] x $_->[2] (area $_->[3] km2)\n"}sort{$a->[3] <=> $b->[3]}@locations;
+
+
+foreach(keys %usage){
+if($usage{$_}!=1){
+$moved{$_}="_COMMON";
+}
+}
+
+
+foreach $filename(keys %moved){
+$target=$dst_dir."/".$moved{$filename};
+make_path($target);
+
+`cp /dev/shm/cache/img_unpacked/models/gta3/$filename $target`;
+
+}
+
+
+
+die Dumper(\%moved);
 
 
 sub updateBB{

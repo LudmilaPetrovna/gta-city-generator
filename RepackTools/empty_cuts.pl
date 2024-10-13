@@ -1,8 +1,4 @@
-
-
-$src_root="/dev/shm/cache/img_unpacked/";
-
-opendir(dd,"$src_root/anim/cuts");
+opendir(dd,"/dev/shm/cache/img_unpacked/anim/cuts");
 @files=grep{/cut$/}readdir(dd);
 closedir(dd);
 
@@ -36,37 +32,24 @@ $dat_template.=";\r\n";
 $dat_template.=";\r\n";
 
 
-%remove=();
+
 foreach $cutfile(@files){
 print STDERR "Processing cutscene $cutfile\n";
-
-$datfile=$cutfile;
-$datfile=~s/cut$/dat/s;
-
-$ifpfile=$cutfile;
-$ifpfile=~s/cut$/ifp/s;
-
-open(dd,"$src_root/anim/cuts/".$cutfile) or die "Can't open source $cutfile: $!";
-while(<dd>){
-s/[\r\n].*//s;
-if($_ eq "model"){$in_model=1;next;}
-if($_ eq "end"){$in_model=0;next;}
-if($in_model){
-@fields=split(/\s*,\s*/);
-$remove{$fields[1]}++;
-}
-
-}
-
 open(oo,">".$cutfile);
 print oo $cut_template;
 close(oo);
+
+$datfile=$cutfile;
+$datfile=~s/cut$/dat/s;
 
 open(oo,">".$datfile);
 print oo $dat_template;
 close(oo);
 
-open(dd,"$src_root/anim/cuts/".$ifpfile) or die "Can't open source $ifpfile: $!";
+$ifpfile=$cutfile;
+$ifpfile=~s/cut$/ifp/s;
+
+open(dd,"/dev/shm/cache/img_unpacked/anim/cuts/".$ifpfile) or die "Can't open source $ifpfile: $!";
 binmode(dd);
 seek(dd,0x14,0);
 read(dd,$animname,8);
@@ -80,10 +63,6 @@ close(oo);
 
 }
 
-open(oo,">/dev/shm/cache/cutscenes-remove.txt");
-map{$model=lc($_);
-print oo "$model.dff	!REMOVE!\n";
-print oo "$model.txd	!REMOVE!\n";
 
-}sort keys %remove;
+
 

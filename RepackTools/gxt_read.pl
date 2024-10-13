@@ -4,17 +4,14 @@ use Digest::CRC "crc32";
 
 my $using_GXT_table="MAIN";
 my @all_gxt_tables=();
-
-initGxts();
-
-
-print resolve_GXT("BLUEB")."\n";
-print resolve_GXT_all("RYD1a05")."\n";
-print resolve_GXT_all("RYD1A05")."\n";
-
-
 my $gxts={};
 my $gxts_data={};
+
+initGxts();
+#print resolve_GXT_all('PRO@01')."\n";
+#print resolve_GXT_all('MOBRING')."\n";
+
+
 
 
 sub resolve_GXT{
@@ -66,7 +63,7 @@ $using_GXT_table=shift;
 
 sub initGxts{
 
-open(dd,"american.gxt");
+open(dd,"american.gxt") or die;
 
 read(dd,$buf,4);
 ($version,$char_width)=unpack("SS",$buf);
@@ -133,5 +130,6 @@ close(dd);
 }
 
 
+1
 
 
