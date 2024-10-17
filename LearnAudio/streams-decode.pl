@@ -2,12 +2,13 @@
 
 
 $src_file=$ARGV[0];
+$dst_file=$ARGV[1];
 
 require "./xor.pl";
-@key=getXorKeyArray();
+@key=getXorKeyArray("../gta_sa_1.exe");
 
-open(dd,$src_file) or die $!;
-open(oo,">".$src_file.".dexored") or die $!;
+open(dd,$src_file) or die "Can't read source \"$src_file\" $!";
+open(oo,">".$dst_file) or die "Can't write \"$dst_file\" destination: $!";
 binmode(dd);
 binmode(oo);
 
