@@ -7,6 +7,9 @@ remove_tree("Dst");
 remove_tree("gta3-dst");
 make_path("gta3-dst");
 
+remove_tree("col_prepared");
+make_path("col_prepared");
+
 
 
 %ide=();
@@ -119,7 +122,6 @@ $isint{$obj_id}+=$interrior;
 $used{$obj_id}++;
 push(@{$storage{$storage_name}},[$obj_id,$lod_index]);
 
-if($obj_id==2785){die $file_in;}
 }
 
 }
@@ -165,6 +167,10 @@ foreach $id(keys %isint){
 if($isint{$id}>0){
 delete $lod{$id};
 }
+}
+
+foreach $id(keys %lodof){
+delete $lod{$id};
 }
 
 
@@ -241,9 +247,7 @@ $_=join(", ",$model_id,$model_name,$interrior,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y
 }
 }
 
-if(/^\s*\d/ && $in_inst){
-$_="";
-}
+#if(/^\s*\d/ && $in_inst){$_="";}
 
 print oo "$_\r\n";
 }
@@ -301,7 +305,6 @@ $cols{$key}=$File::Find::name;
 }
 }},"col_unpacked");
 
-
 foreach $model_id(keys %lod){
 $lod_id=$lod{$model_id};
 
@@ -315,6 +318,23 @@ if(!exists $cols{$modelfile}){
 die "Can't find collision for $modelfile (model:$model_id) collision:$col int:$isint{$model_id}!";
 }
 
+open(dd,$cols{$modelfile}) or die $!;
+read(dd,$buf,-s(dd));
+close(dd);
+
+substr($buf,8,22)=pack("Z22",$ide{$lod_id}->[0]);
+substr($buf,30,2)=pack("S",$lod_id);
+
+$package="default";
+if($cols{$modelfile}=~/([^\/]+)\/([^\/]+)$/){
+$package=$1;
+}
+
+$outfile="col_prepared/".$package."/".$ide{$lod_id}->[0].".col";
+make_path(dirname($outfile));
+open(oo,">".$outfile);
+print oo $buf;
+close(oo);
 
 }
 
@@ -338,7 +358,7 @@ close(oo);
 
 
 
-die;
+die "done";
 
 sub find_file{
 my $basename=shift;
