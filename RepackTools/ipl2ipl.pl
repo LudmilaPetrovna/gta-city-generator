@@ -1,4 +1,5 @@
 use File::Path qw(make_path remove_tree);
+use File::Basename;
 use GD;
 use Data::Dumper;
 
@@ -8,12 +9,13 @@ $map->alphaBlending(0);
 $map->filledRectangle(0,0,6000,6000,0x7f000000);
 $map->alphaBlending(1);
 
-$gta3_root="/dev/shm/cache/img_unpacked/models/gta3";
+$gta3_root="img_unpacked";
 $dst_dir="ipl_unpacked";
 
 %usage=();
 %moved=();
 
+remove_tree($dst_dir);
 make_path($dst_dir);
 
 open(pp,"/dev/shm/cache/zones_info.txt");
@@ -25,7 +27,7 @@ push(@paths,[$x1,$y1,$x2,$y2,$path]);
 close(pp);
 
 #collect names
-$files=`find Src -iname "*.ide"`;
+$files=`find data -iname "*.ide"`;
 %ide=();
 foreach $filename(split(/\n/,$files)){
 open(ii,$filename);
@@ -47,12 +49,15 @@ open(dd,$filename) or die;
 read(dd,$file,-s(dd));
 close(dd);
 
-$newfile=$dst_dir."/"."debug.txt";
+$newfile=$filename;
+$newfile=~s/^$gta3_root\///s;
+$newfile=$dst_dir."/".$newfile;
 
 
 $bb=[];
 
-open(oo,">".$newfile) or die;
+make_path(dirname($newfile));
+open(oo,">".$newfile) or die "Can't write to \"$newfile\": $!";
 
 if(substr($file,0,4) eq "bnry"){ #this is binary IPL
 ($items_count,$null,$null,$null,$cars_count,$null)=unpack("IIIIII",substr($file,4,24));
@@ -158,6 +163,7 @@ $map->string(gdSmallFont,$x1+2,$y1+2,$filename,0);
 #print "We found locations:\n";
 #rint map{"$_->[0]: $_->[1] x $_->[2] (area $_->[3] km2)\n"}sort{$a->[3] <=> $b->[3]}@locations;
 
+die;
 
 foreach(keys %usage){
 if($usage{$_}!=1){
