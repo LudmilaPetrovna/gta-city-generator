@@ -2,8 +2,8 @@ use File::Find;
 use File::Path qw(make_path remove_tree);
 use File::Basename;
 
-$src_dir="img_unpacked/models/gta3";
-$dst_dir="col_unpacked/gta3/";
+$src_dir="img_unpacked/models/";
+$dst_dir="col_unpacked/";
 
 remove_tree($dst_dir);
 make_path($dst_dir);
@@ -24,6 +24,8 @@ sub extract_colls{
 my $path=shift;
 my $basefile=lc(basename($path));
 $basefile=~s/\.col$//is;
+my $basedir=substr(lc(dirname($path)),length($src_dir));
+
 
 print STDERR "Extracting collisions from \"$path\"...\n";
 open(dd,$path) or dir $!;
@@ -50,7 +52,7 @@ die "We got obj_id $obj_id, but expect 0..19999! May be a mod?";
 
 read(dd,$data,$size-22-2);
 
-$outfile=$dst_dir.'/'.$basefile.'/'.lc($model).'.col';
+$outfile=$dst_dir.'/'.$basedir.'/'.$basefile.'/'.lc($model).'.col';
 print STDERR "... $outfile ($obj_id)\n";
 if(-s($outfile)){
 die "File $outfile already exists!!!";
