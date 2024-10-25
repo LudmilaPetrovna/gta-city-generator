@@ -121,18 +121,24 @@ make_path('Dst/'.dirname($File::Find::name));
 open(oo,'>Dst/'.$File::Find::name) or die;
 $in_inst=0;
 $inst_id=0;
-
+$in_path=0;
 while(<ii>){
 chomp;
 s/[\r\n]*$//s;
 
 if(/^inst/){$in_inst=1;$inst_id=0;}
-if(/^end/){$in_inst=0;}
+if(/^path/){$in_path=1;$inst_id=0;}
+
+if(/^end/){$in_inst=0;$in_path=0;}
 if(/^\s*\d/ && $in_inst){
 ($model_id,$model_name,$interrior,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_id)=split(/\s*,\s*/);
 if(exists $used{$model_id}){
 $_="";
 }
+}
+
+if(/^\s*\d/ && $in_path){
+$_="";
 }
 
 #if(/^\s*\d/ && $in_inst){$_="";}
