@@ -1,4 +1,6 @@
 
+require "/dev/shm/tmp/collada_writer.pl";
+
 $g_version=0x1803FFFF;
 
 $rpGEOMETRYTRISTRIP =0x00000001;         	#Is triangle strip (if disabled it will be an triangle list)
@@ -54,12 +56,14 @@ map{($id,$text)=split(/ - /,$_,2);$types->{hex($id)}=$text;}split(/\n+/,<<AAA);
 2A − rwID_CHUNKGROUPEND – конец группы Chunk (тип RwChunkGroup)
 AAA
 
+cld_create();
+
 open(dd,$ARGV[0]);
 binmode(dd);
 read(dd,$file,-s(dd));
 
 
-walk(0,length($file),0);
+walk(0,length($file),0,0,"");
 
 
 sub walk{
@@ -67,6 +71,7 @@ my $offset=shift;
 my $len=shift;
 my $level=shift;
 my $parent_id=shift;
+my $path=shift;
 my $buf;
 my($chunk_id,$chunk_len,$chunk_version);;
 my $pos=0;
@@ -76,16 +81,13 @@ my $pos=0;
 while($pos<$len){
 $buf=substr($file,$offset+$pos,12);
 ($chunk_id,$chunk_len,$chunk_version)=unpack("III",$buf);
+if($chunk_version != $g_version){last;}
+if($chunk_len>$len){die "Internal chunk len size is more than parent chunk! Data may be broken!";}
 
-
-
-if($chunk_version != $g_version){
-last;
-}
-
-if($chunk_len>$len){
-die "Internal chunk len size is more than parent chunk! Data may be broken!";
-}
+$path2=$path.sprintf("%.2x",$chunk_id);
+open(oo,">dump-dff-$path2.bin");
+print oo substr($file,$offset+$pos,$chunk_len+12);
+close(oo);
 
 print "".("  " x $level).sprintf("%08x: chunk %02x, len %04x (%d) bytes ... up to %08x",$offset+$pos,$chunk_id,$chunk_len,$chunk_len,$offset+$pos+$chunk_len+12).": ".$types->{$chunk_id}."\n";
 
@@ -118,7 +120,7 @@ print "".("  " x $level)."We found: $geometries_count geomeries\n";
 if($parent_id==0x0f && $chunk_id==0x1 && $chunk_len>=16){
 ($format,$triangles_count,$verts_count,$morph_count)=unpack("iiii",substr($file,$offset+$pos+12,16));
 $numTexSets=($format>>16)&0xFF;
-
+print "We found $triangles_count triangles, $verts_count verts, $morph_count morphs!!!!!\n";
 my $polys=[];
 my $verts=[];
 my $q;
@@ -137,16 +139,23 @@ print "skipped $verts_count prelite points, we at ".sprintf("%08x",$offset+$pos+
 
 if($format&$rpGEOMETRYTEXTURED){
 #skip UV coords
+@cld_uv=();
+for($q=0;$q<$verts_count;$q++){
+($UV_S,$UV_T)=unpack("ff",substr($file,$offset+$pos+$minipos+$q*8,8));
+print "UV[".($q+1)."]=[".join(", ",$UV_S,$UV_T)."]\n";
+push(@cld_uv,[$UV_S,-$UV_T]);
+}
 $minipos+=8*$numTexSets*$verts_count;
 print "skipped $numTexSets UV\n";
 }
 
 # load triangles
+$mesh_raw=substr($file,$offset+$pos+$minipos,8*$triangles_count);
 for($q=0;$q<$triangles_count;$q++){
 ($vertex2, $vertex1, $materialId, $vertex3)=unpack("SSSS",substr($file,$offset+$pos+$minipos,8));
 $minipos+=8;
 $polys->[$q]=[$vertex1,$vertex2,$vertex3];
-#print "poly $vertex1,$vertex2,$vertex3\n";
+print "POLY[".($q+1)."]=[$vertex1,$vertex2,$vertex3]\n";
 }
 print "$triangles_count triangles loaded\n";
 
@@ -162,20 +171,46 @@ print "bounding box: $bound_x,$bound_y,$bound_z,$bound_r\n";
 $minipos+=8;
 if($has_verts){
 # load vertexes
+@cld_verts=();
 for($q=0;$q<$verts_count;$q++){
-($ox,$oy,$oz)=unpack("fff",substr($file,$offset+$pos+$minipos,12));
-$minipos+=12;;
-$verts->[$q]=[$ox,$oy,$oz];
+if(substr($file,$offset+$pos+$minipos,12) eq ""){
+die "not enough vertex!";
 }
+($ox,$oy,$oz)=unpack("fff",substr($file,$offset+$pos+$minipos,12));
+$minipos+=12;
+$verts->[$q]=[$ox,$oy,$oz];
+push(@cld_verts,[$ox,$oy,$oz]);
+}
+cld_VBO(@cld_verts);
 print "loaded $verts_count vertex\n";
 }
 
 if($has_normals && $format&$rpGEOMETRYNORMALS){
 # skip normals
-$minipos+=12*$verts_count;
-print "skipped $verts_count normals\n";
-
+@cld_norms=();
+for($q=0;$q<$verts_count;$q++){
+($ox,$oy,$oz)=unpack("fff",substr($file,$offset+$pos+$minipos,12));
+push(@cld_norms,[$ox,$oy,$oz]);
+$minipos+=12;
 }
+cld_normals(@cld_norms);
+print "loaded $verts_count normals\n";
+}
+
+cld_UV(@cld_uv);
+
+@cld_mesh=();
+for($q=0;$q<$triangles_count;$q++){
+($vertex2, $vertex1, $materialId, $vertex3)=unpack("SSSS",substr($mesh_raw,$q*8,8));
+print "TRIA[".($q+1)."]=[$vertex2, $vertex1, $vertex3]\n";
+push(@cld_mesh,$vertex1,$vertex1,$vertex1,$vertex2,$vertex2,$vertex2,$vertex3,$vertex3,$vertex3);
+}
+cld_mesh(@cld_mesh);
+cld_finish();
+
+
+
+
 
 print "".("  " x $level)."Prelit color: $color, triangles: $triangles_count, verts: $verts_count\n";
 print "".("  " x $level)."end of data at: ".sprintf("%08x",$offset+$pos+$minipos)."\n";
@@ -191,9 +226,20 @@ print "".("  " x $level)."We found: mat id: $mat_id\n";
 }
 }
 
+# binmesh / material split
+if($parent_id==0x03 && $chunk_id==0x50e && $chunk_len>4){
+($strip_count,$split_count,$face_count)=unpack("III",substr($file,$offset+$pos+12,12));
+print "".("  " x $level)."We found: BINMESH, $strip_count,$split_count,$face_count\n";
+for($q=0;$q<$face_count;$q++){
+$val=unpack("I",substr($file,$offset+$pos+12+12+$q*4,4))+1;
+print "$val, ";
+}
+print "\n";
+}
 
 
-walk($offset+$pos+12,$chunk_len,$level+1,$chunk_id);
+
+walk($offset+$pos+12,$chunk_len,$level+1,$chunk_id,$path2);
 $pos+=$chunk_len+12;
 
 }
@@ -216,19 +262,26 @@ my $poly_count=@{$polys};
 my @verts2=map{pack("fff",@{$_})}@{$verts};
 my $verts3=join("",@verts2);
 
+
 print "Building model out of ".(length($verts3)/12)." vertexes\n";
 print "Building model out of ".@verts2." vertexes\n";
+print "Building model out of $poly_count faces\n";
 
 open(ss,">".$filename."-debug.stl");
 binmode(ss);
 print ss "\x00" x 80;
 print ss pack("I",$poly_count);
 my $q;
+
+for($q=0;$q<@{$verts};$q++){
+print "VERT[".($q+1)."]=[".join(", ",@{$verts->[$q]})."]\n";
+}
+
 for($q=0;$q<$poly_count;$q++){
 # normal vector
 print ss pack("III",0,0,0);
 
-
+#print "poly ".join(", ",$verts->[$polys->[$q]->[0]],$verts->[$polys->[$q]->[1]],$verts->[$polys->[$q]->[2]])."\n";
 if(!$verts2[$polys->[$q]->[0]]){die "wrong 1 $q, we want $polys->[$q]->[0]";}
 if(!$verts2[$polys->[$q]->[1]]){die "wrong 2 $q, we want $polys->[$q]->[1]";}
 if(!$verts2[$polys->[$q]->[2]]){die "wrong 3 $q, we want $polys->[$q]->[2]";}
