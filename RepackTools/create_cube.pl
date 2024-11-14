@@ -1,10 +1,13 @@
 $build=0x1803FFFF;
 
-$texture_name="cardboxes_128";
+$texture_name="world0";
+$model_name="card5";
 
 $faces_count=12;
 $verts_count=8;
 $tvert_count=36;
+
+$scale=50.0;
 
 $verts=[
 [0,0,-1],
@@ -15,6 +18,12 @@ $verts=[
 [1,0,0],
 [0,1,0],
 [1,1,0]
+];
+
+$bounds=[
+-0.1,-.1,-1,
+1.1,1.1,0,
+3
 ];
 
 $faces=[
@@ -68,7 +77,7 @@ $tverts=[
 [0.9995,0.999501,0.999501],
 [0.9995,0.999501,0.999501],
 [0.000499487,0.000499487,0.000499725],
-[0.9995,0.999501,0.000499487],
+[0.9995,0.999501,0.000499487]
 ];
 
 $normals=[
@@ -82,9 +91,29 @@ $normals=[
 [0,0,1.5708],
 ];
 
-open(oo,">cardboardbox4.dff");
+open(oo,">".$model_name.".dff");
 print oo gen_Clump();
 close(oo);
+
+open(oo,">".$model_name.".col");
+print oo gen_collision();
+close(oo);
+
+sub gen_collision{
+my $ret=pack("A4IZ22S","COL3",140,$model_name,0); #header
+$ret.=pack("ffffffffff",$bounds->[0]*$scale,$bounds->[1]*$scale,$bounds->[2]*$scale,
+$bounds->[3]*$scale,$bounds->[4]*$scale,$bounds->[5]*$scale,
+0,0,0,$bounds->[6]*$scale); #TBound
+$ret.=pack("SSSCCIIIIIIIIII",0,1,0,0,0,2,0,0x74,0,0,0,0,0,0,0);
+
+my $box=pack("ffffffCCCC",$bounds->[0]*$scale,$bounds->[1]*$scale,$bounds->[2]*$scale, # bound min
+$bounds->[3]*$scale,$bounds->[4]*$scale,$bounds->[5]*$scale, # bound max
+0x3D,0x00,0xBB,0x00 # surface props
+);
+return($ret.$box);
+
+}
+
 
 
 sub get_by_path{
@@ -139,7 +168,7 @@ $out.=join("",map{pack("ff",$_->[0],$_->[1])}@{$verts}); # tex coords (very bad)
 $out.=join("",map{pack("SSSS",$_->[1]-1,$_->[0]-1,0,$_->[2]-1)}@{$faces}); # triangles
 $out.=pack("ffff",0,0,0,3); # bounding sphere
 $out.=pack("II",1,1);
-$out.=join("",map{pack("fff",$_->[0],$_->[1],$_->[2])}@{$verts}); # vertices
+$out.=join("",map{pack("fff",$_->[0]*$scale,$_->[1]*$scale,$_->[2]*$scale)}@{$verts}); # vertices
 $out.=join("",map{pack("III",@{$_})}@{$normals}); # normals
 
 $add=gen_RwMatList($texture_name);
