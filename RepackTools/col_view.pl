@@ -223,7 +223,7 @@ print "Loading spheres: count: $num_spheres, offset: $off_spheres\n";
 $sp=substr($file,$off_spheres+4);
 for($q=0;$q<$num_spheres;$q++){
 ($center_x,$center_y,$center_z,$radius,$flags)=unpack("ffffI",substr($sp,$q*20,20));
-createSphere([$center_x,$center_y,$center_z],$radius,25);
+createSphere([$center_x,$center_y,$center_z],$radius,55);
 }
 
 stlClose();
