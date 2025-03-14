@@ -322,8 +322,8 @@ my $qTheta;
 my $wTheta;
 my $pp;
 
-$wTheta=($w-1)*1.0/$SEGS*180.0;
-$qTheta=($q-1)*1.0/$SEGS*360.0;
+$wTheta=($w-1)*1.0/$SEGS*180.0/360*2.0*3.14159265;
+$qTheta=($q-1)*1.0/$SEGS*360.0/360*2.0*3.14159265;
 $pp=[sin($qTheta)*sin($wTheta)*$R,cos($qTheta)*sin($wTheta)*$R,cos($wTheta)*$R];
 return($pp);
 }
