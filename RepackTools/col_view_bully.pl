@@ -68,8 +68,9 @@ stlClose();
 die;
 =cut
 
-$part5=substr($file,1980);
-print_color_hex($part5,16,"ffff");
+# prelight?
+$part5=substr($file,1980+8+12);
+print_color_hex($part5,12,"sscCCCss");
 die;
 
 for($w=1;$w<50;$w++){

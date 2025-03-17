@@ -124,7 +124,7 @@ $len=$num_shadow_faces;
 print "here face data: ".$len." faces (must be ~$num_shadow_faces)\n";
 for($q=0;$q<$len;$q++){
 push(@poly,[unpack("SSS",substr($faces,$q*8,6))]);
-#print "$q: ".join(" x ",unpack("SSSCC",substr($faces,$q*8,8)))."\n";
+print "$q: ".join(" x ",unpack("SSSCC",substr($faces,$q*8,8)))."\n";
 }
 
 writeSTL("shadow",[@verts],[@poly]);
