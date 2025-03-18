@@ -65,12 +65,21 @@ parseIPL($File::Find::name);
 # produce files:
 # id, file_path.col, pos, quat
 
+#my $center=[2743.4375, -2120.640625, 15.421875];
+my $center=[-2254, -66, 35];
+my $rad=500;
+
 my @ret=();
 foreach $ipl_prefix(keys %ipl){
 print STDERR "Transforming $ipl_prefix...\n";
 foreach(@{$ipl{$ipl_prefix}}){
 ($id,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_id)=@{$_};
+#print "($id,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_id)\n";
+$dist=sqrt(($center->[0]-$pos_x)**2+($center->[1]-$pos_y)**2+($center->[2]-$pos_z)**2);
+if($dist>$rad){next;}
+if(exists $id_files{$id}){
 push(@ret,[$id,join("\t",$id,$id_files{$id},$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w)]);
+}
 }
 }
 
@@ -134,7 +143,7 @@ if($items_offset!=0x4C){die "Items offset must be 0x4c, your file may be broken"
 for($q=0;$q<$items_count;$q++){
 ($pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$obj_id,$interrior,$lod_index)=unpack("fffffffIIi",substr($file,$items_offset+$q*40,40));
 if($interrior!=0){next;} # today we interested only in "main world"
-push(@{$ret},[$id,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_id]);
+push(@{$ret},[$obj_id,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_id]);
 }
 
 }

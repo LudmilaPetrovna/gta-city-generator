@@ -2,12 +2,12 @@ use Data::Dumper;
 
 $target=$ARGV[0];
 
-open(dd,$target);
+open(dd,$target) or die;
 binmode(dd);
 read(dd,$file,-s(dd));
 close(dd);
 
-if(length($file)<500){exit(0);}
+#if(length($file)<500){exit(0);}
 
 ($sign,$filesize,$model_name,$model_id)=unpack("A4IZ22S",substr($file,0,32));
 if($sign ne "COLL" && $sign ne "COL2"  && $sign ne "COL3"  && $sign ne "COL4"){
