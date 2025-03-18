@@ -98,13 +98,15 @@ $off_boxes>$filesize ||
 $off_lines>$filesize ||
 $off_mesh_verts>$filesize ||
 $off_mesh_faces>$filesize ||
-$off_planes>$filesize){print "$target: one or more offsets targets over file end, file may be corrupted\n";exit(0);}
+$off_planes>$filesize){print "$target: one or more offsets targets over file end, file may be corrupted or from other game (like Bully)\n";exit(0);}
 
 
 print "$target: $sign have ".($filesize+8)." bytes $num_spheres spheres, $num_boxes boxes, $num_mesh_faces meshface, $num_lines lines, $has_shadows ($num_shadow_faces) shadows, $has_cones cones, $has_face_groups fgroups, $has_planes planes\n";
 
 print "Parsing shadow model...\n";
 # TODO: add version validation and flags checking
+
+%mat_used=();
 
 $verts=substr($file,$off_shadow_verts+4);
 @verts=();
@@ -150,6 +152,8 @@ $len=$num_mesh_faces;
 print "here face data: ".$len." faces\n";
 for($q=0;$q<$len;$q++){
 push(@poly,[unpack("SSS",substr($faces,$q*8,6))]);
+($mat,$light)=unpack("CC",substr($faces,$q*8+6,2));
+$mat_used{$mat}++;
 #print "$q: ".join(" x ",unpack("SSSCC",substr($faces,$q*8,8)))."\n";
 }
 
@@ -194,6 +198,8 @@ for($q=0;$q<$num_boxes;$q++){
 ($min_x,$min_y,$min_z,$max_x,$max_y,$max_z,$surf_mat,$surf_flag,$surf_bright,$surf_light)=unpack("ffffffCCCC",substr($box,$q*28,28));
 @sizes=($max_x-$min_x,$max_y-$min_y,$max_z-$min_z);
 $h=@verts;
+$mat_used{$surf_mat}++;
+
 for($p=0;$p<8;$p++){
 push(@verts,[
 $cube_verts->[$p]->[0]*$sizes[0]+$min_x,
@@ -222,13 +228,15 @@ writeSTL("boxes",[@verts],[@poly]);
 print "Loading spheres: count: $num_spheres, offset: $off_spheres\n";
 $sp=substr($file,$off_spheres+4);
 for($q=0;$q<$num_spheres;$q++){
-($center_x,$center_y,$center_z,$radius,$flags)=unpack("ffffI",substr($sp,$q*20,20));
+($center_x,$center_y,$center_z,$radius,$surf_mat,$surf_flag,$surf_bright,$surf_light)=unpack("ffffCCCC",substr($sp,$q*20,20));
+$mat_used{$surf_mat}++;
+print "Material: $surf_mat\n";
 createSphere([$center_x,$center_y,$center_z],$radius,55);
 }
 
 stlClose();
 
-
+print "Materials used:".Dumper(\%mat_used);
 
 
 sub showhex{
