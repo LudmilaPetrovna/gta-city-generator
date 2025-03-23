@@ -1,6 +1,6 @@
 $build=0x1803FFFF;
 
-$texture_name="world0";
+$texture_name="cardboxes_128";
 $model_name="card5";
 
 $faces_count=12;
@@ -25,6 +25,8 @@ $bounds=[
 1.1,1.1,0,
 3
 ];
+
+#$bounds=[-73.56640625,-89.8295288085938,3.21468353271484,75.708984375,89.8414611816406,7.95890426635742,116];
 
 $faces=[
 [1,3,4],
@@ -96,19 +98,88 @@ print oo gen_Clump();
 close(oo);
 
 open(oo,">".$model_name.".col");
-print oo gen_collision();
+print oo gen_collision($model_name,0x3D,0x00,0xBB,0x00);
 close(oo);
 
+$subtile=2;
+
+
+open(ct,"./col_unpacked/gta3/sfs_2/bbgroundbitc_sfs.col");
+open(ct,"./col_unpacked/gta3/sfs_4/bbgroundbitd_sfs.col");
+
+read(ct,$ct,-s(ct));
+close(ct);
+
+mkdir "surface_demo",0777;
+`cp card5.txd surface_demo`;
+open(ipl,">surface_demo/anus.ipl");
+open(ide,">surface_demo/anus.ide");
+open(col,">surface_demo/anus.col");
+
+print ipl "inst\r\n";
+print ide "objs\r\n";
+
+for($w=0;$w<16;$w++){
+for($q=0;$q<16;$q++){
+$material=$q+$w*16;
+#for($s=0;$s<$subtile;$s++){
+#for($a=0;$a<$subtile;$a++){
+
+$id=19000+$material;
+if($id>=20000){last;}
+$col_name="surfdemo_${material}";
+$col_file="surface_demo/".$col_name.".col";
+
+$pos_x=$q*(15*2+0.05)+5;
+$pos_y=$w*(68*2+0.05)+5;
+$pos_z=35;
+
+substr($ct,8,24)=pack("Z22S",$col_name,$id);
+
+print col $ct;
+#col gen_collision($col_name,$material,0x00,0x7f,0x7f);
+`cp card5.dff surface_demo/$col_name.dff`;
+#`cp ./img_unpacked/models/gta3/cardboardbox2.dff surface_demo/$col_name.dff`;
+`cp ./col_unpacked/gta3/sfs_4/bbgroundbitd_sfs.col surface_demo/$col_name.dff`;
+
+#patch 0x90
+#$name=pack("Z16",$col_name);
+#open(aa,"+<surface_demo/$col_name.dff");
+#seek(aa,0x90,0);
+#print aa $name;
+#close(aa);
+
+print ipl "$id, unused, 0, $pos_x, $pos_y, $pos_z, 0, 0, 0, 1, -1\r\n";
+print ipl "3335, road_sign, 0, $pos_x, $pos_y, $pos_z, 0, 0, 0, 1, -1\r\n";
+print ide "$id, $col_name, card5, 150, 1\r\n";
+}
+}
+#}
+#}
+print ipl "end\r\n";
+print ide "end\r\n";
+
+
+
+
 sub gen_collision{
-my $ret=pack("A4IZ22S","COL3",140,$model_name,0); #header
+my $col_name=shift;
+
+my $col_material=shift;
+my $col_flags=shift;
+my $brightness=shift;
+my $light=shift;
+
+my $ret=pack("A4IZ22S","COL3",140,$col_name,0); #header
 $ret.=pack("ffffffffff",$bounds->[0]*$scale,$bounds->[1]*$scale,$bounds->[2]*$scale,
 $bounds->[3]*$scale,$bounds->[4]*$scale,$bounds->[5]*$scale,
 0,0,0,$bounds->[6]*$scale); #TBound
-$ret.=pack("SSSCCIIIIIIIIII",0,1,0,0,0,2,0,0x74,0,0,0,0,0,0,0);
+$ret.=pack("SSSCCIIIIIIIIII",0,1,0,0,0,2,0,0x74,0,0,0,0,0,0,0); # count of objects and offsets
 
 my $box=pack("ffffffCCCC",$bounds->[0]*$scale,$bounds->[1]*$scale,$bounds->[2]*$scale, # bound min
 $bounds->[3]*$scale,$bounds->[4]*$scale,$bounds->[5]*$scale, # bound max
-0x3D,0x00,0xBB,0x00 # surface props
+#0x3D,        0x00,      0xBB,       0x00 # surface props
+$col_material,$col_flags,$brightness,$light # surface props
 );
 return($ret.$box);
 
@@ -261,7 +332,7 @@ my $texture_name=shift;
           000008a8: chunk 01, len 001c (28) bytes ... up to 000008d0: STRUCT (data)
           00000924: chunk 03, len 0000 (0) bytes ... up to 00000930: Extension (RW Section)
 =cut
-my $out=pack("IIIIIIIfff",1,0x1c,$build,0,0xFFFFFFFF,0,1,1,0.05,1); # color and surface props, https://gtamods.com/wiki/RpMaterial
+my $out=pack("IIIIIIIfff",1,0x1c,$build,0,0xFFFFFFFF,0,1,.5,0.05,.5); # color and surface props, https://gtamods.com/wiki/RpMaterial
 $out.=gen_RwTexture($texture_name);
 $out.=pack("III",3,0,$build);
 $out=pack("III",7,length($out),$build).$out;

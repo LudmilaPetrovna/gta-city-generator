@@ -66,8 +66,10 @@ parseIPL($File::Find::name);
 # id, file_path.col, pos, quat
 
 #my $center=[2743.4375, -2120.640625, 15.421875];
-my $center=[-2254, -66, 35];
-my $rad=500;
+#my $center=[-2254, -66, 35];
+#my $center=[-152,235,9];
+my $center=[-164,16,9];
+my $rad=1500;
 
 my @ret=();
 foreach $ipl_prefix(keys %ipl){
