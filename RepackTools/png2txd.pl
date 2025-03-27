@@ -37,7 +37,7 @@ $temp_file="tmp-".time()."-".rand().".dds";
 
 unlink($temp_file);
 #-resize "${max_size}x${max_size}\!"
-`convert "$png_file" -define dds:mipmaps=0 -flip -define dds:compression=TXD5 "$temp_file"`;
+`convert "$png_file" -define dds:mipmaps=0 -define dds:compression=TXD5 "$temp_file"`;
 if(!-s($temp_file)){
 die "Conversion $png_file to DDS failed!";
 }
