@@ -1,8 +1,12 @@
 delete $*
 clearListener()
 clearUndoBuffer()
+deleteAllChangeHandlers()
 gc()
+
+
 --resetMaxFile() #noPrompt
+--macros.run "Lights and Cameras" "Camera_CreateFromView"
 
 filename=@"z:\cache\vgnboigashot15.col"
 
@@ -386,11 +390,14 @@ surfaces[179]=[90, 22, 210]
 
 
 meditMaterials[1]=Standard diffuseMap:(Vertex_Color())
+meditMaterials[1].twoSided = on
+meditMaterials[1].selfIllumAmount = 69
 showTextureMap meditMaterials[1] true
-showHWTextureMap meditMaterials[1] true
+showHWTextureMap meditMaterials[1] false
 
 fn util_enable_vc obj=(
 meshop.setNumMaps obj 1 keep:false
+obj.showVertexColors=on
 )
 	
 fn util_colorize obj col=(
@@ -399,6 +406,7 @@ convertToMesh obj
 util_enable_vc obj
 meshop.setNumCPVVerts obj 1
 setVertColor obj 1 col
+obj.showVertexColors=on
 --setVertColor obj 1 [255,0,0]
 for q=1 to (meshop.getNumFaces obj) do (
 	setVCFace obj q [1,1,1]
@@ -711,19 +719,32 @@ fn col_get_info filename do_bounding=(
 
 fn col_load filename=(
 local info=col_get_info filename false
-	if info[1] then (
-	return col_load_collision filename
+local obj1
+local obj2
+	
+if info[2] then (
+--obj1=col_load_shadow filename
 )
---if info[2] then (
---return col_load_shadow filename
---)
 
+if info[1] then (
+obj2=col_load_collision filename
+)
+
+if obj1==undefined and obj2!=undefined then (
+	return obj2
+)
+
+if obj1!=undefined and obj2!=undefined then (
+	attach obj1 obj2
+)
+return obj1
 )
 
 badfile="z:/cache/col_unpacked/gta3/vegepart/tree_hipoly09b.col"
 badfile="z:/cache/col_unpacked/gta3/barriers/gate_autor.col"
 badfile="z:/cache/col_unpacked/gta3/las2_2/bchcostrd6v_las2.col"
 badfile="z:/cache/col_unpacked/gta3/sfs_2/bbgroundbitc_sfs.col"
+badfile="z:/cache/col_unpacked/gta3/sfe_1/masts1_sfe.col"
 --col_get_info badfile true
 --col_load_collision_faces badfile
 --col_load badfile
@@ -735,7 +756,17 @@ file=openFile (@"z:\cache\map.txt") mode:"rt" encoding:#utf8
 
 tt=200000
 undo off (
-while not (eof file); do (
+root=Sphere pos:[0,0,0] radius:1 segments:10
+util_colorize root [0,0,0]
+util_enable_vc root
+meshop.setNumCPVVerts root 256
+root.showVertexColors = on
+for q=1 to 256 do (
+	setVertColor root q surfaces[q]
+)
+	linenum=1
+	
+	while not (eof file); do (
 dline=readLine file
 fields=filterString dline "\t"
 	tt=tt-1
@@ -753,23 +784,37 @@ rot_z=fields[8] as float
 rot_w=fields[9] as float
 nodename="obj_"+fields[1]
 
-mainref=getNodeByName nodename
-if objnode==undefined then (
+if mainref!=undefined then (
+	if mainref.name!=nodename then (
+	delete mainref
+		mainref=undefined
+	)
+)
+if mainref==undefined then (
 	mainref=col_load filename
 	if mainref==undefined then (
 		mainref=Dummy pos:[0,0,0]
 	)
 	mainref.name=nodename
-	obj=mainref
-) else (
-	obj=instance mainref
 )
+
+obj=instance mainref
 obj.pos=[0,0,0]
 obj.rotation=(quat rot_x rot_y -rot_z rot_w)
 obj.pos=[pos_x,pos_y,pos_z]
-	
+obj.showVertexColors=on
+obj.name=nodename+"_"+(linenum as string)
+cl=classof obj
+if cl==Editable_mesh then (
+--attach root obj
+)
+
+linenum+=1
+if mod linenum 123==0 then print linenum
 
 )
+
+print "Map creation complete, enabling \"undo\""
 )
 
 close file
