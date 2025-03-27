@@ -10,6 +10,9 @@ use Digest::CRC qw(crc64 crc32 crc16);
 %inst=();
 %ipl=();
 
+remove_tree("ipl_decoded");
+mkdir "ipl_decoded",0777;
+
 # step 1: find files and make shortcuts
 # Not perfect was, as we have some collisions, but enough for IPL files
 
@@ -78,9 +81,9 @@ dump_inst($stream_key);
 #my $center=[-152,235,9];
 #my $center=[-164,16,9];
 #my $center=[-439.086,1041.41,16.6484];
-my $center=[-1204.12,1032.61,53.5703];
-my $rad=11700;
-my $max_count=5000;
+my $center=[0,0,0];
+my $rad=1500;
+my $max_count=50000;
 
 my @ret=();
 foreach $ipl_key(grep{!/barrier.+ipl/}keys %inst){
@@ -172,8 +175,9 @@ return($ret);
 
 sub dump_inst{
 my $key=shift;
-mkdir "ipl_decoded",0777;
-open(oo,">ipl_decoded/".$key.".inst.txt");
+my $out=$key;
+$out=~s/\.ipl$//s;
+open(oo,">ipl_decoded/".$out.".inst.txt");
 print oo map{join(", ",@{$_})."\n"}@{$inst{$key}};
 close(oo);
 }
