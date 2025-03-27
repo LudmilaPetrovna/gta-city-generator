@@ -12,13 +12,14 @@
 $list="";
 for($q=0;$q<144;$q++){
 $src_filename=sprintf("./tmp/frames-%d.png",$q);
+$src_filename=sprintf("radar_render/frames%.4d.png",$q);
 $list.=" $src_filename";
 
 `rm -rf tmp/txddir`;
 `mkdir tmp/txddir`;
 
 $radname=sprintf("radar%.2d",$q);
-`convert $src_filename -alpha off tmp/txddir/$radname.png`;
+`convert $src_filename -alpha off -resize 64x64 tmp/txddir/$radname.png`;
 `perl /dev/shm/gta-city-generator/RepackTools/png2txd.pl out_radar/$radname.txd tmp/txddir/$radname.png`;
 }
 
