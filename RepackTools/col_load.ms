@@ -21,7 +21,7 @@ panocam.target=targetObject ()
 panocam.target.pos=pano.pos+[10,0,0]
 
 meditMaterials[1].selfIllumAmount = 100
-meditMaterials[1].opacity = 51
+meditMaterials[1].opacity = 0
 )
 
 surfaces=#()
@@ -391,7 +391,7 @@ surfaces[179]=[90, 22, 210]
 
 meditMaterials[1]=Standard diffuseMap:(Vertex_Color())
 meditMaterials[1].twoSided = on
-meditMaterials[1].selfIllumAmount = 69
+meditMaterials[1].selfIllumAmount = 100
 showTextureMap meditMaterials[1] true
 showHWTextureMap meditMaterials[1] false
 
@@ -745,6 +745,7 @@ badfile="z:/cache/col_unpacked/gta3/barriers/gate_autor.col"
 badfile="z:/cache/col_unpacked/gta3/las2_2/bchcostrd6v_las2.col"
 badfile="z:/cache/col_unpacked/gta3/sfs_2/bbgroundbitc_sfs.col"
 badfile="z:/cache/col_unpacked/gta3/sfe_1/masts1_sfe.col"
+badfile="z:/cache/col_unpacked/gta3/las2_4/sanpedro4_las2.col"
 --col_get_info badfile true
 --col_load_collision_faces badfile
 --col_load badfile
@@ -754,8 +755,15 @@ if true then (
 -- load file list
 file=openFile (@"z:\cache\map.txt") mode:"rt" encoding:#utf8
 
-tt=200000
+perball=1000
+currentball=-1
+linenum=1
+
 undo off (
+	
+	while not (eof file); do (
+		
+if currentball<linenum/perball	then (
 root=Sphere pos:[0,0,0] radius:1 segments:10
 util_colorize root [0,0,0]
 util_enable_vc root
@@ -764,13 +772,11 @@ root.showVertexColors = on
 for q=1 to 256 do (
 	setVertColor root q surfaces[q]
 )
-	linenum=1
-	
-	while not (eof file); do (
+currentball=linenum/perball
+)
+		
 dline=readLine file
 fields=filterString dline "\t"
-	tt=tt-1
-	if tt<0 then exit
 --print fields
 id=fields[1] as integer
 filename=@"z:\cache\"+fields[2]
@@ -782,7 +788,10 @@ rot_x=fields[6] as float
 rot_y=fields[7] as float
 rot_z=fields[8] as float
 rot_w=fields[9] as float
-nodename="obj_"+fields[1]
+nodename="obj_"+fields[1]+"_"
+
+--6196
+--if id!=6223 then continue
 
 if mainref!=undefined then (
 	if mainref.name!=nodename then (
@@ -795,24 +804,32 @@ if mainref==undefined then (
 	if mainref==undefined then (
 		mainref=Dummy pos:[0,0,0]
 	)
+	mainref.pos=[0,10000,0]
 	mainref.name=nodename
 )
-
+print "debug:"
+print mainref
 obj=instance mainref
 obj.pos=[0,0,0]
+print "debug:"
+print obj
 obj.rotation=(quat rot_x rot_y -rot_z rot_w)
 obj.pos=[pos_x,pos_y,pos_z]
-obj.showVertexColors=on
+obj.showVertexColors=off
 obj.name=nodename+"_"+(linenum as string)
 cl=classof obj
 if cl==Editable_mesh then (
---attach root obj
+attach root obj
 )
 
 linenum+=1
-if mod linenum 123==0 then print linenum
+if mod linenum 123==0 then (
+	print linenum
+)
 
 )
+
+delete mainref
 
 print "Map creation complete, enabling \"undo\""
 )

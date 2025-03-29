@@ -1,17 +1,17 @@
-delete $*
-clearListener()
-clearUndoBuffer()
-deleteAllChangeHandlers()
-gc()
+--delete $*
+--clearListener()
+--clearUndoBuffer()
+--deleteAllChangeHandlers()
+--gc()
 
-renderWidth=768
-renderHeight=768
+renderWidth=1024
+renderHeight=1024
 
-meditMaterials[7].diffuseMap = Bitmaptexture fileName:@"Z:\camera-calibration-patterns\xor-numbered.png"
-meditMaterials[7].selfIllumAmount = 61
+--meditMaterials[7].diffuseMap = Bitmaptexture fileName:@"Z:\camera-calibration-patterns\xor-numbered.png"
+--meditMaterials[7].selfIllumAmount = 61
 
-b=Box lengthsegs:1 widthsegs:1 heightsegs:1 length:6000.0 width:6000.0 height:1.0 mapcoords:on pos:[0,0,0]
-b.material=meditMaterials[7]
+--b=Box lengthsegs:1 widthsegs:1 heightsegs:1 length:6000.0 width:6000.0 height:1.0 mapcoords:on pos:[0,0,0]
+--b.material=meditMaterials[7]
 
 cam=Freecamera fov:45 targetDistance:160 pos:[0,0,10000]
 viewport.setCamera cam

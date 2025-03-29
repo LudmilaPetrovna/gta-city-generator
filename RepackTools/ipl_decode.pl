@@ -81,16 +81,26 @@ dump_inst($stream_key);
 #my $center=[-152,235,9];
 #my $center=[-164,16,9];
 #my $center=[-439.086,1041.41,16.6484];
-my $center=[0,0,0];
-my $rad=1500;
-my $max_count=50000;
+my $center=[-3000,-3000,0];
+my $rad=50000;
+my $max_count=500000;
+
+
+$center_preview=[2416,2351];
+$center_preview=[516,1450];
+$center_preview=[2747,2111];
+$center=[$center_preview->[0]/3072*6000-3000,3000-$center_preview->[1]/3072*6000,0];
+
 
 my @ret=();
 foreach $ipl_key(grep{!/barrier.+ipl/}keys %inst){
 print STDERR "Transforming $ipl_key...\n";
 foreach(@{$inst{$ipl_key}}){
 ($id,$model_name,$interrior,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_id)=@{$_};
-if($interrior!=0){next;} # today we interested only in "main world"
+
+$interrior&=0xFF;
+
+if($interrior!=0 && $interrior!=13){next;} # today we interested only in "main world"
 
 #print "($id,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_id)\n";
 $dist=sqrt(($center->[0]-$pos_x)**2+($center->[1]-$pos_y)**2+($center->[2]-$pos_z)**2);
@@ -141,8 +151,7 @@ if(/^inst/i){$in_inst=1;next;}
 if(/^end/i){$in_inst=0;next;}
 if(/^\s*\d/ && $in_inst){
 ($id,$dummy_name,$interrior,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_id)=split(/\s*,\s*/);
-$interrior&=0xFF;
-push(@{$ret},[$id,$ids{$obj_id},$interrior,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_id]);
+push(@{$ret},[$id,$dummy_name,$interrior,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_id]);
 }
 }
 return($ret)
@@ -167,8 +176,9 @@ if($q==4){$cars_offset=$offset;}
 if($items_offset!=0x4C){die "Items offset must be 0x4c, your file may be broken";}
 for($q=0;$q<$items_count;$q++){
 ($pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$obj_id,$interrior,$lod_index)=unpack("fffffffIIi",substr($file,$items_offset+$q*40,40));
-$interrior&=0xFF;
-push(@{$ret},[$obj_id,$ids{$obj_id},$interrior,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_id]);
+
+$model_name=exists $ids{$obj_id}?$ids{$obj_id}:"UNKNOWN_ID";
+push(@{$ret},[$obj_id,$model_name,$interrior,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_id]);
 }
 return($ret);
 }
