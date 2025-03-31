@@ -9,7 +9,7 @@ use Digest::CRC qw(crc64 crc32 crc16);
 $src_dir="newcol";
 $ref_dir="/dev/shm/gta-micro/Projects/ColorRadar/samples/REF/";
 $title="MaterialMap";
-$scale=2;
+$scale=8;
 $radar_centre="radar_centre.png";
 $tilesize=128*$scale;
 @zoomname=qw/zero normal HIGH high high high high high ULTRA/;
@@ -19,8 +19,8 @@ $out_dir="release_$title/${title}_x${scale}_${zoomname[$scale]}_${tilesize}x${ti
 #remove_tree($out_dir);
 make_path($out_dir);
 
-#create_radar_icon();
-#create_zoomout_map();
+create_radar_icon();
+create_zoomout_map();
 create_radar_tiles();
 
 sub create_radar_icon{
@@ -87,6 +87,18 @@ open(dd,">$tempdir/map.png");
 binmode(dd);
 print dd $pano2->png(0);
 close(dd);
+
+$panosize=2048;
+print "  ...resizing to ${panosize}x$panosize for preview...\n";
+$pano2=GD::Image->new($panosize,$panosize,1);
+$pano2->copyResampled($pano,0,0,0,0,$panosize,$panosize,$tile_size*12,$tile_size*12);
+
+print "  ...saving map preview...\n";
+open(dd,">$out_dir/Preview.jpg");
+binmode(dd);
+print dd $pano2->jpeg(70);
+close(dd);
+
 
 $pano=undef;
 $pano2=undef;

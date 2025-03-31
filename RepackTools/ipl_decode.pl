@@ -69,6 +69,13 @@ dump_inst($stream_key);
 }
 }
 
+
+
+
+#used_count
+#lod_by_coords
+
+
 # TODO: FIXME: Count line numbers and check correctness of LODs...
 
 # step 4: write txt
@@ -82,7 +89,7 @@ dump_inst($stream_key);
 #my $center=[-164,16,9];
 #my $center=[-439.086,1041.41,16.6484];
 my $center=[-3000,-3000,0];
-my $rad=50000;
+my $rad=500;
 my $max_count=500000;
 
 
@@ -91,6 +98,7 @@ $center_preview=[516,1450];
 $center_preview=[2747,2111];
 $center=[$center_preview->[0]/3072*6000-3000,3000-$center_preview->[1]/3072*6000,0];
 
+$center=[-1894.98,105.789,23.1719];
 
 my @ret=();
 foreach $ipl_key(grep{!/barrier.+ipl/}keys %inst){
@@ -100,7 +108,8 @@ foreach(@{$inst{$ipl_key}}){
 
 $interrior&=0xFF;
 
-if($interrior!=0 && $interrior!=13){next;} # today we interested only in "main world"
+#if($interrior!=0 && $interrior!=13){next;} # today we interested only in "main world"
+#if($interrior==0){next;} # today we interested only in "internal worlds"
 
 #print "($id,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_id)\n";
 $dist=sqrt(($center->[0]-$pos_x)**2+($center->[1]-$pos_y)**2+($center->[2]-$pos_z)**2);

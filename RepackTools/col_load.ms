@@ -30,7 +30,7 @@ for q=1 to 256 do (
 )
 
 -- 0: (1 in max) DEFAULT
-surfaces[1]=[55, 124, 234]
+surfaces[1]=[180, 180, 180]
 -- 1: (2 in max) TARMAC
 surfaces[2]=[69, 122, 236]
 -- 2: (3 in max) TARMAC_FUCKED
@@ -559,7 +559,7 @@ fn col_load_collision filename=(
 	fclose f
 
 	m.showVertexColors=on
-	m.material=meditMaterials[1]
+	m.material=meditMaterials[7]
 --	m.name="collision"
 	m.pivot=[0,0,0]
 
@@ -807,19 +807,21 @@ if mainref==undefined then (
 	mainref.pos=[0,10000,0]
 	mainref.name=nodename
 )
-print "debug:"
-print mainref
+--print "debug:"
+--print mainref
+
+cl=classof mainref
+if cl==Editable_mesh then (
+
 obj=instance mainref
 obj.pos=[0,0,0]
-print "debug:"
-print obj
+--print "debug:"
+--print obj
 obj.rotation=(quat rot_x rot_y -rot_z rot_w)
 obj.pos=[pos_x,pos_y,pos_z]
 obj.showVertexColors=off
 obj.name=nodename+"_"+(linenum as string)
-cl=classof obj
-if cl==Editable_mesh then (
-attach root obj
+--attach root obj
 )
 
 linenum+=1

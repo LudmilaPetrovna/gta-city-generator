@@ -7,6 +7,8 @@
 renderWidth=1024
 renderHeight=1024
 
+rendDitherTrue=false
+
 --meditMaterials[7].diffuseMap = Bitmaptexture fileName:@"Z:\camera-calibration-patterns\xor-numbered.png"
 --meditMaterials[7].selfIllumAmount = 61
 
