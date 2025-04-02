@@ -77,4 +77,4 @@ constraint PK_TB primary key (pano_id,x,y,z))
 # Где спросить подробности
 
 * В дискорд-канале: https://discord.gg/pbSTvva4tG
-* Можно пообщаться голосом в Mumble: mumble://soobbotnyayakonfyeryentseeya.anon.fm
+* Можно пообщаться голосом в Mumble: mumble://shiziki.com
