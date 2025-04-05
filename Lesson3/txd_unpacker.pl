@@ -244,7 +244,8 @@ close(oo);
 if($mm==0){
 #`convert "$dds_name" "$png_name"`;
 #`convert "$dds_name" -resize 128x128\\\> "$png_name"`;
-`convert "$dds_name" -resize 16384\\\@\\\> -colorspace srgb "$png_name"`;
+`convert "$dds_name" -colorspace srgb "$png_name"`;
+#`convert "$dds_name" -resize 16384\\\@\\\> -colorspace srgb "$png_name"`;
 #`ffmpeg -v 0 -i "$dds_name" -y "$ffpng_name"`;
 #`oiiotool "$dds_name" -o "$iopng_name"`; # actually same as imagemagick, but very slow
 }

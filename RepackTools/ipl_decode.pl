@@ -99,6 +99,7 @@ $center_preview=[2747,2111];
 $center=[$center_preview->[0]/3072*6000-3000,3000-$center_preview->[1]/3072*6000,0];
 
 $center=[-1894.98,105.789,23.1719];
+$center=[1263.88,-770.375,1083]; # in sky
 
 my @ret=();
 foreach $ipl_key(grep{!/barrier.+ipl/}keys %inst){

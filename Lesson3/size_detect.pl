@@ -19,6 +19,18 @@ return($filesize-length($1));
 }
 }
 
+if($filename=~/\.rrr$/i){ # pre-recorded car path
+my $q=0;
+my $filesize=length($file);
+my $empty="\x00" x 32;
+while($q<$filesize){
+if(substr($file,$q,32) eq $empty){
+return($q);
+}
+$q+=32;
+}
+return($filesize);
+}
 
 if($filename=~/\.ifp$/i && substr($file,0,4) eq "ANP3"){ # this is IFP file 4 (-8)
 $size=unpack("I",substr($file,4,4))+8;

@@ -9,7 +9,7 @@ use Digest::CRC qw(crc64 crc32 crc16);
 $filename="/dev/shm/gta-micro/Projects/ColorRadar/samples/REF/radar91.txd";
 $filename="/dev/shm/gta-micro/Projects/ColorRadar/samples/Proper_Radar/(PC 512)/Proper Radar/radar00.txd";
 $filename="/dev/shm/gta-micro/Projects/ColorRadar/samples/1503318561_happymap/radar00.txd";
-unpack_radar_dir(dirname($filename));
+unpack_radar_dir(dirname($ARGV[0]));
 
 sub unpack_radar_dir{
 my $basedir=shift;
@@ -33,7 +33,7 @@ $txd_filename=$basedir.'/'.$radar_tile;
 $png_filename=$tempdir.'/'.sprintf("png/radar%.2d.png",$q);
 $list.=" $png_filename";
 print "$txd_filename\n";
-if(!-s($txd_filename)){next;}
+if(!-s($txd_filename)){die "Can't read $txd_filename";}
 print `perl /dev/shm/gta-city-generator/Lesson3/txd_unpacker.pl "$txd_filename" "$tempdir"`;
 }
 

@@ -63,7 +63,7 @@ $using_GXT_table=shift;
 
 sub initGxts{
 
-open(dd,"american.gxt") or die;
+open(dd,"text/american.gxt") or die;
 
 read(dd,$buf,4);
 ($version,$char_width)=unpack("SS",$buf);
