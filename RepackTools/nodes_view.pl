@@ -3,14 +3,14 @@ use Digest::CRC qw(crc64 crc32 crc16);
 
 require "./gxt_read.pl";
 
-$wholemap_size=4096;
-$radar_tile=256;
-$min_width=5;
+$scale=8;
+$wholemap_size=2048;
+$radar_tile=128*$scale;
+$min_width=int(2.5/1500*$wholemap_size+.99);
 $infozon="/dev/shm/gta-micro/Clean/data/info.zon";
 
-
 $pic=GD::Image->new($wholemap_size,$wholemap_size,1);
-$pic->saveAlpha(0);
+$pic->saveAlpha(1);
 $pic->alphaBlending(1);
 $pic->setAntiAliased(0);
 
@@ -33,29 +33,36 @@ $pic->setAntiAliased(0);
 
 print STDERR "# add background image...\n";
 $bg=GD::Image->newFromPng("nodes_bgmap512.png",1);
-$pic->copyResampled($bg,0,0,0,0,$wholemap_size,$wholemap_size,$bg->getBounds);
+
+$pic->saveAlpha(1);
+$pic->alphaBlending(0);
+$pic->filledRectangle(0,0,$wholemap_size,$wholemap_size,0x7f000000);
+
+#$pic->copyResampled($bg,0,0,0,0,$wholemap_size,$wholemap_size,$bg->getBounds);
 
 
 draw_zones_bounds(0x10);
 #draw_nodes_bounds();
 
 print STDERR "# dim background image...\n";
-$pic->alphaBlending(1);
-$pic->filledRectangle(0,0,$wholemap_size,$wholemap_size,0x50000000);
-$pic->alphaBlending(0);
+#$pic->alphaBlending(1);
+#$pic->filledRectangle(0,0,$wholemap_size,$wholemap_size,0x50000000);
+#$pic->alphaBlending(0);
 
-draw_pre_recorded();
-draw_trains_tracks();
+
+
+#draw_pre_recorded();
+#draw_trains_tracks();
 
 read_nodes_graph();
 #draw_navi_points();
-draw_nodes_joints();
+#draw_nodes_joints();
 draw_zones_bounds(0x65);
 
 save_pic();
 
 #generate_radar_map();
-
+#`perl picture2radar.pl`;
 
 @colorama=();
 
@@ -170,7 +177,7 @@ $snode{"$area_id:$node_id"}=[$pos_x,$pos_y,$pos_z,$node_width];
 push(@joints,[$area_id,$node_id,$link_id,$count_node_links,$color,$is_vehicle,$pos_z]);
 
 #print "id:$node_id,link:$link_id,width:$node_width,links:$count_node_links,traf:$traffic_level,spawn:$spawn\t".sprintf("%b,\t%032b",$floodfill,$flags)."\n";
-$pic->setPixel($pos_x,$pos_y,0xFFFFFF^$flags);
+#$pic->setPixel($pos_x,$pos_y,0xFFFFFF^$flags);
 }
 
 # read NAVI nodes
@@ -299,7 +306,7 @@ $pic->alphaBlending(1);
 $pic->setThickness($node_width);
 $pic->line($l1->[0],$l1->[1],$l2->[0],$l2->[1],$color|0x50000000);
 $pic->alphaBlending(0);
-$pic->setThickness(1);
+$pic->setThickness(3);
 $pic->line($l1->[0],$l1->[1],$l2->[0],$l2->[1],$color);
 
 if(!$is_vehicle){next;}
@@ -419,8 +426,9 @@ $label=~s/\s//sg;
 $label=resolve_GXT($label);
 
 $color=int(rand()*256) | (int(rand()*256)<<8) | (int(rand()*256)<<16);
-#$opacity=0x70;
-$filled_color=$opacity|$color;
+$color|=0x808080;
+$opacity0=0x70000000;
+$filled_color=$opacity0|$color;
 
 $x1=($x1+3000)/6000*$wholemap_size;
 $y1=(3000-$y1)/6000*$wholemap_size;
@@ -428,13 +436,16 @@ $y1=(3000-$y1)/6000*$wholemap_size;
 $x2=($x2+3000)/6000*$wholemap_size;
 $y2=(3000-$y2)/6000*$wholemap_size;
 
-#$pic->filledRectangle($x1,$y1,$x2,$y2,$filled_color);
-#$pic->rectangle($x1,$y1,$x2,$y2,$color);
-#$pic->string(gdSmallFont,$x1+3,$y2+3,$label,0);
-#$pic->string(gdSmallFont,$x1+2,$y2+2,$label,$color);
+$pic->alphaBlending(1);
+$pic->filledRectangle($x1,$y1,$x2,$y2,$filled_color);
+$pic->rectangle($x1,$y1,$x2,$y2,$color);
+$pic->string(gdSmallFont,$x1+2,$y2+3,$label,0);
+$pic->string(gdSmallFont,$x1+3,$y2+3,$label,0);
+$pic->string(gdSmallFont,$x1+3,$y2+2,$label,0);
+$pic->string(gdSmallFont,$x1+2,$y2+2,$label,$color);
 
 $str_width=6*length($label)+2;
-$str_height=12+2;
+$str_height=13+2;
 $str_aspect=$str_width/$str_height;
 
 $new_width=abs($x2-$x1);
@@ -472,13 +483,16 @@ close(dd);
 
 print "Processing $rrr_file...\n";
 
+$label=sprintf("carrec%03d",$w);
+
 $q=0;
 $prev_time=-1;
 $prev_pos_x=0;
 $prev_pos_y=0;
 $color=0xFF00FF;
 $color_seed=crc32($rrr_file)&0xFFFFFF;
-$color^=$color_seed&0x3f7f3f;
+$color^=$color_seed;
+#$color^=$color_seed&0x3f7f3f;
 while($q*32<length($file)){
 ($time,$vel_x,$vel_y,$vel_z,$r_x,$r_y,$r_z,$top_x,$top_y,$top_z,$steering,$gas,$brake,$handbrake,$pos_x,$pos_y,$pos_z)=unpack("Isssccccccccccfff",substr($file,$q*32,32));
 if($prev_time>$time||($time==0&&$pos_x==0&&$pos_y==0&&$pos_z==0)){last;}
@@ -493,6 +507,11 @@ $pic->setThickness($min_width+2);
 $pic->line($prev_pos_x,$prev_pos_y,$pos_x,$pos_y,0);
 $pic->setThickness($min_width);
 $pic->line($prev_pos_x,$prev_pos_y,$pos_x,$pos_y,$color);
+if(rand()<.03){
+$pic->string(gdSmallFont,$pos_x+3,$pos_y+3,$label,0);
+$pic->string(gdSmallFont,$pos_x+2,$pos_y+2,$label,$color);
+
+}
 }
 
 $q++;
@@ -529,11 +548,11 @@ $line=<dd>;
 
 $pos_x=($pos_x+3000)/6000*$wholemap_size;
 $pos_y=(3000-$pos_y)/6000*$wholemap_size;
-$pic->filledEllipse($pos_x,$pos_y,25,25,0xBB0000);
-$pic->filledEllipse($pos_x,$pos_y,20,20,$train_color);
+$pic->filledEllipse($pos_x,$pos_y,$min_width*5,$min_width*5,0xBB0000);
+$pic->filledEllipse($pos_x,$pos_y,$min_width*4,$min_width*4,$train_color);
 
 if($station){
-$pic->filledEllipse($pos_x,$pos_y,50,50,0xAA8888);
+$pic->filledEllipse($pos_x,$pos_y,$min_width*10,$min_width*10,0xAA8888);
 }
 
 if($q){

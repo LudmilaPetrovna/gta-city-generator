@@ -8,7 +8,7 @@ use Digest::CRC qw(crc64 crc32 crc16);
 
 $src_dir="newcol";
 $ref_dir="/dev/shm/gta-micro/Projects/ColorRadar/samples/REF/";
-$title="RoadMap";
+$title="RealMapPaths_nobg";
 $scale=2;
 $radar_centre="radar_centre.png";
 $tilesize=128*$scale;
