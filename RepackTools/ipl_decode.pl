@@ -8,10 +8,12 @@ use Digest::CRC qw(crc64 crc32 crc16);
 %files=();
 %ids=();
 %inst=();
+%occl=();
 %ipl=();
 
 remove_tree("ipl_decoded");
-mkdir "ipl_decoded",0777;
+make_path("ipl_decoded/inst/");
+make_path("ipl_decoded/occl/");
 
 # step 1: find files and make shortcuts
 # Not perfect was, as we have some collisions, but enough for IPL files
@@ -53,8 +55,9 @@ close(dd);
 print STDERR "Searching for IPL files...\n";
 foreach $file_key(grep{/\.ipl$/ && !/_stream\d+\.ipl$/}keys %files){
 $ipl_files{$file_key}=$files{$file_key};
-$inst{$file_key}=parse_IPL($files{$file_key});
+$inst{$file_key}=parse_IPL($files{$file_key},$file_key);
 dump_inst($file_key);
+dump_occl($file_key);
 $ipl_prefix=$file_key;
 $ipl_prefix=~s/\.ipl$//s;
 
@@ -64,7 +67,7 @@ $ipl_prefix=~s/\.ipl$//s;
 for($e=0;$e<100;$e++){
 $stream_key=$ipl_prefix."_stream".$e.".ipl";
 if(!exists $files{$stream_key}){next;}
-$inst{$stream_key}=parse_IPL($files{$stream_key});
+$inst{$stream_key}=parse_IPL($files{$stream_key},$file_key);
 dump_inst($stream_key);
 }
 }
@@ -138,14 +141,15 @@ my $ipl_file=shift;
 my $data;
 
 print STDERR "Processing IPL $ipl_file...\n";
-open(dd,$ipl_file);
+open(dd,$ipl_file) or die $!;
 binmode(dd);
 read(dd,$data,-s(dd));
 close(dd);
 
+my $tag=lc(basename($ipl_file));
 my $sign=substr($data,0,4);
-if($sign eq "bnry"){return parse_binary_IPL($data);}
-if($sign eq "# IP"){return parse_text_IPL($data);}
+if($sign eq "bnry"){return parse_binary_IPL($data,$tag);}
+if($sign eq "# IP" || $sign eq "occl"){return parse_text_IPL($data,$tag);}
 
 print "WARNING: Very strange IPL file: $ipl_file!!!\n";
 }
@@ -154,16 +158,33 @@ print "WARNING: Very strange IPL file: $ipl_file!!!\n";
 sub parse_text_IPL{
 my $ret=[];
 my $file=shift;
+my $tag=shift;
 my $in_inst=0;
+my $in_occl=0;
+if(!exists $occl{$tag}){
+$occl{$tag}=[];
+}
+
 foreach(split(/[\r\n]+/,$file)){
 #print "debug: $_  ($in_inst)\n";
 if(/^inst/i){$in_inst=1;next;}
-if(/^end/i){$in_inst=0;next;}
+if(/^occl/i){$in_occl=1;
+
+print "in occl\n";
+next;}
+if(/^end/i){$in_inst=0;$in_occl=0;next;}
 if(/^\s*\d/ && $in_inst){
 ($id,$dummy_name,$interrior,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_id)=split(/\s*,\s*/);
 push(@{$ret},[$id,$dummy_name,$interrior,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_id]);
 }
+
+if(/^\s*\-?\d/ && $in_occl){
+push(@{$occl{$tag}},[split(/[\s*,]+/)]);
 }
+
+
+}
+
 return($ret)
 }
 
@@ -197,7 +218,20 @@ sub dump_inst{
 my $key=shift;
 my $out=$key;
 $out=~s/\.ipl$//s;
-open(oo,">ipl_decoded/".$out.".inst.txt");
+open(oo,">ipl_decoded/inst/".$out.".txt");
 print oo map{join(", ",@{$_})."\n"}@{$inst{$key}};
 close(oo);
 }
+
+sub dump_occl{
+my $key=shift;
+my $out=$key;
+$out=~s/\.ipl$//s;
+my $count=@{$occl{$key}};
+if($count){
+open(oo,">ipl_decoded/occl/".$out.".txt");
+print oo map{join(", ",@{$_})."\n"}@{$occl{$key}};
+close(oo);
+}
+}
+
