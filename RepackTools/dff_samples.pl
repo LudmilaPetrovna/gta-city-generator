@@ -14,10 +14,14 @@ load_names();
 %samples=();
 
 %stat_usage=();
+%stat_usage_perfile=();
+%stat_usage_perclump=();
 %stat_sizes=();
 %stat_uniq=();
 %stat_is_binary=();
 %stat_order=();
+%light=();
+%valid_paths=();
 
 @dff_files=();
 find({no_chdir=>1,follow=>1,wanted=>sub{
@@ -28,7 +32,9 @@ push(@dff_files,$File::Find::name);
 }},$src_dir);
 
 @dff_files=sort @dff_files;
-foreach(@dff_files){
+
+
+foreach(grep{/dff$/i}@dff_files){
 parse_dff($_);
 #if($count++>1000){last;}
 }
@@ -51,6 +57,7 @@ if($file_build!=$build){
 die "$filename: possible broken or not SA file ".sprintf("(we expect build %08x, but have %08x)\n",$build,$file_build);
 }
 
+$clump_id=$filename;
 walker(0,length($file),0,0,"");
 }
 
@@ -76,7 +83,78 @@ $named=get_named_path($_);
 $min=$max=-1;
 $sum=0;
 $sum_count=0;
+$align=8;
 foreach $size(@sizes){
+if($sum_count==0){
+$min=$max=$size;
+}
+if($min>$size){$min=$size;}
+if($max<$size){$max=$size;}
+if($size%$align){$align/=2;}
+$sum+=$size;
+$sum_count++;
+}
+$average=int($sum/$sum_count);
+
+
+@uniq=keys %{$stat_uniq{$_}};
+$uniq_count=@uniq;
+$is_bin=$stat_is_binary{$_}{bin}|0;
+$is_text=$stat_is_binary{$_}{text}|0;
+"$named (used:$stat_usage{$_}, text:$is_text/$is_bin, size:$min/$average/$max, align:$align,uniq:$uniq_count)\n"}sort keys %stat_usage;
+
+
+print "Valid paths:\n\n";
+print map{$valid_paths{$_}++;"\"$_\",\n"}sort keys %stat_usage;
+
+
+#die Dumper(\%stat_usage_perclump);
+
+print "Usage path per file:\n\n";
+print map{
+$path=$_;
+$min=0;
+$max=0;
+$sum=0;
+$sum_count=0;
+foreach $file_key(keys %stat_usage_perfile){
+if(exists $stat_usage_perfile{$file_key}{$path}){
+$size=$stat_usage_perfile{$file_key}{$path};
+} else {
+$size=0;
+}
+if($path eq "-10" && $size>1){
+print "long: $file_key > $path = $size\n";
+}
+if($sum_count==0){
+$min=$max=$size;
+}
+if($min>$size){$min=$size;}
+if($max<$size){$max=$size;}
+if($size%$align){$align/=2;}
+$sum+=$size;
+$sum_count++;
+}
+$average=int($sum/$sum_count);
+
+"$path (min/average/max: $min/$average/$max)\n"
+}sort keys %stat_usage;
+
+
+
+print "\n\nUsage path per clump:\n\n";
+print map{
+$path=$_;
+$min=0;
+$max=0;
+$sum=0;
+$sum_count=0;
+foreach $clump_key(keys %stat_usage_perclump){
+if(exists $stat_usage_perclump{$clump_key}{$path}){
+$size=$stat_usage_perclump{$clump_key}{$path};
+} else {
+$size=0;
+}
 if($sum_count==0){
 $min=$max=$size;
 }
@@ -86,16 +164,16 @@ $sum+=$size;
 $sum_count++;
 }
 $average=int($sum/$sum_count);
+if($max>1){
+$path3=$path;
+$path3=~s/-[\da-f]+$//si;
+$stat_order{$path3}{"unsortable as $path have multiple entries"}++;
+}
 
-@uniq=keys %{$stat_uniq{$_}};
-$uniq_count=@uniq;
-$is_bin=$stat_is_binary{$_}{bin}|0;
-$is_text=$stat_is_binary{$_}{text}|0;
-"$named (used:$stat_usage{$_}, text:$is_text/$is_bin, size:$min/$average/$max, uniq:$uniq_count)\n"}sort keys %stat_usage;
 
+"$path (min/average/max: $min/$average/$max)\n"
+}sort keys %stat_usage;
 
-print "Valid paths:\n\n";
-print map{"\"$_\",\n"}sort keys %stat_usage;
 
 
 print "Valid order with paths:\n\n";
@@ -105,6 +183,7 @@ print map{
 }sort keys %stat_order;
 
 
+print Dumper(\%light);
 
 sub get_named_path{
 my $path=shift;
@@ -138,26 +217,32 @@ push(@order,$chunk_id);
 $last_order=$chunk_id;
 }
 
+if($path eq "" && $chunk_id==0x10){
+$clump_id=$filename.':'.$pos;
+}
+
+
 $path2=sprintf("%s-%.2X",$path,$chunk_id);
 $path_last=sprintf("%02X-%.2X",$parent_id,$chunk_id);
 
 $sample=substr($file,$offset+$pos+12,$chunk_len);
 $md5sum=md5_hex($sample);
 $is_bin="bin";
-if($sample=~/^[\x20-\x7E]+$/s){
+if($sample=~/^[\x20-\x7E]+\x00*$/s){
 $is_bin="text";
 }
 
 $file_seed=(crc32($sample)&0xFFFFFF)%1000;
 
 $stat_usage{$path2}++;
+$stat_usage_perfile{$filename}{$path2}++;
+$stat_usage_perclump{$clump_id}{$path2}++;
 $stat_sizes{$path2}{$chunk_len}++;
 $stat_uniq{$path2}{$md5sum}++;
 $stat_is_binary{$path2}{$is_bin}++;
 if($chunk_len>0 && $path){ # we don't want empty file samples
 $samples{$path2.":".$file_seed}=[$filename_short,$sample];
 }
-
 
 walker($offset+$pos+12,$chunk_len,$level+1,$chunk_id,$path2);
 $pos+=$chunk_len+12;
@@ -166,7 +251,13 @@ $pos+=$chunk_len+12;
 if($len){
 $uniq_order=join(":",map{sprintf("%02x",$_)}@order);
 $stat_order{$path}{$uniq_order}++;
+if(index($uniq_order,"12:01:12:01:12:01:12:01:12:01:12:01:12:01:12:01:12:01:12:01:12:01:12:01:12:01:12:01")>0){
+$light{$filename}++;
 }
+}
+
+
+
 return($pos);
 }
 

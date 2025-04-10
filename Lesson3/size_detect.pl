@@ -7,7 +7,11 @@ my $img_file=shift;
 my $size=0;
 my $is_plaintext=0;
 
-if($img_file=~/cuts\.img/ && $filename=~/\.(cut|dat)$/i){
+if($img_file=~/cuts\.img/i && $filename=~/\.(cut|dat)$/i){
+$is_plaintext=1;
+}
+
+if($filename=~/\.cut$/i){
 $is_plaintext=1;
 }
 
