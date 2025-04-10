@@ -17,6 +17,7 @@ load_names();
 %stat_sizes=();
 %stat_uniq=();
 %stat_is_binary=();
+%stat_order=();
 
 @dff_files=();
 find({no_chdir=>1,follow=>1,wanted=>sub{
@@ -43,7 +44,7 @@ close(dd);
 
 #if(length($file)==0){return;}
 
-print "$filename...\n";
+print "$filename...                             \r";
 $file_build=unpack("I",substr($file,8,4));
 
 if($file_build!=$build){
@@ -93,6 +94,16 @@ $is_text=$stat_is_binary{$_}{text}|0;
 "$named (used:$stat_usage{$_}, text:$is_text/$is_bin, size:$min/$average/$max, uniq:$uniq_count)\n"}sort keys %stat_usage;
 
 
+print "Valid paths:\n\n";
+print map{"\"$_\",\n"}sort keys %stat_usage;
+
+
+print "Valid order with paths:\n\n";
+print map{
+@orders=keys %{$stat_order{$_}};
+"\"$_\"=\n".join("",map{"$_\n"}@orders)."\n"
+}sort keys %stat_order;
+
 
 
 sub get_named_path{
@@ -112,19 +123,23 @@ my $path=shift;
 my $buf;
 my($chunk_id,$chunk_len,$chunk_version);
 my $pos=0;
-
+my @order=();
+my $last_order=-1;
 
 while($pos<$len){
-#print "$filename: ".("  " x $level)." Reading at $offset+$pos in $path...\n";
+#print "$filename: ".("  " x $level)." Reading at $offset+$pos/$len in ".get_named_path($path)."...\n";
 ($chunk_id,$chunk_len,$chunk_version)=unpack("III",substr($file,$offset+$pos,12));
 if($chunk_version!=$build){return;} # we not in subchunk
 if($chunk_len>$len){die "$filename: Internal chunk ($path:".sprintf("%08X",$chunk_id)." len size ($chunk_len) is more than parent chunk ($path:$len)! Data may be broken!";}
+#print "$filename: ".("  " x $level)." we got $chunk_id ($names{$chunk_id}->[0]),$chunk_len,$chunk_version)\n";
+
+if($chunk_id!=$last_order){
+push(@order,$chunk_id);
+$last_order=$chunk_id;
+}
 
 $path2=sprintf("%s-%.2X",$path,$chunk_id);
-
-if($path){
 $path_last=sprintf("%02X-%.2X",$parent_id,$chunk_id);
-
 
 $sample=substr($file,$offset+$pos+12,$chunk_len);
 $md5sum=md5_hex($sample);
@@ -139,14 +154,18 @@ $stat_usage{$path2}++;
 $stat_sizes{$path2}{$chunk_len}++;
 $stat_uniq{$path2}{$md5sum}++;
 $stat_is_binary{$path2}{$is_bin}++;
-if($chunk_len>0){ # we don't want empty file samples
+if($chunk_len>0 && $path){ # we don't want empty file samples
 $samples{$path2.":".$file_seed}=[$filename_short,$sample];
 }
 
-}
 
 walker($offset+$pos+12,$chunk_len,$level+1,$chunk_id,$path2);
 $pos+=$chunk_len+12;
+}
+
+if($len){
+$uniq_order=join(":",map{sprintf("%02x",$_)}@order);
+$stat_order{$path}{$uniq_order}++;
 }
 return($pos);
 }

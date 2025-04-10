@@ -43,7 +43,7 @@ return $size;
 }
 
 if($filename=~/\.dff$/i){ # this is DFF file 4 (-12)
-while(substr($file,$size,4) eq "\x10\x00\x00\x00"){
+while(substr($file,$size,4) eq "\x10\x00\x00\x00" || substr($file,$size,4) eq "\x2B\x00\x00\x00"){
 $size+=unpack("I",substr($file,$size+4,4))+12;
 }
 return $size;
