@@ -149,6 +149,31 @@ print_color_hex(substr($file,$offset,$len),16,$level);
 }
 
 
+
+sub view_chunk{
+my $data=shift;
+my $path=shift;
+my $level=shift;
+
+my $syspath=lc($path);
+$syspath=~tr/-/_/;
+$syspath=~s/\(\d+\)//g;
+
+$func=("check".$syspath);
+if(defined &$func){
+$errors=&$func($data);
+if($errors){
+print "$filename: ".("  " x $level)." \x1b[38;5;131m$errors!!!\x1b[0m\n";
+}
+}
+
+$func=("decode".$syspath);
+if(defined &$func){
+&$func($data,$level);
+}
+
+}
+
 sub walk_dump{
 my $offset=shift;
 my $len=shift;
@@ -165,6 +190,7 @@ print "$filename: ".("  " x $level)." Reading at $offset+$pos/$len in ".get_name
 ($chunk_id,$chunk_len,$chunk_version)=unpack("III",substr($file,$offset+$pos,12));
 if($chunk_version!=$build){ # possible we in a leaf node, dump it all
 write_chunk($offset+$pos,$len-$pos,$level,$path);
+view_chunk(substr($file,$offset+$pos,$len-$pos),$path,$level);
 return;
 }
 if($chunk_len>$len){die "$filename: Internal chunk ($path:".sprintf("%08X",$chunk_id)." len size ($chunk_len) is more than parent chunk ($path:$len)! Data may be broken!";}
@@ -177,6 +203,7 @@ walk_dump($offset+$pos+12,$chunk_len,$level+1,$chunk_id,$path2);
 } else {
 # write even 0 bytes, let's empty sections persist
 write_chunk($offset+$pos+12,$chunk_len,$level+1,$path2);
+view_chunk(substr($file,$offset+$pos+12,$chunk_len),$path2,$level+1);
 }
 $pos+=$chunk_len+12;
 }
@@ -421,3 +448,106 @@ $offset+=$width;
 }
 
 }
+
+
+
+sub check_10_14_01{
+my $data=shift;
+my $len=length($data);
+if($len!=16){return "Chunk size must be 16 bytes!";}
+if(substr($data,12,4) ne "\x00\x00\x00\x00"){return "last 4 bytes must be zeroes!";}
+}
+
+sub decode_10_14_01{
+my $data=shift;
+my $level=shift;
+my($frame_index,$geometry_index,$flags)=unpack("III",$data);
+print "$filename: ".("  " x $level)." \x1b[38;5;155mframe:$frame_index,geometry:$geometry_index,flags:".join(", ",($flags&1?"has_collision":"no_col"),$flags&4?"render in frustum only":"")."\x1b[0m\n";
+
+}
+
+sub encode_10_14_01{
+}
+
+
+sub check_10_1a_0f_08_07_06_02{
+my $data=shift;
+my $len=length($data);
+if($len%4){return "Chunk size must be padded to 4 bytes!";}
+if($len>32){return "Chunk size must be usually 32 bytes of less!";}
+}
+
+sub decode_10_1a_0f_08_07_06_02{
+my $data=shift;
+my $level=shift;
+$data=~s/\x00.*//s;
+print "$filename: ".("  " x $level)." \x1b[38;5;185mString: \"$data\"\x1b[0m\n";
+}
+
+sub check_10_0e_03_253f2fe{
+my $data=shift;
+my $len=length($data);
+if($len>23){return "Chunk size too large for R* games";}
+}
+
+sub decode_10_0e_03_253f2fe{
+my $data=shift;
+my $level=shift;
+$data=~s/\x00.*//s;
+print "$filename: ".("  " x $level)." \x1b[38;5;185mFrame name: \"$data\"\x1b[0m\n";
+}
+
+sub decode_10_1a_0f_03_253f2f8{
+my $data=shift;
+my $level=shift;
+my $effects_count=unpack("I",substr($data,0,4));
+my $q;
+my $w;
+print "$filename: ".("  " x $level)." \x1b[38;5;155mEffects count: $effects_count\x1b[0m\n";
+my $pos=4;
+my @types=qw/Light Particle Unknown PedAttractor SunGlare Unknown ENEX Sign Trigger CoverPoint Escalator/;
+my @chars_in_line=qw/16 2 4 8/;
+my @colors=qw/white black gray red/;
+my @texts=();
+for($q=0;$q<$effects_count;$q++){
+my($pos_x,$pos_y,$pos_z,$type,$size)=unpack("fffII",substr($data,$pos,20));
+print "$filename: ".("  " x ($level+1))." \x1b[38;5;155m".sprintf("Position: %03fx%03fx%03f, type:%d (%s), size: 0x%04x/%d bytes",$pos_x,$pos_y,$pos_z,$type,$types[$type],$size,$size)."\x1b[0m\n";
+
+if($type==0){
+
+if($size==76){
+
+
+}
+
+if($size==80){
+my($color,$far_clip,$near_clip,$corona_size,$shadow_size,$corona_mode,$corona_reflection,$corona_flare,$shadow_mult,$flags1,$corona_texture_name,$shadow_texture_name,$shadow_z_distance,$flags2,$look_x,$look_y,$look_z,$padding)=unpack(
+"IffffCCCCCZ24Z24CCcccS",substr($data,$pos+20,80));
+print "$filename: ".("  " x ($level+2))." \x1b[38;5;152m".sprintf("Color:%06x, size:%03.2f, shadow size:%03.2f, mode:%d, refl:%d, flare:%d, shadow_mult:%d, flags1:%d, textures:\"%s\"/\"%s\", z_dist:%f, look:%dx%dx%dx)",
+$color,$corona_size,$shadow_size,$corona_mode,$corona_reflection,$corona_flare,$shadow_mult,$flags1,$corona_texture_name,$shadow_texture_name,$shadow_z_distance,$look_x,$look_y,$look_z
+)."\x1b[0m\n";
+}
+
+
+}
+
+if($type==7){# street sign
+my($size_x,$size_y,$rot_x,$rot_y,$rot_z,$flags)=unpack("fffffS",substr($data,$pos+20,22));
+my $text_x=$chars_in_line[($flags>>2)&3];
+my $text_y=$flags&3;
+print "$filename: ".("  " x ($level+2))." \x1b[38;5;156m".sprintf("Size:%03fx%03f, chars:%dx%d (%s), rotation:%01.1fx%01.1fx%01.1f, flags:%d (0x%08x)",$size_x,$size_y,$text_x,$text_y,$colors[($flags>>4)&3],$rot_x,$rot_y,$rot_z,$flags,$flags)."\x1b[0m\n";
+for($w=0;$w<$text_y;$w++){
+print "$filename: ".("  " x ($level+3))." \x1b[38;5;152mStreet sign text: \"".substr($data,$pos+42+$w*16,$text_x)."\"\x1b[0m\n";
+}
+}
+
+$pos+=$size+20;
+}
+
+die;
+}
+
+
+
+
+
