@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+    <Document id="new_tour1744432223">
+        <name>New Tour Sat Apr 12 08:30:23 2025</name>
+        <gx:Tour>
+            <name>New Tour Sat Apr 12 08:30:23 2025</name>
+            <gx:Playlist>
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.88658214785224</longitude>
+                <latitude>56.63153245936853</latitude>
+    <heading>246.735563667936</heading>
+    <tilt>9.23089298826753</tilt>
+	    <range>5041.50430208885</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.911503541121355</longitude>
+                <latitude>56.63196055287305</latitude>
+    <heading>105.299820569144</heading>
+    <tilt>6.03846692591896</tilt>
+	    <range>16571.5900295032</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.89245090640908</longitude>
+                <latitude>56.635667091566084</latitude>
+    <heading>55.277367860874</heading>
+    <tilt>24.57528810667</tilt>
+	    <range>21708.9076340346</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.91118298833301</longitude>
+                <latitude>56.63662657459565</latitude>
+    <heading>262.239964243736</heading>
+    <tilt>5.41426012714572</tilt>
+	    <range>5235.29971716281</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.88846876744542</longitude>
+                <latitude>56.6310940459517</latitude>
+    <heading>42.5885755863017</heading>
+    <tilt>11.3111218369517</tilt>
+	    <range>10565.7489222616</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.901697422596335</longitude>
+                <latitude>56.63284074764813</latitude>
+    <heading>273.215513586804</heading>
+    <tilt>15.6323636904169</tilt>
+	    <range>17367.7716249147</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.906817507371876</longitude>
+                <latitude>56.63720607128329</latitude>
+    <heading>109.771310672879</heading>
+    <tilt>2.47372117341488</tilt>
+	    <range>1058.16430370702</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.90047650552351</longitude>
+                <latitude>56.63742997213698</latitude>
+    <heading>62.9527432829826</heading>
+    <tilt>38.9967503391602</tilt>
+	    <range>18868.1177722899</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.89111418487163</longitude>
+                <latitude>56.636262443966004</latitude>
+    <heading>85.380214882971</heading>
+    <tilt>0.866040890327042</tilt>
+	    <range>19216.3914689251</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.905154972991006</longitude>
+                <latitude>56.63377966321488</latitude>
+    <heading>49.0172725660469</heading>
+    <tilt>18.2839829368741</tilt>
+	    <range>2859.75019486087</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.91094179997799</longitude>
+                <latitude>56.636388470833445</latitude>
+    <heading>331.757915016288</heading>
+    <tilt>14.9953266657877</tilt>
+	    <range>10369.2612486081</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.89249736744551</longitude>
+                <latitude>56.628255865436344</latitude>
+    <heading>99.7262605798949</heading>
+    <tilt>35.469230516814</tilt>
+	    <range>4548.85752829137</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.90099229812943</longitude>
+                <latitude>56.63274936450186</latitude>
+    <heading>230.24218598091</heading>
+    <tilt>3.58525214675858</tilt>
+	    <range>3075.28446728622</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.880884940957735</longitude>
+                <latitude>56.621047912134514</latitude>
+    <heading>260.129871107962</heading>
+    <tilt>11.105777060649</tilt>
+	    <range>22048.9552453481</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.908803582787485</longitude>
+                <latitude>56.63298486487025</latitude>
+    <heading>211.475240658247</heading>
+    <tilt>12.7686622426264</tilt>
+	    <range>7360.9175879404</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.90284002881348</longitude>
+                <latitude>56.633661565184305</latitude>
+    <heading>55.7636233606178</heading>
+    <tilt>17.7192176348221</tilt>
+	    <range>18472.8795239899</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.887045440458415</longitude>
+                <latitude>56.6318733692961</latitude>
+    <heading>10.3904547507399</heading>
+    <tilt>44.2303639147731</tilt>
+	    <range>6526.60250457562</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.90812178278768</longitude>
+                <latitude>56.63641416929546</latitude>
+    <heading>220.690701397914</heading>
+    <tilt>0.468050882025981</tilt>
+	    <range>14084.5628477271</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.88002142624394</longitude>
+                <latitude>56.621740917152074</latitude>
+    <heading>19.9686014684447</heading>
+    <tilt>12.9622421364568</tilt>
+	    <range>3582.09032108079</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.90689582374056</longitude>
+                <latitude>56.63051678858371</latitude>
+    <heading>15.3754883160923</heading>
+    <tilt>35.9028935760879</tilt>
+	    <range>19517.9164939123</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.89885992564159</longitude>
+                <latitude>56.62966699958123</latitude>
+    <heading>173.221946817242</heading>
+    <tilt>39.0546289764692</tilt>
+	    <range>23641.6763845562</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.90068699962817</longitude>
+                <latitude>56.63460623969043</latitude>
+    <heading>92.0635431094612</heading>
+    <tilt>5.45660395092584</tilt>
+	    <range>18065.3882722426</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.90101178594066</longitude>
+                <latitude>56.63847872500726</latitude>
+    <heading>228.915126858573</heading>
+    <tilt>25.8482659172148</tilt>
+	    <range>16910.0202405246</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.89901364230709</longitude>
+                <latitude>56.637374272401466</latitude>
+    <heading>105.880429152607</heading>
+    <tilt>1.71392764801707</tilt>
+	    <range>15133.4933141783</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.902504112449755</longitude>
+                <latitude>56.63803026065868</latitude>
+    <heading>51.376220388445</heading>
+    <tilt>39.1570656383146</tilt>
+	    <range>10314.3205253692</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+
+                <gx:FlyTo>
+                    <gx:duration>10</gx:duration>
+            <LookAt>
+                <longitude>47.908036542306895</longitude>
+                <latitude>56.631520273424094</latitude>
+    <heading>350.277491404978</heading>
+    <tilt>33.0402111376595</tilt>
+	    <range>2931.98645165502</range>
+                    </LookAt>
+                </gx:FlyTo>
+
+<gx:Wait>
+  <gx:duration>10.0</gx:duration>
+</gx:Wait>
+
+            </gx:Playlist>
+        </gx:Tour>
+</Document></kml>
