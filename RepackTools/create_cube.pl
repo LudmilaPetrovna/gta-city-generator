@@ -103,7 +103,7 @@ close(oo);
 
 $subtile=2;
 
-
+die;
 open(ct,"./col_unpacked/gta3/sfs_2/bbgroundbitc_sfs.col");
 open(ct,"./col_unpacked/gta3/sfs_4/bbgroundbitd_sfs.col");
 

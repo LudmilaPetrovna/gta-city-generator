@@ -34,7 +34,8 @@ push(@dff_files,$File::Find::name);
 @dff_files=sort @dff_files;
 
 
-foreach(grep{/dff$/i}@dff_files){
+foreach(@dff_files){
+#foreach(grep{/dff$/i}@dff_files){
 parse_dff($_);
 #if($count++>1000){last;}
 }
@@ -101,7 +102,11 @@ $average=int($sum/$sum_count);
 $uniq_count=@uniq;
 $is_bin=$stat_is_binary{$_}{bin}|0;
 $is_text=$stat_is_binary{$_}{text}|0;
+
+$restrict.="".lc($_)."=$min,$max,$align\n";
 "$named (used:$stat_usage{$_}, text:$is_text/$is_bin, size:$min/$average/$max, align:$align,uniq:$uniq_count)\n"}sort keys %stat_usage;
+
+print "\nrestrict db:\n$restrict\n\n";
 
 
 print "Valid paths:\n\n";

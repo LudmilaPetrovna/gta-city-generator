@@ -73,7 +73,7 @@ push(@{$cp},$chunk_data);
 }
 }
 
-my $dff=join_walk($struct);
+my $dff=join_walk($struct,0,"");
 
 open(oo,">".$file_prefix."-rebuld.dff") or die $!;
 print oo $dff;
@@ -84,16 +84,25 @@ close(oo);
 sub join_walk{
 my $arr=shift;
 my $level=shift;
+my $syspath=shift;
 my $el;
 my $type;
 my $ret;
 my $joined;
+my $rests;
 foreach $el(@{$arr}){
 $type=ref $el;
 if(!defined $el){next;}
 if($type eq 'ARRAY'){
-$joined=join_walk($el->[1],$level+1);
-$el=pack("III",$el->[0],length($joined),$build).$joined;
+my $el_path=sprintf("%s_%02x",$syspath,$el->[0]);
+if(!exists $restrict{$el_path}){
+die "Can't join, we have path $el_path, which is now allowed!";
+}
+$rests=$restrict{$el_path};
+$joined=join_walk($el->[1],$level+1,$el_path);
+my $el_size=length($joined);
+print "joined $syspath -> $el_path, our size: ".$el_size.", ".($el_size>=$rests->[0]&&$el_size<=$rests->[1]&&(($el_size%$rests->[2])==0)?"good":"\x1b[38;5;222;48;5;33mWARN! Element must be $rests->[0]..$rests->[1], align $rests->[2]!\x1b[0m")."\n";
+$el=pack("III",$el->[0],$el_size,$build).$joined;
 }
 $ret.=$el;
 }
@@ -399,6 +408,64 @@ sub load_names{
 0x0253F2FD	Breakable	R*	Contains a mesh that is used to render objects that are breakable (like windows or tables).
 0x0253F2FE	Frame	R*	Stores the name of a frame within a Frame List.
 DATA
+
+%restrict=map{my($path,$vals)=split(/=/);$path,[split(/,/,$vals)]}split(/\n/,<<DATA);
+_10=510,699795,1
+_10_01=4,12,4
+_10_03=0,14900,4
+_10_03_253f2fa=160,14888,4
+_10_0e=99,10203,1
+_10_0e_01=60,6556,4
+_10_0e_03=0,782,1
+_10_0e_03_11e=12,752,4
+_10_0e_03_253f2fe=2,23,1
+_10_12=48,48,8
+_10_12_01=24,24,8
+_10_12_03=0,0,8
+_10_14=40,92,4
+_10_14_01=16,16,8
+_10_14_03=0,52,4
+_10_14_03_120=4,4,4
+_10_14_03_1f=8,8,8
+_10_14_03_253f2f3=4,4,4
+_10_1a=292,699572,1
+_10_1a_01=4,4,4
+_10_1a_0f=264,699544,1
+_10_1a_0f_01=84,516392,4
+_10_1a_0f_03=60,180240,1
+_10_1a_0f_03_116=625,45751,1
+_10_1a_0f_03_134=20,2112,4
+_10_1a_0f_03_134_134=8,2100,4
+_10_1a_0f_03_253f2f8=36,11604,4
+_10_1a_0f_03_253f2f9=4,72140,4
+_10_1a_0f_03_253f2fd=4,44336,4
+_10_1a_0f_03_50e=32,108060,4
+_10_1a_0f_08=84,9120,4
+_10_1a_0f_08_01=8,248,4
+_10_1a_0f_08_07=52,352,4
+_10_1a_0f_08_07_01=28,28,4
+_10_1a_0f_08_07_03=0,200,4
+_10_1a_0f_08_07_03_120=12,128,4
+_10_1a_0f_08_07_03_135=48,48,8
+_10_1a_0f_08_07_03_135_01=36,36,4
+_10_1a_0f_08_07_03_1f=8,8,8
+_10_1a_0f_08_07_03_253f2f6=28,28,4
+_10_1a_0f_08_07_03_253f2fc=24,24,8
+_10_1a_0f_08_07_06=60,112,4
+_10_1a_0f_08_07_06_01=4,4,4
+_10_1a_0f_08_07_06_02=4,32,4
+_10_1a_0f_08_07_06_03=0,16,8
+_10_1a_0f_08_07_06_03_110=4,4,4
+_16=28,89884,4
+_16_01=4,4,4
+_16_03=0,0,8
+_16_15=148,2164,4
+_16_15_01=124,2140,4
+_16_15_03=0,0,8
+_2b=308,13652,4
+_2b_01=4,4,4
+_2b_1b=280,13624,8
+DATA
 }
 
 sub get_named_path{
@@ -497,7 +564,149 @@ $data=~s/\x00.*//s;
 print "$filename: ".("  " x $level)." \x1b[38;5;185mFrame name: \"$data\"\x1b[0m\n";
 }
 
-sub decode_10_1a_0f_03_253f2f8{
+sub decode_10_0e_01{ # Frame List -> Struct
+my $data=shift;
+my $level=shift;
+my $count=unpack("I",substr($data,0,4));
+my $q;
+print "$filename: ".("  " x $level)." \x1b[38;5;185mElements: $count\x1b[0m\n";
+for($q=0;$q<$count;$q++){
+($mat_right_x,$mat_right_y,$mat_right_z,$mat_up_x,$mat_up_y,$mat_up_z,$mat_at_x,$mat_at_y,$mat_at_z,$mat_pos_x,$mat_pos_y,$mat_pos_z,$parent_id,$flags)=unpack(
+"ffffffffffffiI",substr($data,$q*0x44+4,0x44));
+print "$filename: ".("  " x ($level+1))." \x1b[38;5;152m".sprintf("mat right:%2.1fx%2.1fx%2.1f, mat up:%2.1fx%2.1fx%2.1f, mat at:%2.1fx%2.fx%2.1f, position:%2.1fx%2.1fx%2.1f, parent:%d, flags: %08X",
+$mat_right_x,$mat_right_y,$mat_right_z,$mat_up_x,$mat_up_y,$mat_up_z,$mat_at_x,$mat_at_y,$mat_at_z,$mat_pos_x,$mat_pos_y,$mat_pos_z,$parent_id,$flags
+)."\x1b[0m\n";
+
+}
+}
+
+sub decode_10_01{ # Clump -> Struct
+my $data=shift;
+my $level=shift;
+my($count_atom,$count_light,$count_camera)=unpack("III",substr($data,0,12));
+print "$filename: ".("  " x $level)." \x1b[38;5;185mAtomics:$count_atom, Lights:$count_light, Cameras:$count_camera\x1b[0m\n";
+if($count_light!=0 || $count_camera!=0){
+die "In GTA SA games this sections is invalid, no lights and cameras allowed in GTA";
+}
+}
+
+sub decode_10_1a_01{ # Geometry list -> struct
+my $data=shift;
+my $level=shift;
+my($count_geometries)=unpack("I",substr($data,0,4));
+print "$filename: ".("  " x $level)." \x1b[38;5;185mGeometries count:$count_geometries\x1b[0m\n";
+}
+
+sub decode_10_1a_0f_08_07_01{ # Material -> struct
+my $data=shift;
+my $level=shift;
+my($flags,$color,$unused,$is_textured,$ambient,$specular,$diffuse)=unpack("IIIIfff",$data);
+print "$filename: ".("  " x ($level))." \x1b[38;5;152m".sprintf("Color:0x%08X, diffuse:%f, ambient:%f, specular:%f, is_textured:%d, flags:0x%08X, unused:0x%08X",
+$color,$diffuse,$ambient,$specular,$is_textured,$flags,$unused
+)."\x1b[0m\n";
+}
+
+sub decode_10_1a_0f_03_253f2f9{ # Extra Vert Colour
+my $data=shift;
+my $level=shift;
+my($magic)=unpack("I",$data);
+my $colors_count=length($data)/4-1;
+print "$filename: ".("  " x ($level))." \x1b[38;5;152m".sprintf("Magic number:0x%08X (%s), colors count: %d",
+$magic,$magic==0x1A9D5F80?"using colors":"unknown",$colors_count
+)."\x1b[0m\n";
+}
+
+
+sub decode_10_1a_0f_03_50e{ # 10[Clump]-1A[Geometry List]-0F[Geometry]-03[Extension]-50E[Bin Mesh PLG]
+my $data=shift;
+my $level=shift;
+my($flags,$count_mesh,$count_inds)=unpack("III",substr($data,0,12));
+my $is_strip=$flags&1;
+my $q;
+my $m;
+my $pos=12;
+my($min,$max);
+my $ind;
+print "$filename: ".("  " x ($level))." \x1b[38;5;152m".sprintf("Count of meshes:%d, mesh packing strip:%d, total indices:%d, flags:0x%08X",
+$count_mesh,$is_strip,$count_inds,$flags
+)."\x1b[0m\n";
+for($m=0;$m<$count_mesh;$m++){
+my($count_inds_mesh,$material_ind)=unpack("II",substr($data,$pos,8));
+$pos+=8;
+print "$filename: ".("  " x ($level+1))." \x1b[38;35;29m".sprintf("Mesh %d, indices:%d, material index:%d",
+$m,$count_inds_mesh,$material_ind
+)."\x1b[0m\n";
+for($q=0;$q<$count_inds;$q++){
+$ind=unpack("I",substr($data,$pos,4));
+if($q==0){
+$min=$max=$ind;
+} else {
+if($min>$ind){$min=$ind;}
+if($max<$ind){$max=$ind;}
+}
+
+
+#print "$filename: ".("  " x ($level+2))." \x1b[38;32;54m".sprintf("Entry:%d, offset:%d, ind:%d",
+#$q,$pos,$ind
+#)."\x1b[0m\n";
+if($pos>=length($data)){
+print "$filename: ".("  " x ($level+2))." \x1b[38;41;27m".sprintf("Out of bounds!"
+)."\x1b[0m\n";
+}
+$pos+=4;
+}
+print "$filename: ".("  " x ($level+1))." \x1b[38;32;54m".sprintf("Values usage: min:%d, max:%d",
+$min,$max
+)."\x1b[0m\n";
+
+
+
+}
+}
+
+
+
+
+
+
+sub decode_10_1a_0f_08_07_06_01{ # Material -> Texture -> struct
+my $data=shift;
+my $level=shift;
+
+my @filter_text=split(/\n/,<<DATA);
+0 - FILTERNAFILTERMODE (filtering is disabled)
+1 - FILTERNEAREST (Point sampled)
+2 - FILTERLINEAR (Bilinear)
+3 - FILTERMIPNEAREST (Point sampled per pixel mip map)
+4 - FILTERMIPLINEAR (Bilinear per pixel mipmap)
+5 - FILTERLINEARMIPNEAREST (MipMap interp point sampled)
+6 - FILTERLINEARMIPLINEAR (Trilinear)
+DATA
+
+my @addr_text=split(/\n/,<<DATA);
+0 - TEXTUREADDRESSNATEXTUREADDRESS (no tiling)
+1 - TEXTUREADDRESSWRAP (tile)
+2 - TEXTUREADDRESSMIRROR (mirror)
+3 - TEXTUREADDRESSCLAMP
+4 - TEXTUREADDRESSBORDER
+DATA
+
+my($filter_mode,$addr_modes,$mipmaps)=unpack("CCS",$data);
+print "$filename: ".("  " x ($level))." \x1b[38;5;152m".sprintf("Texture filter mode: %s",
+$filter_text[$filter_mode]
+)."\x1b[0m\n";
+print "$filename: ".("  " x ($level))." \x1b[38;5;152m".sprintf("U-addr mode: %s, V-addr mode: %s",
+$addr_text[$addr_modes>>4],$addr_text[$addr_modes&0xF]
+)."\x1b[0m\n";
+print "$filename: ".("  " x ($level))." \x1b[38;5;152m".sprintf("Using mipmap levels: %d",
+$mipmaps
+)."\x1b[0m\n";
+}
+
+
+
+
+sub decode_10_1a_0f_03_253f2f8{ # 2dfx
 my $data=shift;
 my $level=shift;
 my $effects_count=unpack("I",substr($data,0,4));
@@ -513,14 +722,14 @@ for($q=0;$q<$effects_count;$q++){
 my($pos_x,$pos_y,$pos_z,$type,$size)=unpack("fffII",substr($data,$pos,20));
 print "$filename: ".("  " x ($level+1))." \x1b[38;5;155m".sprintf("Position: %03fx%03fx%03f, type:%d (%s), size: 0x%04x/%d bytes",$pos_x,$pos_y,$pos_z,$type,$types[$type],$size,$size)."\x1b[0m\n";
 
-if($type==0){
+if($type==0){ # Light
 
-if($size==76){
+if($size==76){ # Light 76 bytes
 
 
 }
 
-if($size==80){
+if($size==80){ # Light 80 bytes
 my($color,$far_clip,$near_clip,$corona_size,$shadow_size,$corona_mode,$corona_reflection,$corona_flare,$shadow_mult,$flags1,$corona_texture_name,$shadow_texture_name,$shadow_z_distance,$flags2,$look_x,$look_y,$look_z,$padding)=unpack(
 "IffffCCCCCZ24Z24CCcccS",substr($data,$pos+20,80));
 print "$filename: ".("  " x ($level+2))." \x1b[38;5;152m".sprintf("Color:%06x, size:%03.2f, shadow size:%03.2f, mode:%d, refl:%d, flare:%d, shadow_mult:%d, flags1:%d, textures:\"%s\"/\"%s\", z_dist:%f, look:%dx%dx%dx)",
