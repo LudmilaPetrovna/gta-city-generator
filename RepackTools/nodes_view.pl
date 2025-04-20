@@ -18,7 +18,7 @@ $pic->setAntiAliased(0);
 %nnode=();
 @joints=();
 %links=();
-
+%simple_ped_nodes=();
 
 
 # todo:
@@ -32,7 +32,7 @@ $pic->setAntiAliased(0);
 
 
 print STDERR "# add background image...\n";
-$bg=GD::Image->newFromPng("nodes_bgmap512.png",1);
+#$bg=GD::Image->newFromPng("nodes_bgmap512.png",1);
 
 $pic->saveAlpha(1);
 $pic->alphaBlending(0);
@@ -83,6 +83,15 @@ for($q=0;$q<256;$q++){
 }
 
 
+@sn=map{join("\t",@{$_})."\n"}values %simple_ped_nodes;
+@sn=sort{rand()<.5?-1:1}@sn;
+splice(@sn,35000);
+open(sn,">nodes_simple_peds.txt");
+print sn @sn;
+close(sn);
+
+
+
 sub read_nodes_graph{
 
 open(sn,">nodes_simple.txt");
@@ -91,7 +100,7 @@ for($file_id=0;$file_id<=63;$file_id++){
 #for($file_id=26;$file_id<=26;$file_id++){
 
 
-open(dd,"img_unpacked/gta3/nodes${file_id}.dat") or die $!;
+open(dd,"img_unpacked/models/gta3/nodes${file_id}.dat") or die $!;
 read(dd,$file,-s(dd));
 close(dd);
 
@@ -151,19 +160,14 @@ $pos_x/=8;
 $pos_y/=8;
 $pos_z/=8;
 
-print sn join("\t",$pos_x,$pos_y,$pos_z,$node_width)."\n";
-
-$pos_x=int(($pos_x+3000)/6000*$wholemap_size);
-$pos_y=int((3000-$pos_y)/6000*$wholemap_size);
-$node_width=$node_width/6000*$wholemap_size;
-if($node_width<$min_width){$node_width=$min_width;}
 
 $is_vehicle=$node_id<$count_vehnodes?1:0;
-
+$is_boat=0;
 $color=$is_vehicle?0x77aaff:0xFFFF00;
+$is_simple=1-$is_vehicle;
 
-if(($flags>>8)&1){$color=0xAAAA00;} #emergency
-if(($flags>>7)&1){$color=0xFFFFFF;} #boats
+if(($flags>>8)&1){$color=0xAAAA00;$is_simple=1;} #emergency
+if(($flags>>7)&1){$color=0xFFFFFF;$is_boat=1;} #boats
 if(($flags>>13)&1){$color=0x0000FF;} #highway
 if(($flags>>21)&1){$color=0xCCCCCC;} #parking
 
@@ -172,6 +176,23 @@ if(($flags>>20)&1){$color=0xFFFF00;} #cityblock
 if(($flags>>23)&1){$color=0xFFFF00;} #cityblock
 if(($flags>>6)&1){$color=0x00FF00;} #road
 
+
+if(rand()<.2){$is_simple^=1;}
+
+if($pos_z>500 || $is_boat){$is_simple=0;}
+
+if($is_simple){
+$simple_key=int($pos_x/30).":".int($pos_y/30).":".int($pos_z/30);
+$simple_ped_nodes{$simple_key}=[$pos_x,$pos_y,$pos_z];
+}
+
+print sn join("\t",$pos_x,$pos_y,$pos_z,$node_width)."\n";
+
+
+$pos_x=int(($pos_x+3000)/6000*$wholemap_size);
+$pos_y=int((3000-$pos_y)/6000*$wholemap_size);
+$node_width=$node_width/6000*$wholemap_size;
+if($node_width<$min_width){$node_width=$min_width;}
 
 $snode{"$area_id:$node_id"}=[$pos_x,$pos_y,$pos_z,$node_width];
 push(@joints,[$area_id,$node_id,$link_id,$count_node_links,$color,$is_vehicle,$pos_z]);
