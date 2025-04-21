@@ -20,17 +20,19 @@ $len=sqrt($dx**2+$dy**2+$dz**2);
 if($len<5){next;}
 
 $pos_z-=.55;
-push(@points,"$pos_x $pos_y $pos_z 0\n");
+push(@points,sprintf("%.2f %.2f %.2f 0\r\n",$pos_x,$pos_y,$pos_z));
 
 }
+
+
+@points=reverse @points;
+push(@points,splice(@points,0,500));
 
 $count=@points;
 
-
 for($t=1;$t<=4;$t++){
 open(oo,">tracks".($t>1?$t:"").".dat");
-print oo "$count\n";
+print oo "$count\r\n";
 print oo @points;
 close(oo);
 }
-
