@@ -41,10 +41,10 @@ $pic->filledRectangle(0,0,$wholemap_size,$wholemap_size,0x7f000000);
 #$pic->copyResampled($bg,0,0,0,0,$wholemap_size,$wholemap_size,$bg->getBounds);
 
 
-draw_zones_bounds(0x10);
+#draw_zones_bounds(0x10);
 #draw_nodes_bounds();
 
-print STDERR "# dim background image...\n";
+#print STDERR "# dim background image...\n";
 #$pic->alphaBlending(1);
 #$pic->filledRectangle(0,0,$wholemap_size,$wholemap_size,0x50000000);
 #$pic->alphaBlending(0);
@@ -57,9 +57,9 @@ print STDERR "# dim background image...\n";
 read_nodes_graph();
 #draw_navi_points();
 #draw_nodes_joints();
-draw_zones_bounds(0x65);
+#draw_zones_bounds(0x65);
 
-save_pic();
+#save_pic();
 
 #generate_radar_map();
 #`perl picture2radar.pl`;
@@ -94,20 +94,22 @@ close(sn);
 
 sub read_nodes_graph{
 
+my $filename;
 open(sn,">nodes_simple.txt");
 
-for($file_id=0;$file_id<=63;$file_id++){
-#for($file_id=26;$file_id<=26;$file_id++){
+#for($file_id=0;$file_id<=63;$file_id++){
+for($file_id=26;$file_id<=36;$file_id++){
 
-
-open(dd,"img_unpacked/models/gta3/nodes${file_id}.dat") or die $!;
+$filename="img_unpacked/models/gta3/nodes${file_id}.dat";
+$filename=uc("nodes${file_id}.dat");
+open(dd,$filename) or die $!;
 read(dd,$file,-s(dd));
 close(dd);
 
 
 ($count_nodes,$count_vehnodes,$count_pednodes,$count_navinodes,$count_links)=unpack("IIIII",substr($file,0,20));
 
-print "We have nodes: ($count_nodes,$count_vehnodes,$count_pednodes,$count_navinodes,$count_links)\n";
+print "$filename: We have nodes: (total:$count_nodes,veh:$count_vehnodes,peds:$count_pednodes,navinodes:$count_navinodes,links:$count_links)\n";
 
 if($count_navinodes*1.1<$count_vehnodes){
 die "Strange: navipoints less than vehnodes $count_navinodes<$count_vehnodes";
@@ -270,14 +272,42 @@ $links{$file_id}[$q]=[$area_id,"$area_id:$node_id","$area_id2:$node_id2",$len];
 }
 
 # filler
-$filler=substr($file,20+$count_nodes*28+$count_navinodes*14+$count_links*4,768);
+$filler_offset=20+$count_nodes*28+$count_navinodes*14+$count_links*4;
+$filler=substr($file,$filler_offset,768);
 $filler_mustbe="\xFF\xFF\x00\x00" x 192;
 if($filler ne $filler_mustbe){die "In original game files exists strange filler, this filler broken in your files!";}
+print "$filename: ";
+printf('We found filler offset at 0x%08x / %d',$filler_offset,$filler_offset);
+print "\n";
 
 
+#navi links
+$navi_links_offset=20+$count_nodes*28+$count_navinodes*14+$count_links*4+768;
+print "$filename: ";
+printf('We found navigation links offset at 0x%08x / %d',$navi_links_offset,$navi_links_offset);
+print "\n";
 
+#navi lengths
+$navi_lens_offset=20+$count_nodes*28+$count_navinodes*14+$count_links*4+768+$count_links*2;
+print "$filename: ";
+printf('We found navigation length offset at 0x%08x / %d',$navi_lens_offset,$navi_lens_offset);
+print "\n";
 
+#intersections
+$intersections_offset=20+$count_nodes*28+$count_navinodes*14+$count_links*4+768+$count_links*2+$count_links;
+print "$filename: ";
+printf('We found intersections offset at 0x%08x / %d',$intersections_offset,$intersections_offset);
+print "\n";
 
+$file_len=-s($filename);
+$remain_offset=$intersections_offset;
+$remain_size=$file_len-$remain_offset;
+$remain_data=substr($file,$remain_offset,$remain_size);
+if($remain_data eq ("\x00" x $remain_size)){
+print "$filename: remain $remain_size zeros, ".($remain_size-$count_links)."\n";
+} else {
+print "$filename: remain $remain_size NON-zeros, ".($remain_size-$count_links)."\n";
+}
 
 
 }
