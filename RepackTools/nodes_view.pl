@@ -102,7 +102,7 @@ for($file_id=0;$file_id<=63;$file_id++){
 
 $filename="img_unpacked/models/gta3/nodes${file_id}.dat";
 $filename=uc("nodes${file_id}.dat");
-$filename=lc("1/nodes${file_id}.dat");
+$filename=lc("3/nodes${file_id}.dat");
 open(dd,$filename) or die $!;
 read(dd,$file,-s(dd));
 close(dd);
