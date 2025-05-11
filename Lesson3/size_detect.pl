@@ -53,6 +53,25 @@ $size+=unpack("I",substr($file,$size+4,4))+12;
 return $size;
 }
 
+if($filename=~/nodes\d+\.dat$/i){ # this is nodes*dat files with car and ped routing information
+my($count_nodes,$count_vehnodes,$count_pednodes,$count_navinodes,$count_links)=unpack("IIIII",substr($file,0,20));
+
+my $filler1_expect="\xFF\xFF\x00\x00" x 192;
+my $filler1_offset=20+$count_nodes*28+$count_navinodes*14+$count_links*4;
+my $filler1=substr($file,$filler1_offset,768);
+
+my $filler2_expect="\x00" x 192;
+my $filler2_offset=20+$count_nodes*28+$count_navinodes*14+$count_links*4+768+$count_links*2+$count_links;
+my $filler2=substr($file,$filler2_offset,0xc0);
+my $filler3_offset=20+$count_nodes*28+$count_navinodes*14+$count_links*4+768+$count_links*2+$count_links+192+$count_links;
+my $filler3=substr($file,$filler3_offset,0xc0);
+
+if($filler1 ne $filler1_expect || $filler2 ne $filler2_expect || $filler3 ne $filler2_expect){
+return 0;
+}
+return(20+$count_nodes*28+$count_navinodes*14+$count_links*4+768+$count_links*2+($count_links+0xc0)*2);
+}
+
 if($filename=~/\.ipl$/i && substr($file,0,4) eq "bnry"){ # this is binary IPL file
 
 if(substr($file,28,4) ne "\x4c\x00\x00\x00"){die "strange file!";}

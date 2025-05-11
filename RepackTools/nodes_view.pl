@@ -97,17 +97,20 @@ sub read_nodes_graph{
 my $filename;
 open(sn,">nodes_simple.txt");
 
-#for($file_id=0;$file_id<=63;$file_id++){
-for($file_id=26;$file_id<=36;$file_id++){
+for($file_id=0;$file_id<=63;$file_id++){
+#for($file_id=26;$file_id<=36;$file_id++){
 
 $filename="img_unpacked/models/gta3/nodes${file_id}.dat";
 $filename=uc("nodes${file_id}.dat");
+$filename=lc("1/nodes${file_id}.dat");
 open(dd,$filename) or die $!;
 read(dd,$file,-s(dd));
 close(dd);
 
 
 ($count_nodes,$count_vehnodes,$count_pednodes,$count_navinodes,$count_links)=unpack("IIIII",substr($file,0,20));
+
+# count_links also known as "addresses"
 
 print "$filename: We have nodes: (total:$count_nodes,veh:$count_vehnodes,peds:$count_pednodes,navinodes:$count_navinodes,links:$count_links)\n";
 
@@ -119,7 +122,7 @@ if($count_navinodes>$count_vehnodes*1.1){
 die "Strange: navipoints more than 110\% of vehnodes! $count_navinodes>$count_vehnodes*1.1";
 }
 
-
+# read path nodes (28 bytes)
 for($q=0;$q<$count_nodes;$q++){
 ($unused1,$zero2,$pos_x,$pos_y,$pos_z,$cost_7FFE,$link_id,$area_id,$node_id,$node_width,$floodfill,$flags)=unpack("IIssssSSSCCI",substr($file,20+$q*28,28));
 =pod
@@ -204,6 +207,7 @@ push(@joints,[$area_id,$node_id,$link_id,$count_node_links,$color,$is_vehicle,$p
 }
 
 # read NAVI nodes
+# also known as car_path_nodes (14 bytes)
 for($q=0;$q<$count_navinodes;$q++){
 =pod
 4b - INT16[2] - Position (XY), see below
@@ -247,7 +251,7 @@ $nnode{"$file_id:$q"}=[$pos_x,$pos_y,$node_width];
 }
 
 
-# links
+# node_links $count_links*4 bytes + 768
 for($q=0;$q<$count_links;$q++){
 =pod
 seg3 (4 bytes)
@@ -287,26 +291,35 @@ print "$filename: ";
 printf('We found navigation links offset at 0x%08x / %d',$navi_links_offset,$navi_links_offset);
 print "\n";
 
-#navi lengths
+#links lengths
 $navi_lens_offset=20+$count_nodes*28+$count_navinodes*14+$count_links*4+768+$count_links*2;
 print "$filename: ";
 printf('We found navigation length offset at 0x%08x / %d',$navi_lens_offset,$navi_lens_offset);
 print "\n";
 
 #intersections
-$intersections_offset=20+$count_nodes*28+$count_navinodes*14+$count_links*4+768+$count_links*2+$count_links;
+$intersections_offset=20+$count_nodes*28+$count_navinodes*14+$count_links*4+768+$count_links*2+$count_links+0xc0;
 print "$filename: ";
 printf('We found intersections offset at 0x%08x / %d',$intersections_offset,$intersections_offset);
 print "\n";
 
+$filler2=substr($file,20+$count_nodes*28+$count_navinodes*14+$count_links*4+768+$count_links*2+$count_links,0xc0);
+$filler3=substr($file,$intersections_offset+$count_links,0xc0);
+$zero_c0="\x00" x 192;
+
+if($filler2 ne $zero_c0 || $filler3 ne $zero_c0){
+die "last two sections must have 192 bytes of zeros at end"
+}
+
 $file_len=-s($filename);
-$remain_offset=$intersections_offset;
+$remain_offset=$intersections_offset+$count_links+0xc0;
 $remain_size=$file_len-$remain_offset;
 $remain_data=substr($file,$remain_offset,$remain_size);
+
 if($remain_data eq ("\x00" x $remain_size)){
-print "$filename: remain $remain_size zeros, ".($remain_size-$count_links)."\n";
+print "$filename: remain $remain_size zeros\n";
 } else {
-print "$filename: remain $remain_size NON-zeros, ".($remain_size-$count_links)."\n";
+print "$filename: remain $remain_size NON-zeros, ".($remain_size-384)."\n";
 }
 
 
