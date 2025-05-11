@@ -100,3 +100,17 @@ https://libertycity.ru/files/gta-san-andreas/106991-visual-car-spawner-v3.0.html
 # Ссылки
 
 Лучше всего давать ссылки на официальный гитхаб, нежели на файлопомойки или склады модов.
+
+
+
+# Украшательства
+
+* https://libertycity.ru/files/gta-san-andreas/182170-veter-v1-0-2.html - Project Wind 1.0.2
+* https://www.mixmods.com.br/2021/12/lod-vegetation-distant-trees/ - LOD Vegetation v1.2
+* https://www.mixmods.com.br/gta-sa/correcoes-e-melhorias/ - [SA] Proper Fixes v1.5
+* https://github.com/aap/skygfx/releases/download/v4.2b/SkyGfx_SA_4.2b.zip
+* https://www.patreon.com/posts/urbanize-03-25-123377968 - вызывает вылеты
+* https://www.mixmods.com.br/2022/09/sa-wind-farm-mod-cata-ventos-eolicos/ - [SA] Wind Farm Mod
+* https://libertycity.ru/files/gta-san-andreas/164128-original-vegetation-remake.html
+* https://libertycity.ru/files/gta-san-andreas/95969-insanity-vegetation-update-1.0.html
+* https://github.com/DK22Pac/imfx/releases - красивый эффект lens flare
