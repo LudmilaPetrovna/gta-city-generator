@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 #define SIZE 6000
 #define SIZEM2 (SIZE*SIZE)
@@ -19,6 +20,41 @@ uint32_t *rawlayer;
 float devs[]={1000,500,100,50, 20, 10, 5,  2.5, 1, 0.1};
 int colors[]={255, 255,210,180,170,140,100,50,  40,30};
 int radius[]={2,   2,  2,  2,  1,  1,  1,  1,   1, 1};
+
+uint32_t *colorize;
+uint32_t gradients[][2]={
+{0xfd0acf,0x1bfa99},
+{0x0868a1,0xb27d98},
+{0xbcdee2,0x574cad},
+{0xf47860,0x9a8022},
+{0x3c0484,0xb5b071},
+{0xd11b34,0x3b1368},
+{0xae773f,0x36a37a},
+{0x74225a,0x5c00ab},
+{0x700b06,0x3d4269},
+{0x0408e0,0x5d4dce},
+{0x1dec7f,0xe88d1c},
+{0x482c42,0xb20f09},
+{0xff7b71,0x29df14},
+{0xbf3ea5,0x18b34d},
+{0x1028fa,0xb59de2},
+{0x408ab9,0x147b54},
+{0x9d6eab,0x25ac5b},
+{0xc8b4f3,0xbd60ba},
+{0x9a6620,0xd7e279},
+{0x7bfd3e,0x867b42},
+{0xbd4539,0x25758a},
+{0xfdf9d4,0xf75838},
+{0x069647,0xf508f6},
+{0x1e7e39,0xe3b59c},
+{0xc56f71,0xda6795},
+{0x0f04ef,0x5b62e5},
+{0xf7d552,0x6058f9},
+{0x6f8ba3,0xe388f0},
+{0x4707e0,0xed676c},
+{0xdde7e0,0xab9d86},
+{0x85c90d,0xfec4df}
+};
 
 
 void save_image(uint32_t *pic,char *filename){
@@ -77,7 +113,47 @@ outpix[p]=color;
 
 }
 
+void gen_colorize(){
+int q,e;
+int sr,sg,sb;
+int tr,tg,tb;
+int r,g,b;
+float ph,iph;
+
+colorize=malloc(2000*4);
+
+for(q=0;q<2000;q++){
+e=q/100;
+ph=(double)(q%100)/100.0;
+iph=1.0-ph;
+sr=(gradients[e][0]>>16)&0xFF;
+sg=(gradients[e][0]>>8)&0xFF;
+sb=(gradients[e][0]&0xFF);
+
+tr=(gradients[e][1]>>16)&0xFF;
+tg=(gradients[e][1]>>8)&0xFF;
+tb=(gradients[e][1]&0xFF);
+
+r=(int)((double)sr*iph+(double)tr*ph);
+g=(int)((double)sg*iph+(double)tg*ph);
+b=(int)((double)sb*iph+(double)tb*ph);
+#define clamp(v,min,max) if(v<min){v=min;}if(v>max){v=max;}
+
+clamp(r,0,255);
+clamp(g,0,255);
+clamp(b,0,255);
+#undef clamp
+colorize[q]=r<<16|(g<<8)|(b)|0xFF000000;
+}
+}
+
+
 int main(void){
+char filename[256];
+int d,q,w,e,op,p,ox,oy;
+
+srand(time(0));
+
 inpix=malloc(SIZEM2*4);
 outpix=malloc(OUTAREA*4);
 rawlayer=malloc(OUTAREA*4);
@@ -86,7 +162,10 @@ FILE *in=fopen("heightmap.bin","rb");
 fread(inpix,1,SIZEM2*4,in);
 fclose(in);
 
-int d,q,w,e,op,p,ox,oy;
+gen_colorize();
+
+
+
 float dev=10;
 float sm[4];
 int matrix[][2]={
@@ -98,6 +177,21 @@ int matrix[][2]={
 
 int sign;
 uint32_t color;
+
+// draw gradient filler
+for(w=0;w<SIZE;w++){
+for(q=0;q<SIZE;q++){
+color=(int)((inpix[q+w*SIZE]+1000.0));
+if(color<0){color=0;}
+if(color>=2000){color=1999;}
+ox=q*OUTSIDE/SIZE;
+oy=(6000-1-w)*OUTSIDE/SIZE;
+rawlayer[ox+oy*OUTSIDE]=colorize[color];
+}
+}
+save_image(rawlayer,"filler.png");
+
+exit(0);
 for(d=0;d<sizeof(colors)/sizeof(colors[0]);d++){
 dev=devs[d];
 printf("Pass %d, devider: %f\n",d,dev);
@@ -113,7 +207,6 @@ oy=(6000-1-w)*OUTSIDE/SIZE;
 rawlayer[ox+oy*OUTSIDE]=color;
 }
 }
-char filename[256];
 sprintf(filename,"layer-%d.png",d);
 save_image(rawlayer,filename);
 

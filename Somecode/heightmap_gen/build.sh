@@ -1,10 +1,10 @@
 #make alpha
-convert pre0.png -gaussian-blur 0x3 blurry3.png
-convert pre0.png -gaussian-blur 0x2 blurry2.png
-convert pre0.png -gaussian-blur 0x1 blurry1.png
-convert -compose screen -size 3072x3072 xc:black blurry3.png -composite blurry2.png -composite pre0.png -composite pre0.png -composite alpha.png
-convert -colorspace srgb -compose copyopacity -size 3072x3072 xc:red alpha.png -composite test1.png
-convert -colorspace srgb -compose copyopacity map2.jpg -resize 3072x3072 alpha.png -composite test2.png
+#convert pre0.png -gaussian-blur 0x3 blurry3.png
+#convert pre0.png -gaussian-blur 0x2 blurry2.png
+#convert pre0.png -gaussian-blur 0x1 blurry1.png
+#convert -compose screen -size 3072x3072 xc:black blurry3.png -composite blurry2.png -composite pre0.png -composite pre0.png -composite alpha.png
+#convert -colorspace srgb -compose copyopacity -size 3072x3072 xc:red alpha.png -composite test1.png
+convert -colorspace srgb -compose copyopacity filler.png -resize 3072x3072 alpha.png -composite test2.png
 
 exit;
 
