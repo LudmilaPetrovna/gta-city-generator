@@ -14,10 +14,23 @@
 
 float *inpix;
 uint32_t *outpix;
+uint32_t *rawlayer;
 
 float devs[]={1000,500,100,50, 20, 10, 5,  2.5, 1, 0.1};
 int colors[]={255, 255,210,180,170,140,100,50,  40,30};
 int radius[]={2,   2,  2,  2,  1,  1,  1,  1,   1, 1};
+
+
+void save_image(uint32_t *pic,char *filename){
+printf("Writing output image \"%s\"...\n",filename);
+FILE *out=fopen("heightlines.gray","wb");
+fwrite(pic,1,OUTAREA*4,out);
+fclose(out);
+
+char cmd[256];
+sprintf(cmd,"ffmpeg -f rawvideo -pix_fmt bgra -s %dx%d -i heightlines.gray -y %s",OUTSIDE,OUTSIDE,filename);
+system(cmd);
+}
 
 void draw_point(int ox, int oy, int color, int r){
 int a,s,p,r2=r*3,len;
@@ -65,12 +78,13 @@ outpix[p]=color;
 }
 
 int main(void){
-FILE *in=fopen("heightmap.bin","rb");
-FILE *out=fopen("heightlines.gray","wb");
 inpix=malloc(SIZEM2*4);
 outpix=malloc(OUTAREA*4);
-fread(inpix,1,SIZEM2*4,in);
+rawlayer=malloc(OUTAREA*4);
 memset(outpix,0,OUTAREA*4);
+FILE *in=fopen("heightmap.bin","rb");
+fread(inpix,1,SIZEM2*4,in);
+fclose(in);
 
 int d,q,w,e,op,p,ox,oy;
 float dev=10;
@@ -86,20 +100,32 @@ int sign;
 uint32_t color;
 for(d=0;d<sizeof(colors)/sizeof(colors[0]);d++){
 dev=devs[d];
-color=colors[d]|(colors[d]<<8)|(colors[d]<<16)|0xFF000000;
 printf("Pass %d, devider: %f\n",d,dev);
+
+// draw raw layer
+for(w=0;w<SIZE;w++){
+for(q=0;q<SIZE;q++){
+color=(int)((inpix[q+w*SIZE]+1000.0)/dev);
+color=color&1?0xFF:0;
+color=color|(color<<8)|(color<<16)|0xFF000000;
+ox=q*OUTSIDE/SIZE;
+oy=(6000-1-w)*OUTSIDE/SIZE;
+rawlayer[ox+oy*OUTSIDE]=color;
+}
+}
+char filename[256];
+sprintf(filename,"layer-%d.png",d);
+save_image(rawlayer,filename);
+
+color=colors[d]|(colors[d]<<8)|(colors[d]<<16)|0xFF000000;
+// draw isolines
 for(w=0;w<SIZE;w++){
 for(q=0;q<SIZE;q++){
 for(e=0;e<4;e++){
 if(q && w){
-sm[e]=inpix[q+matrix[e][0]+(w+matrix[e][1])*SIZE];
-sign=sm[e]<0?-1:1;
-sm[e]=(int)(sm[e]/dev);
-if(d==0 && sign<0){
-sm[e]-=10;
-}
+sm[e]=(int)((inpix[q+matrix[e][0]+(w+matrix[e][1])*SIZE]+1000.0)/dev);
 } else {
-sm[e]=(int)(inpix[q+w*SIZE]/dev);
+sm[e]=(int)((inpix[q+w*SIZE]+1000.0)/dev);
 }
 
 //if(sm[e]>3){sm[e]=0;}
@@ -126,7 +152,7 @@ if(sm[0]>sm[2]){dd(2);}
 }
 }
 
-
+/*
 // make contrask outline
 printf("Creating contrast outline...\n");
 int luma,lumamax;
@@ -151,18 +177,10 @@ color=luma|(luma<<8)|(luma<<16)|0x11000000;
 outpix[q+w*OUTSIDE]=color;
 }
 }
+*/
 
+save_image(outpix,"test.png");
 
-
-printf("Writing output...\n");
-// write result
-fwrite(outpix,1,OUTAREA*4,out);
-fclose(in);
-fclose(out);
-
-char cmd[256];
-sprintf(cmd,"ffmpeg -f rawvideo -pix_fmt bgra -s %dx%d -i heightlines.gray -y test.png",OUTSIDE,OUTSIDE);
-system(cmd);
 
 return 0;
 }
