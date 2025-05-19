@@ -1,16 +1,23 @@
+use strict;
 use Data::Dumper;
 use File::Find;
 use File::Path qw(make_path remove_tree);
 use File::Basename;
+use File::Slurp;
 use Digest::MD5 "md5_hex";
 use Digest::CRC qw(crc64 crc32 crc16);
 
 
-$src_dir="img_unpacked/";
-$build=0x1803FFFF;
+my $src_dir="img_unpacked/";
+my $build=0x1803FFFF;
+my %names=();
+my %restrict=();
 load_names();
 
-($action,$workfile)=@ARGV;
+my $file;
+my $filename;
+my $file_prefix;
+my ($action,$workfile)=@ARGV;
 
 if($action eq "dump"){
 dump_dff($workfile);
@@ -21,46 +28,47 @@ join_dff($workfile);
 }
 
 
+sub join_find_files{
+my $workdir=shift;
+my $file_prefix=shift;
+my @src_files=();
 
-sub join_dff{
-
-$filename=shift;
-$filename_short=basename($filename);
-$file_prefix=$filename_short;
-$file_prefix=~s/\.dff$//si;
-$file_prefix.='-chunkdump';
-$file="";
-$workdir=dirname($filename);
-
-# searching for previous dump
-@src_files=();
 opendir(ddd,$workdir);
 map{
 push(@src_files,$workdir.'/'.$_);
 }grep{index($_,$file_prefix)==0 && /\.bin$/}readdir(ddd);
 closedir(ddd);
+return(sort @src_files);
+}
 
-@src_files=sort @src_files;
 
-$struct=[];
-foreach $src_chunk(@src_files){
+sub join_dff{
+$filename=shift;
+my $filename_short=basename($filename);
+my $file_prefix=$filename_short;
+my $workdir=dirname($filename);
+
+# searching for previous dump
+$file_prefix=~s/\.dff$//si;
+$file_prefix.='-chunkdump';
+my @src_files=join_find_files($workdir,$file_prefix);
+
+my $struct=[];
+foreach my $src_chunk(@src_files){
 if($src_chunk=~/chunkdump((-[\da-f]+\(\d+\))+)\.bin$/si){
-$path=$1;
-
-open(dd,$src_chunk) or die $!;
-read(dd,$chunk_data,-s(dd));
-close(dd);
-
+my $path=$1;
+my $chunk_data=read_file($src_chunk);
 #$chunk_data="DATA";
 
-$cp=$struct;
-@paths=split(/-/,$path);
-$last_path=@paths-1;
+my $cp=$struct;
+my @paths=split(/-/,$path);
+my $last_path=@paths-1;
+my $q;
 for($q=0;$q<=$last_path;$q++){
-$path_id=$paths[$q];
+my $path_id=$paths[$q];
 if(!$path_id){next;}
 if($path_id!~/([\da-f]+)\((\d+)\)/si){next;}
-($chunk_id,$chunk_pos)=($1,$2);
+my($chunk_id,$chunk_pos)=($1,$2);
 $chunk_id=hex($chunk_id);
 #$chunk_pos/=10;
 if(!exists $cp->[$chunk_pos]){
@@ -74,10 +82,7 @@ push(@{$cp},$chunk_data);
 }
 
 my $dff=join_walk($struct,0,"");
-
-open(oo,">".$file_prefix."-rebuld.dff") or die $!;
-print oo $dff;
-close(oo);
+write_file($file_prefix."-rebuld.dff",$dff);
 }
 
 
@@ -111,21 +116,17 @@ return($ret);
 
 
 sub dump_dff{
-
 $filename=shift;
-$filename_short=basename($filename);
+$file=read_file($filename);
+
+my $filename_short=basename($filename);
+my $workdir=dirname($filename);
 $file_prefix=$filename_short;
 $file_prefix=~s/\.dff$//si;
 $file_prefix.='-chunkdump';
-$file="";
-$workdir=dirname($filename);
-
-open(dd,$filename) or die $!;
-read(dd,$file,-s(dd));
-close(dd);
 
 print "dumping structure of $filename...                             \n";
-$file_build=unpack("I",substr($file,8,4));
+my $file_build=unpack("I",substr($file,8,4));
 
 if($file_build!=$build){
 die "$filename: possible broken or not SA file ".sprintf("(we expect build %08x, but have %08x)\n",$build,$file_build);
@@ -146,19 +147,6 @@ walk_dump(0,length($file),0,0,"");
 
 
 
-sub write_chunk{
-my $offset=shift;
-my $len=shift;
-my $level=shift;
-my $path=shift;
-my $out_chunk=$file_prefix.$path.'.bin';
-print "$filename: ".("  " x $level)." Writing chunk to $out_chunk\n";
-open(oo,">".$out_chunk);binmode(oo);print oo substr($file,$offset,$len);close(oo);
-print_color_hex(substr($file,$offset,$len),16,$level);
-}
-
-
-
 sub view_chunk{
 my $data=shift;
 my $path=shift;
@@ -167,20 +155,37 @@ my $level=shift;
 my $syspath=lc($path);
 $syspath=~tr/-/_/;
 $syspath=~s/\(\d+\)//g;
+my $func=("check".$syspath);
 
-$func=("check".$syspath);
+eval{
 if(defined &$func){
-$errors=&$func($data);
+my $errors=&$func($data);
 if($errors){
 print "$filename: ".("  " x $level)." \x1b[38;5;131m$errors!!!\x1b[0m\n";
 }
 }
+};
 
+
+eval{
 $func=("decode".$syspath);
 if(defined &$func){
 &$func($data,$level);
 }
+};
 
+}
+
+
+sub write_chunk{
+my $offset=shift;
+my $len=shift;
+my $level=shift;
+my $path=shift;
+my $out_chunk=$file_prefix.$path.'.bin';
+print "$filename: ".("  " x $level)." Writing chunk to $out_chunk\n";
+write_file($out_chunk,substr($file,$offset,$len));
+print_color_hex(substr($file,$offset,$len),16,$level);
 }
 
 sub walk_dump{
@@ -198,6 +203,10 @@ while($pos+12<=$len){
 print "$filename: ".("  " x $level)." Reading at $offset+$pos/$len in ".get_named_path($path)."...\n";
 ($chunk_id,$chunk_len,$chunk_version)=unpack("III",substr($file,$offset+$pos,12));
 if($chunk_version!=$build){ # possible we in a leaf node, dump it all
+if(!$path){ #possible some garbage at end of file
+last;
+}
+print "writing body of $path ($chunk_id,$chunk_len,$chunk_version)\n";
 write_chunk($offset+$pos,$len-$pos,$level,$path);
 view_chunk(substr($file,$offset+$pos,$len-$pos),$path,$level);
 return;
@@ -205,12 +214,14 @@ return;
 if($chunk_len>$len){die "$filename: Internal chunk ($path:".sprintf("%08X",$chunk_id)." len size ($chunk_len) is more than parent chunk ($path:$len)! Data may be broken!";}
 #print "$filename: ".("  " x $level)." we got $chunk_id ($names{$chunk_id}->[0]),$chunk_len,$chunk_version)\n";
 
-$path2=sprintf("%s-%.2X(%d)",$path,$chunk_id,(++$uid)*10);
+my $path2=sprintf("%s-%.2X(%d)",$path,$chunk_id,(++$uid)*10);
 
 if($chunk_len>=12){
+# possible we can go deeper
 walk_dump($offset+$pos+12,$chunk_len,$level+1,$chunk_id,$path2);
 } else {
 # write even 0 bytes, let's empty sections persist
+print "wri\n";
 write_chunk($offset+$pos+12,$chunk_len,$level+1,$path2);
 view_chunk(substr($file,$offset+$pos+12,$chunk_len),$path2,$level+1);
 }
@@ -218,7 +229,8 @@ $pos+=$chunk_len+12;
 }
 
 if($pos!=$len){
-write_chunk($offset+$pos,$len-$pos,$level,$path2.'-tail');
+print "writing tail\n";
+write_chunk($offset+$pos,$len-$pos,$level,$path.'-tail');
 }
 
 }
@@ -226,7 +238,7 @@ write_chunk($offset+$pos,$len-$pos,$level,$path2.'-tail');
 
 
 sub load_names{
-%names=map{@v=split(/\t/);hex($v[0]),[@v[1..3]]}split(/[\r\n]+/,<<DATA);
+%names=map{my @v=split(/\t/);hex($v[0]),[@v[1..3]]}split(/[\r\n]+/,<<DATA);
 0x00000001	Struct	Core	A generic section that stores data for its parent.
 0x00000002	String	Core	Stores a 4-byte aligned ASCII string.
 0x00000003	Extension	Core	A container for non-standard extensions of its parent section.
@@ -571,7 +583,7 @@ my $count=unpack("I",substr($data,0,4));
 my $q;
 print "$filename: ".("  " x $level)." \x1b[38;5;185mElements: $count\x1b[0m\n";
 for($q=0;$q<$count;$q++){
-($mat_right_x,$mat_right_y,$mat_right_z,$mat_up_x,$mat_up_y,$mat_up_z,$mat_at_x,$mat_at_y,$mat_at_z,$mat_pos_x,$mat_pos_y,$mat_pos_z,$parent_id,$flags)=unpack(
+my($mat_right_x,$mat_right_y,$mat_right_z,$mat_up_x,$mat_up_y,$mat_up_z,$mat_at_x,$mat_at_y,$mat_at_z,$mat_pos_x,$mat_pos_y,$mat_pos_z,$parent_id,$flags)=unpack(
 "ffffffffffffiI",substr($data,$q*0x44+4,0x44));
 print "$filename: ".("  " x ($level+1))." \x1b[38;5;152m".sprintf("mat right:%2.1fx%2.1fx%2.1f, mat up:%2.1fx%2.1fx%2.1f, mat at:%2.1fx%2.fx%2.1f, position:%2.1fx%2.1fx%2.1f, parent:%d, flags: %08X",
 $mat_right_x,$mat_right_y,$mat_right_z,$mat_up_x,$mat_up_y,$mat_up_z,$mat_at_x,$mat_at_y,$mat_at_z,$mat_pos_x,$mat_pos_y,$mat_pos_z,$parent_id,$flags
