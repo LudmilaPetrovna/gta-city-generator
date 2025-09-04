@@ -19,11 +19,11 @@ uint32_t pack_id,meta_offset,audio_len;
 }STLK;
 
 void gen_dummy(){
-system("echo \"zz z  zz  z z z z zzzz   z z z z  z27834569237465 2398475 69237845692387456293745692348752369457623 \" | ffmpeg -v 0 -f s8 -ac 1 -ar 80 -i - -t 1 -ac 1 -ar 8000 -qscale:a 0 -compression_level 10 -application voip -map_metadata -1 -y dummy0.ogg");
+system("echo \"zz z  zz  z z z z zzzz   z z z z  z2 \" | ffmpeg -v 0 -f s8 -ac 1 -ar 80 -i - -t 1 -ac 1 -ar 8000 -qscale:a 0 -compression_level 10 -application voip -map_metadata -1 -y dummy0.ogg");
 system("oggz-comment -d -a dummy0.ogg -o dummy.ogg");
 unlink("dummy0.ogg");
 
-system("ffmpeg -ss 100 -f s16le -ac 1 -ar 8000 -i /proc/kcore -af volume=3 -ab 8000 -t 1 -y dummy.ogg");
+//system("ffmpeg -ss 100 -f s16le -ac 1 -ar 8000 -i /proc/kcore -af volume=3 -ab 8000 -t 1 -y dummy.ogg");
 
 }
 
@@ -141,10 +141,12 @@ mkdir("repack",0777);
 mkdir("repack/CONFIG",0777);
 mkdir("repack/streams",0777);
 mkdir("tmp",0777);
+mkdir("beats",0777);
 
 uint8_t key[16];
 extract_key("gta_sa.exe",key);
 
+FILE *genvoice=fopen("genvoice.bat","w");
 
 uint8_t *dummy;
 int dummy_len;
@@ -171,11 +173,13 @@ int pk;
 int ok;
 uint32_t *num;
 uint32_t beats_sum,header_sum;
-
+int last_endpost;
+int is_beat;
 
 char *pack_name;
 char stream_filename[1024];
 char out_filename[1024];
+char speech_filename[1024];
 int is_repack;
 int last_pack=-1;
 FILE *fi=NULL;
@@ -191,12 +195,16 @@ pack_name=(char*)&strm_packs[ti->pack_id*16];
 if(last_pack!=ti->pack_id){
 last_pack=ti->pack_id;
 is_repack=ti->pack_id==3 || ti->pack_id==4?1:0;  /* AMBIENT or BEATS*/
+//is_repack=1;
+//if(ti->pack_id>5){exit(0);}
+//is_repack=ti->pack_id==0?1:0;  /* AMBIENT or BEATS*/
 sprintf(stream_filename,"/root/GTASA_DIST/audio/streams/%s",pack_name);
 sprintf(out_filename,"repack/streams/%s",pack_name);
 if(fi){
 fclose(fi);
 }
 fi=fopen(stream_filename,"rb");
+last_endpost=0;
 if(!is_repack){ //write dummy file
 gen_dummy_pack(out_filename,dummy,dummy_len,key);
 } else {
@@ -228,8 +236,50 @@ pk++;
 beats_sum=crc32_slow(beats,8000);
 header_sum=crc32_slow(header,68);
 
+is_beat=beats_sum!=0x3df50fdd?1:0;
+
+num=(uint32_t*)header;
+int infilesize=num[0];
+int samplerate=num[1];
+int endpos=ti->meta_offset+ti->audio_len+8068;
+for(q=0;q<8;q++){
+infilesize=num[q*2];
+samplerate=num[q*2+1];
+if(infilesize!=samplerate && samplerate!=0xcdcdcdcd){break;}
+}
+
 // print info
-printf("sound at %d, pack: %d (%s), beats: %08x, header:%08x, offset: %d, len: %d\n",p/12,ti->pack_id,pack_name,beats_sum,header_sum,ti->meta_offset,ti->audio_len);
+printf("sound at %d, pack: %d (%s), beats: %08x, header:%08x, offset: %d, len: %d, inpacklen:%d, end: %d (diff %d), samplerate: %d\n",p/12,ti->pack_id,pack_name,beats_sum,
+header_sum,ti->meta_offset,ti->audio_len,infilesize,
+endpos,ti->meta_offset-last_endpost,samplerate
+);
+
+//fprintf(genvoice,"balabolka.exe -snq \"трек %s_%d\" %s_%d.wav ELAN TTS Russian (Nikolai 16Khz) r50\r\n",pack_name,p/12,pack_name,p/12);
+fprintf(genvoice,"balabolka.exe -snq \"трек %s_%d\" %s_%d.wav \"ScanSoft Katerina_Full_22kHz\" r-10\r\n",pack_name,p/12,pack_name,p/12);
+
+
+
+last_endpost=endpos;
+
+if(num[0]==0xcdcdcdcd){
+hexdump(header,68);
+//abort();
+}
+
+
+
+sprintf(speech_filename,"speech/%s_%d.ogg",pack_name,p/12);
+
+
+if(is_beat){
+num=(uint32_t*)beats;
+hexdump(num,128);
+for(q=0;q<1000;q++){
+printf("%d: %d : %x\n",q,num[q*2],num[q*2+1]);
+if(num[q*2]==0xFFFFFFFF){break;}
+}
+
+}
 
 
 if(!is_repack){
@@ -248,10 +298,10 @@ if(stat(out_filename,&tmp_stat)!=0){
 
 // unpack first
 tmp_ogg=fopen(out_filename,"wb");
-fseek(fi,ti->meta_offset+8068,SEEK_SET);
-int len=ti->audio_len;
+//fseek(fi,ti->meta_offset+STREAM_FULLHEADER_SIZE,SEEK_SET);
+int len=infilesize;
 int chunk;
-pk=ti->meta_offset+8068;
+//pk=ti->meta_offset+STREAM_FULLHEADER_SIZE;
 while(len>0){
 chunk=len;
 if(chunk>BUFSIZ){
@@ -264,7 +314,9 @@ pk++;
 }
 l2=fwrite(buf,1,l1,tmp_ogg);
 if(l1!=l2 || l1!=chunk){
-abort();
+printf("We expect: %d, we got %d, we wrote: %d\n",chunk,l1,l2);
+break;
+//abort();
 }
 
 len-=l1;
@@ -284,15 +336,47 @@ num=(uint32_t*)header;
 
 uint8_t *repacked_file;
 int repacked_file_len=0;
+//read_file_to_pointer(speech_filename,&repacked_file,&repacked_file_len);
 read_file_to_pointer(out_filename,&repacked_file,&repacked_file_len);
 
-num[0]=repacked_file_len;
-num[1]=REPACKED_SAMPLE_RATE;
+
 for(q=2;q<16;q++){
 num[q]=0xCDCDCDCD;
 }
 num[16]=0xCDCD0001;
 
+// beat files have pair "len:samplerate" in second slot.
+// don't know why, don't really need
+if(!is_beat){
+num[0]=repacked_file_len;
+num[1]=REPACKED_SAMPLE_RATE;
+} else {
+num[2]=repacked_file_len;
+num[3]=REPACKED_SAMPLE_RATE;
+}
+
+
+num=(uint32_t*)beats;
+
+/*
+// default beats
+for(q=0;q<1000;q++){
+num[q*2]=0xFFFFFFFF;
+num[q*2+1]=0;
+}
+
+// our beats
+for(q=0;q<10;q++){
+num[q*2]=5000+q*1000;
+num[q*2+1]=1;
+}
+q=10;
+num[q*2]=20000;
+num[q*2+1]=0x21;
+*/
+
+
+// encrypt beats and header info again
 for(q=0;q<8000;q++){
 beats[q]^=key[ok&0xf];
 ok++;
@@ -303,10 +387,14 @@ header[q]^=key[ok&0xf];
 ok++;
 }
 
+
+// encrypt repacked file
 for(q=0;q<repacked_file_len;q++){
 repacked_file[q]^=key[ok&0xf];
 ok++;
 }
+
+// write to file
 
 fwrite(beats,1,8000,fo);
 fwrite(header,1,68,fo);
