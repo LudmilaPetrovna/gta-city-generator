@@ -1,6 +1,8 @@
-opendir(dd,"/dev/shm/cache/img_unpacked/anim/cuts");
+opendir(dd,"/dev/shm/t/gta/unpacked/anim/cuts");
 @files=grep{/cut$/}readdir(dd);
 closedir(dd);
+
+$outpath='/dev/shm/mini/cuts';
 
 
 $cut_template=<<CODE;
@@ -35,28 +37,28 @@ $dat_template.=";\r\n";
 
 foreach $cutfile(@files){
 print STDERR "Processing cutscene $cutfile\n";
-open(oo,">".$cutfile);
+open(oo,">$outpath/".$cutfile);
 print oo $cut_template;
 close(oo);
 
 $datfile=$cutfile;
 $datfile=~s/cut$/dat/s;
 
-open(oo,">".$datfile);
+open(oo,">$outpath/".$datfile);
 print oo $dat_template;
 close(oo);
 
 $ifpfile=$cutfile;
 $ifpfile=~s/cut$/ifp/s;
 
-open(dd,"/dev/shm/cache/img_unpacked/anim/cuts/".$ifpfile) or die "Can't open source $ifpfile: $!";
+open(dd,"/dev/shm/t/gta/unpacked/anim/cuts/".$ifpfile) or die "Can't open source $ifpfile: $!";
 binmode(dd);
 seek(dd,0x14,0);
 read(dd,$animname,8);
 close(dd);
 
 
-open(oo,">".$ifpfile);
+open(oo,">$outpath/".$ifpfile);
 print oo pack("A4IA4IIZ8","ANPK",20,"INFO",12,0,$animname);
 close(oo);
 

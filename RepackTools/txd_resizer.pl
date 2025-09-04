@@ -1,13 +1,14 @@
 
 
 
-$new_width=$new_height=16;
+$new_width=$new_height=32;
 
 ($src_file,$dst_file,$do_hilite)=@ARGV;
 
 if(!$src_file || !$dst_file){
 die "Usage: txd_resizer.pl [source.txd] [output.txd]";
 }
+
 
 
 if($src_file=~/fonts\.txd/){
@@ -24,7 +25,7 @@ $conv_options='+level 5%,100% -level 0%,50%';
 }
 
 if($src_file=~/(ealod_law2|laeast2_lod|lahills_lod|lahillsa_lod|lahillsa_lodw|lanlod|lawnlodbig|lod2_las|lod2_sfe|lod2lae1|lod3_las|lod3_sfe|lod4_sfe|lod4sfw|lod5_sfe|lod5sfw|lod6_sfe|lod6sfw|lod7sfw|lod8sfw|lod9sfw|lod_a_law|lod_lan2|lod_las2|lod_laxrf|lod_mount_sfs|lod_sfe|lod_sfs1|lod_sfs2|lod_sfs3|lod_sfs4|lod_sfs5|lod_sfs6|lod_sfse|lod_sfse2|lod_sfse3|lod_sfse69|lodhangar_sfsxref|lodhuge_lan2|lodlawnsmall|lodsfn|lodtnsfn|lodvegaswest1|lodvegaswest2|lodvegaswest3|lodvegaswest4|lodvgshangar|lodvgsslod|lodvgsslod01|lodvgsslod02|lodvgswestout|lodvgwstcoast|vegaselod1|vegaselod2|vegaselod3|vegasnlod1|vegasnlod3|vegasnlod4|vgsseleclod|welod_law2)\.txd/i){
-$new_width=$new_height=4;
+$new_width=$new_height=8;
 }
 
 
@@ -72,6 +73,11 @@ $d3dFormatAlpha, # or alpha for GTA3/VC
 $width,$height,$depth,$mipmap_count,
 $rasterType,$flags)=unpack("ICCSZ32Z32Ia4SSCCCC",$buf);
 
+
+$no_resize=0;
+if($tex_name=~/carplate|carpback|plateback1|plateback2|plateback3|font/i){
+$no_resize=1;
+}
 
 
 
@@ -182,6 +188,17 @@ if(!$isCompressed && $version==9 && !($d3dFormatAlphaNum==0x15 || $d3dFormatAlph
 die "$src_file: Only 0x15, but have ".sprintf("%x",$d3dFormatAlphaNum)."($d3dFormatAlpha) type supported D3DFMT_A8R8G8B8=21, see https://learn.microsoft.com/ru-ru/windows/win32/direct3d9/d3dformat";
 }
 
+if($no_resize){
+print "Copy $tex_name, no resize!\n";
+read(dd,$resized_data,$len-88);
+
+$resized_data=$buf.$resized_data;
+$resized_data=pack("III",1,length($resized_data),0x1803FFFF).$resized_data;
+$resized_data.=pack("III",3,0,0x1803FFFF);
+$resized_data=pack("III",0x15,length($resized_data),0x1803FFFF).$resized_data;
+push(@to_out,$resized_data);
+
+} else {
 
 if($paletteSize){
 read(dd,$palette,$paletteSize);
@@ -340,6 +357,8 @@ $height>>=1;
 
 }
 #printf("We at %x\n",tell(dd));
+}
+
 
 read(dd,$buf,12);
 ($type,$len,$build)=unpack("III",$buf);
