@@ -2,6 +2,7 @@ use File::Find;
 use Data::Dumper;
 use File::Path qw(make_path remove_tree);
 use File::Basename;
+use File::Slurp;
 use Digest::CRC qw(crc64 crc32 crc16);
 
 
@@ -10,6 +11,10 @@ use Digest::CRC qw(crc64 crc32 crc16);
 %inst=();
 %occl=();
 %ipl=();
+
+%txd=();
+%lod=();
+%lod_txd=();
 
 remove_tree("ipl_decoded");
 make_path("ipl_decoded/inst/");
@@ -44,6 +49,7 @@ if(/^end/){$in_objs=0;}
 if(/\s*\d/ && $in_objs==1){
 @fields=split(/[,\s]+/,$_);
 $ids{$fields[0]}=lc($fields[1]);
+$txd{lc($fields[1])}=lc($fields[2]);
 }
 }
 close(dd);
@@ -53,7 +59,7 @@ close(dd);
 
 %ipl_files=();
 print STDERR "Searching for IPL files...\n";
-foreach $file_key(grep{/\.ipl$/ && !/_stream\d+\.ipl$/}keys %files){
+foreach $file_key(sort grep{/\.ipl$/ && !/_stream\d+\.ipl$/}keys %files){
 $ipl_files{$file_key}=$files{$file_key};
 $inst{$file_key}=parse_IPL($files{$file_key},$file_key);
 dump_inst($file_key);
@@ -62,7 +68,7 @@ $ipl_prefix=$file_key;
 $ipl_prefix=~s/\.ipl$//s;
 
 # add streamable files
-
+print "parsed ".($#{$inst{$file_key}})." items\n";
 
 for($e=0;$e<100;$e++){
 $stream_key=$ipl_prefix."_stream".$e.".ipl";
@@ -73,8 +79,27 @@ dump_inst($stream_key);
 }
 
 
+%lod=();
+%nonlod=();
+foreach $key(keys %inst){
+$ip=$inst{$key};
+foreach $ii(@{$ip}){
+if($ii->[10] && $ii->[10]>=0){
+$nonlod{$ii->[0]}=1;
+$lod{$ids{$ii->[0]}}=$ip->[$ii->[10]]->[1];
+$lod_txd{$txd{$ip->[$ii->[10]]->[1]}}=1;
+}
+}
+}
+
+foreach $id(keys %nonlod){
+$lod_txd{$txd{$ids{$id}}}=0;
+}
 
 
+print join("|",sort grep{$lod_txd{$_}} keys %lod_txd);
+
+exit(1);
 #used_count
 #lod_by_coords
 
@@ -175,7 +200,11 @@ next;}
 if(/^end/i){$in_inst=0;$in_occl=0;next;}
 if(/^\s*\d/ && $in_inst){
 ($id,$dummy_name,$interrior,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_id)=split(/\s*,\s*/);
-push(@{$ret},[$id,$dummy_name,$interrior,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_id]);
+
+$real_model_name=exists $ids{$id}?$ids{$id}:"UNKNOWN_ID";
+
+push(@{$ret},[$id,$real_model_name,$interrior,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_id]);
+
 }
 
 if(/^\s*\-?\d/ && $in_occl){
@@ -193,6 +222,8 @@ my $ret=[];
 my $file=shift;
 my $q;
 my $e;
+my $lod_min=0xFFFFFF;
+my $lod_max=0;
 
 if(substr($file,0,4) ne "bnry"){die "Streamable IPL files must be with \"bnry\" signature!";}
 
@@ -208,9 +239,15 @@ if($items_offset!=0x4C){die "Items offset must be 0x4c, your file may be broken"
 for($q=0;$q<$items_count;$q++){
 ($pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$obj_id,$interrior,$lod_index)=unpack("fffffffIIi",substr($file,$items_offset+$q*40,40));
 
+if($lod_index>=0){
+if($lod_min>$lod_index){$lod_min=$lod_index;}
+if($lod_max<$lod_index){$lod_max=$lod_index;}
+}
+
 $model_name=exists $ids{$obj_id}?$ids{$obj_id}:"UNKNOWN_ID";
 push(@{$ret},[$obj_id,$model_name,$interrior,$pos_x,$pos_y,$pos_z,$rot_x,$rot_y,$rot_z,$rot_w,$lod_id]);
 }
+print "Lod ids: $lod_min .. $lod_max\n";
 return($ret);
 }
 
