@@ -58,7 +58,7 @@ $sounds_count=400; # max size of bank, since it actually many banks in same offs
 print oo pack("SS",$sounds_count,0);
 for($q=0;$q<400;$q++){
 #($buffer_offset,$loop_offset,$sample_rate,$headroom)
-print oo pack("IiSS",$q*$sample_count*2,$q==8?0:-1,$samplerate,0);
+print oo pack("IiSS",$q*$sample_count*2,-1,$samplerate,0);
 }
 
 
@@ -68,6 +68,7 @@ print oo pack("IiSS",$q*$sample_count*2,$q==8?0:-1,$samplerate,0);
 
 $voices=5;
 
+srand(time());
 for($q=0;$q<$sounds_count;$q++){
 print STDERR "Writing sound id: $q\n";
 

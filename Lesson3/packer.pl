@@ -58,7 +58,7 @@ $buf.="\x00" x $padding;
 }
 
 $hash=md5_hex($buf);
-if(exists $dups{$hash}){
+if(exists $dups{$hash} && 0){
 ($sect_start,$sectors)=@{$dups{$hash}}
 } else {
 $dups{$hash}=[$cur_sect,$sectors];

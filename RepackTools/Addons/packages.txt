@@ -1,0 +1,65 @@
+name:WindowedMode
+info:Запускает игру в окне без необходимости в dxwnd, позволяет легко делать скриншоты
+home:https://github.com/ThirteenAG/III.VC.SA.WindowedMode
+load:https://github.com/ThirteenAG/III.VC.SA.WindowedMode/releases/download/v1.17/III.VC.SA.WindowedMode.zip
+tweak:III.VC.SA.LimitAdjuster.ini
+
+name:ASI_Loader
+info:Загрузчик файлов в формате ASI от Silent
+home:http://thirteenag.github.io/wfp#gtasa
+load:https://github.com/ThirteenAG/WidescreenFixesPack/releases/download/gtasa/GTASA.WidescreenFix.zip
+use:vorbisFile.dll
+
+name:SilentPatch
+info:Исправления сотен багов в игре, включая исправления работы мыши
+home:https://github.com/CookiePLMonster/SilentPatch
+load:https://github.com/CookiePLMonster/SilentPatch/releases/download/1.1-BUILD33.1-SA/SilentPatchSA.zip
+use:SilentPatchSA.asi;SilentPatchSA.ini
+
+name:CLEO5.1
+info:Поддержка модификаций основанных на скриптовом коде
+home:https://cleo.li/
+load:https://github.com/cleolibrary/CLEO5/releases/download/preview/SA.CLEO-v5.1.0-9e5353e.zip
+old:https://github.com/cleolibrary/CLEO4/releases/download/v4.4.4/CLEO4.zip
+
+name:Project2DFX
+info:Продвинутое освещение в игре и снятие множества лимитов, захардкоженных в игре
+home:https://github.com/ThirteenAG/III.VC.SA.IV.Project2DFX
+load:https://github.com/ThirteenAG/III.VC.SA.IV.Project2DFX/releases/download/gtasa/SA.Project2DFX.zip
+
+name:WidescreenFix
+info:Исправление полноэкранного режима на широкоформатных мониторах
+home:http://thirteenag.github.io/wfp#gtasa
+load:https://github.com/ThirteenAG/WidescreenFixesPack/releases/download/gtasa/GTASA.WidescreenFix.zip
+use:scripts/GTASA.WidescreenFix.asi;scripts/GTASA.WidescreenFix.ini
+
+name:CrashInfo
+info:Выдача сообщений о ошибках внутри игры, полезно для диагностики вылетов
+home:https://www.mixmods.com.br/2022/09/crashinfo/
+load:https://sharemods.com/g2boidmk6atl/CrashInfo.zip.html
+file:CrashInfo.zip
+path:(SA)/EN/(mod - to the game folder)
+use:CrashInfo.SA.asi;gta_sa.pdb;libcurl.dll;zlib1.dll
+tweak:CrashInfo.ini;CrashList.txt
+
+name:ImFast
+info:Ускоренный запуск игры, пропуск заставок, загрузка последнего сохранения
+home:https://www.gtagarage.com/mods/show.php?id=25665
+file:imfast.zip
+tweak:imfast.ini
+use:imfast.asi
+
+name:SADisplayResolutions
+info:Добавление в игру более высоких разрешений экрана, таких как 1920х1080
+good:no
+home:https://libertycity.net/files/gta-san-andreas/56610-support-1920x1080-169.html
+file:1366519213_1920x1080.rar
+use:SADisplayResolutions.asi
+
+name:CLEO_CJ_can_fly
+info:Сиджей теперь умеет летать, просто подпрыгните или прыгните с кочки/автомобиля, управление WASD, нужна поддержка CLEO
+file:fly.zip
+
+name:CLEO_DisplayCoords
+info:Отображает в верхней части экрана текущие координаты Сиджея, нужна поддержка CLEO
+file:coords.zip

@@ -27,7 +27,7 @@ $dat_template="";
 for($s=0;$s<4;$s++){
 $dat_template.="2,\r\n";
 for($w=0;$w<2;$w++){
-$dat_template.="".($w*5).".000000f,".join("",map{($w*int(rand()*10)).".0,"}(1..$dat_counts[$s]))."\r\n";
+$dat_template.="".($w*3).".000000f,".join("",map{($w*int(rand()*10)).".0,"}(1..$dat_counts[$s]))."\r\n";
 }
 $dat_template.=";\r\n";
 }
