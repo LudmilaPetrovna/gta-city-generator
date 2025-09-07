@@ -1,3 +1,5 @@
+#!/usr/bin/perl
+
 use utf8;
 use File::Slurp;
 use File::Basename;
@@ -7,6 +9,7 @@ use Encode;
 
 mkdir("__Addons");
 @install=();
+@summary=();
 
 foreach $pi(split(/\n\n+/,read_file("packages.txt"))){
 %pi=map{split(/:/,$_,2)}split(/\n/,$pi);
@@ -37,7 +40,10 @@ write_file($output.'/readme-'.$pi{name}.'.txt',encode("cp1251",decode_utf8($pi{i
 foreach $file(split(/;/,$pi{tweak})){
 print `cp -v tweaks/$file $output`;
 }
+if(!$pi{noinstall}){
 push(@install,$pi{name});
+}
+push(@summary,"**$pi{name}**: $pi{info} ($pi{home})");
 print Dumper(\%pi);
 
 
@@ -45,4 +51,6 @@ print Dumper(\%pi);
 
 write_file("__Addons/install_all.bat",join("",map{"xcopy.exe /E /Y $_ ..\r\n"}@install));
 
+
+print map{"".(++$uid).". ".$_."\n"} @summary;
 
