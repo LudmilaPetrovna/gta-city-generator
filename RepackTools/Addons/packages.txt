@@ -1,11 +1,11 @@
 name:WindowedMode
-info:Запускает игру в окне без необходимости в dxwnd, позволяет легко делать скриншоты
+info:Запускает игру в окне без необходимости в dxwnd, позволяет легко делать скриншоты штатными средствами
 home:https://github.com/ThirteenAG/III.VC.SA.WindowedMode
 load:https://github.com/ThirteenAG/III.VC.SA.WindowedMode/releases/download/v1.17/III.VC.SA.WindowedMode.zip
 tweak:III.VC.SA.LimitAdjuster.ini
 
-name:ASI_Loader
-info:Загрузчик файлов в формате ASI от Silent
+name:Ultimate_ASI_Loader
+info:Загрузчик файлов в формате ASI, требуется для работы всех остальных модов в формате ASI, в том числе для CLEO
 home:http://thirteenag.github.io/wfp#gtasa
 load:https://github.com/ThirteenAG/WidescreenFixesPack/releases/download/gtasa/GTASA.WidescreenFix.zip
 use:vorbisFile.dll
@@ -17,7 +17,7 @@ load:https://github.com/CookiePLMonster/SilentPatch/releases/download/1.1-BUILD3
 use:SilentPatchSA.asi;SilentPatchSA.ini
 
 name:CLEO5.1
-info:Поддержка модификаций основанных на скриптовом коде
+info:Поддержка множества CLEO-модификаций основанных на скриптовом коде
 home:https://cleo.li/
 load:https://github.com/cleolibrary/CLEO5/releases/download/preview/SA.CLEO-v5.1.0-9e5353e.zip
 old:https://github.com/cleolibrary/CLEO4/releases/download/v4.4.4/CLEO4.zip
