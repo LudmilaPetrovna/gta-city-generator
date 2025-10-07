@@ -5,7 +5,7 @@ clearUndoBuffer()
 deleteAllChangeHandlers()
 gc()
 
-DATAFILE=@"z:\water\water.dat"
+DATAFILE=@"z:\water\water_orig.dat"
 water_sample=[-1474.6840,127.7405,-0.4584]
 sphere pos:water_sample radius:10 segments:30 name:"water_sample" wirecolor:[255,0,0]
 
@@ -16,6 +16,7 @@ dline = readline wf
 data = filterString dline " 	"
 n=n+1
 --if n>200 then exit
+print data.count
 if data.count<22 then continue
 
 rcol=random [0, 0, 0] [255, 255, 255]
@@ -36,8 +37,6 @@ setVert m 2 vert2
 setVert m 3 vert3
 
 meshop.createPolygon m #(3,2,1)	
-update m
-freeze m
 )
 
 if data.count==29 do (
@@ -83,15 +82,14 @@ setVert m 4 vert4
 
 meshop.createPolygon m #(1,2,3)	
 meshop.createPolygon m #(2,4,3)
-update m
-freeze m
 
 if bit.and flags 1!=0 then m.renderable=on else m.renderable=off
 if bit.and flags 2!=0 then m.xray=on else m.xray=off
 
 )
 
-
+update m
+setUserPropBuffer m dline
 
 )
 
