@@ -1,0 +1,14 @@
+{$CLEO .cs}
+script_name "alhambr"
+nop
+
+while not is_key_pressed 116 // F5
+    wait 100
+end
+
+print_string_now "Welcome to Alhambra!" 2000
+int cj=get_player_char 0
+set_char_coordinates cj {x} 1836.0 {y} -1682.0 {z} 14.0
+
+terminate_this_custom_script
+
