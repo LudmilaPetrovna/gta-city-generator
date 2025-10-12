@@ -69,7 +69,7 @@ $codeparam->[0x600]="p7";
 $codeparam->[0x172]="p1p1";
 
 @possible=();
-for($q=0;$q<1128;$q++){
+for($q=0;$q<11280;$q++){
 $opcode=unpack("S",substr($file,$q,2))&0x7FFF;
 $is_bad=0;
 
@@ -91,12 +91,14 @@ $param_count=$parameters_count{$opcode};
 
 #if($opcode==0x004F || $opcode==0x0913){$param_count=888;}
 if($opcode==0x05B6){$param_count=0;$ppos+=128;} #SAVE_STRING_TO_DEBUG_FILE
-
+$ops=$codeparam->[$opcode];
+print "ops $ops\n";
 $vararg=0;
-while($codeparam->[$opcode]=~/([a-z])(\d+)/g){
-$value="UNKNOWN";
-
+while($ops=~/([a-z])(\d*)/g){
 ($pt,$pc)=($1,$2);
+$value="UNKNOWN";
+print "decoding operands $pt $pc\n";
+
 if($pt eq "s"){
 ($adv,$value)=read_string($ppos,$pc);
 if($adv==0){$is_bad=1;last;}
@@ -144,7 +146,7 @@ $ppos+=$param_size;
 
 if($is_bad){next;}
 
-$params="";
+$params="[$q..$ppos]";
 for($e=0;$e<$parameters_count{$opcode};$e++){
 $params.=($e?", ":"")."[$names{$opcode}->[$e]]="."(".$param_types[$e].")".$param_values[$e];
 }
@@ -162,7 +164,7 @@ $q=$ppos-1;
 #show hex
 $offset=0;
 $pc=0;
-for($w=0;$w<24;$w++){
+for($w=0;$w<240;$w++){
 printf("\x1b[1;44;33m%.4x (%.4d)\x1b[0m: ",$offset,$offset);
 $txt="";
 for($q=0;$q<16;$q++){
@@ -222,7 +224,7 @@ if($pcode==20){($gl_var,$arr_ind,$arr_size)=unpack("SSS",substr($file,$offset+$a
 $str=~s/\x00.*//s;
 
 if(!is_string($str)){
-print STDERR "We got string \"$str\", but this is not text!\n";
+#print STDERR "We got string \"$str\", but this is not text!\n";
 return 0;
 }
 
