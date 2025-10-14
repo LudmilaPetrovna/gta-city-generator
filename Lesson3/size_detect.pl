@@ -36,6 +36,17 @@ $q+=32;
 return($filesize);
 }
 
+if($filename=~/\.scm$/i
+## && substr($file,0,3) eq "\xA4\x03\x09"
+){ # this is SCM script from script.img
+my $offset=index($file,"\x4E\x00\x00\x00");
+if($offset>0){
+return($offset+2);
+}
+return length($file);
+}
+
+
 if($filename=~/\.ifp$/i && substr($file,0,4) eq "ANP3"){ # this is IFP file 4 (-8)
 $size=unpack("I",substr($file,4,4))+8;
 return $size;
