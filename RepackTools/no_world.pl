@@ -5,6 +5,18 @@ use File::Path qw(make_path remove_tree);
 use File::Basename;
 
 
+=pod
+Add white list:
+./data/furnitur.dat
+./data/object.dat
+./data/peds.ide
+./data/handling.cfg
+./data/carmods.dat
+./data/cargrp.dat
+./data/vehicles.ide
+=cut
+
+
 $path_data="data";
 $path_dst_game="no_world/game";
 $path_dst_cols="no_world/col_patched";
