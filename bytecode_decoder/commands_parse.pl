@@ -213,6 +213,8 @@ if($opcode==0x06E6){
 $params="i1o1";
 }
 
+do "./opcode_db_my_fix.pl";
+
 
 $codes[$opcode]=$params;
 }

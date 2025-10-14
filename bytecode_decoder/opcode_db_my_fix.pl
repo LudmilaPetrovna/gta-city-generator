@@ -71,20 +71,20 @@ if($opcode==0x078B && ' 1931 = GRAB_ENTITY_ON_WINCH                       '){$pa
 if($opcode==0x07EF && ' 2031 = GET_CITY_FROM_COORDS                       '){$params="i3o1";} #cleo:4 gh:0 sc:4 wiki:0 my:3
 if($opcode==0x0806 && ' 2054 = GET_TOTAL_NUMBER_OF_PEDS_KILLED_BY_PLAYER  '){$params="i1o1";} #cleo:2 gh:0 sc:2 wiki:0 my:1
 if($opcode==0x080A && ' 2058 = GET_LEVEL_DESIGN_COORDS_FOR_OBJECT         '){$params="i2o3";} #cleo:5 gh:0 sc:5 wiki:0 my:2
-if($opcode==0x080E && ' 2062 = GET_CHAR_HIGHEST_PRIORITY_EVENT            '){$params="i1";} #cleo:2 gh:0 sc:2 wiki:0 my:1
-if($opcode==0x0844 && ' 2116 = IS_VAR_TEXT_LABEL_EMPTY                    '){$params="";} #cleo:1 gh:0 sc:1 wiki:0 my:0
-if($opcode==0x0846 && ' 2118 = IS_VAR_TEXT_LABEL16_EMPTY                  '){$params="";} #cleo:1 gh:0 sc:1 wiki:0 my:0
-if($opcode==0x0871 && ' 2161 = SWITCH_START                               '){$params="i4";} #cleo:18 gh:0 sc:18 wiki:0 my:4
-if($opcode==0x0872 && ' 2162 = SWITCH_CONTINUED                           '){$params="i4";} #cleo:18 gh:0 sc:18 wiki:0 my:4
-if($opcode==0x08EF && ' 2287 = SET_MENU_ITEM_WITH_2_NUMBERS               '){$params="i3s8i1";} #cleo:6 gh:0 sc:6 wiki:0 my:5
-if($opcode==0x08F9 && ' 2297 = IS_VAR_TEXT_LABEL16_EQUAL_TO_TEXT_LABEL    '){$params="";} #cleo:2 gh:0 sc:2 wiki:0 my:0
+if($opcode==0x080E && ' 2062 = GET_CHAR_HIGHEST_PRIORITY_EVENT            '){$params="i1o1";} #cleo:2 gh:0 sc:2 wiki:0 my:1
+if($opcode==0x0844 && ' 2116 = IS_VAR_TEXT_LABEL_EMPTY                    '){$params="p1";} #cleo:1 gh:0 sc:1 wiki:0 my:0
+if($opcode==0x0846 && ' 2118 = IS_VAR_TEXT_LABEL16_EMPTY                  '){$params="p1";} #cleo:1 gh:0 sc:1 wiki:0 my:0
+if($opcode==0x0871 && ' 2161 = SWITCH_START                               '){$params="i4i14";} #cleo:18 gh:0 sc:18 wiki:0 my:4  jump???
+if($opcode==0x0872 && ' 2162 = SWITCH_CONTINUED                           '){$params="i4i18";} #cleo:18 gh:0 sc:18 wiki:0 my:4  jump???
+if($opcode==0x08EF && ' 2287 = SET_MENU_ITEM_WITH_2_NUMBERS               '){$params="i3s8i2";} #cleo:6 gh:0 sc:6 wiki:0 my:5
+if($opcode==0x08F9 && ' 2297 = IS_VAR_TEXT_LABEL16_EQUAL_TO_TEXT_LABEL    '){$params="p1s16";} #cleo:2 gh:0 sc:2 wiki:0 my:0
 if($opcode==0x0913 && ' 2323 = START_NEW_STREAMED_SCRIPT                  '){$params="i1v";} #cleo:2 gh:0 sc:2 wiki:0 my:1001
-if($opcode==0x0926 && ' 2342 = GET_NUMBER_OF_INSTANCES_OF_STREAMED_SCRIPT '){$params="i1";} #cleo:2 gh:0 sc:2 wiki:0 my:1
-if($opcode==0x0945 && ' 2373 = GET_PLAYER_MAX_ARMOUR                      '){$params="i1";} #cleo:2 gh:0 sc:2 wiki:0 my:1
-if($opcode==0x0947 && ' 2375 = SET_CHAR_SAY_CONTEXT                       '){$params="i2";} #cleo:3 gh:0 sc:3 wiki:0 my:2
-if($opcode==0x0953 && ' 2387 = GET_BEAT_TRACK_STATUS                      '){$params="";} #cleo:1 gh:0 sc:1 wiki:0 my:0
-if($opcode==0x0956 && ' 2390 = FIND_MAX_NUMBER_OF_GROUP_MEMBERS           '){$params="";} #cleo:1 gh:0 sc:1 wiki:0 my:0
-if($opcode==0x098B && ' 2443 = STRING_CAT16                               '){$params="p1p1";} #cleo:3 gh:0 sc:3 wiki:0 my:2
-if($opcode==0x098C && ' 2444 = STRING_CAT8                                '){$params="p1p1";} #cleo:3 gh:0 sc:3 wiki:0 my:2
-if($opcode==0x0A3E && ' 2622 = GET_RANDOM_CHAR_IN_AREA_OFFSET_NO_SAVE     '){$params="i6";} #cleo:7 gh:0 sc:7 wiki:0 my:6
-if($opcode==0x0A40 && ' 2624 = CREATE_USER_3D_MARKER                      '){$params="i4";} #cleo:5 gh:0 sc:5 wiki:0 my:4
+if($opcode==0x0926 && ' 2342 = GET_NUMBER_OF_INSTANCES_OF_STREAMED_SCRIPT '){$params="i1o1";} #cleo:2 gh:0 sc:2 wiki:0 my:1
+if($opcode==0x0945 && ' 2373 = GET_PLAYER_MAX_ARMOUR                      '){$params="i1o1";} #cleo:2 gh:0 sc:2 wiki:0 my:1
+if($opcode==0x0947 && ' 2375 = SET_CHAR_SAY_CONTEXT                       '){$params="i2o1";} #cleo:3 gh:0 sc:3 wiki:0 my:2  #out must be float!!!
+if($opcode==0x0953 && ' 2387 = GET_BEAT_TRACK_STATUS                      '){$params="o1";} #cleo:1 gh:0 sc:1 wiki:0 my:0
+if($opcode==0x0956 && ' 2390 = FIND_MAX_NUMBER_OF_GROUP_MEMBERS           '){$params="o1";} #cleo:1 gh:0 sc:1 wiki:0 my:0
+if($opcode==0x098B && ' 2443 = STRING_CAT16                               '){$params="p3";} #cleo:3 gh:0 sc:3 wiki:0 my:2  # sometimes read +p1, may be p2 or p3
+if($opcode==0x098C && ' 2444 = STRING_CAT8                                '){$params="p3";} #cleo:3 gh:0 sc:3 wiki:0 my:2  # sometimes read +p1, may be p2 or p3
+if($opcode==0x0A3E && ' 2622 = GET_RANDOM_CHAR_IN_AREA_OFFSET_NO_SAVE     '){$params="i6o1";} #cleo:7 gh:0 sc:7 wiki:0 my:6
+if($opcode==0x0A40 && ' 2624 = CREATE_USER_3D_MARKER                      '){$params="i4o1";} #cleo:5 gh:0 sc:5 wiki:0 my:4

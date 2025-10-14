@@ -83,6 +83,9 @@ $wiki[$id]=$paramcount;
 
 #############
 
+@bad=();
+open(oo,">opcode_db_my_fix_.pl");
+
 for($q=0;$q<3000;$q++){
 if($my_exists->[$q]!=1){next;}
 $res="";
@@ -93,13 +96,17 @@ if($sc[$q]==$myl[$q]){
 $res="all_ok";
 next;
 }
-if($my_code->[$q]=~/return/){
+#if($my_code->[$q]=~/return/){
 print "\x1b[1;44;33m";
 printf("% 4s % 4s (% 50s) % 5s % 5s % 5s % 5s % 5s % 10s\n","hex","dec","name","cleo","ghidr","sc","wiki","my","res");
 printf("%04X %04d (% 50s) % 5d % 5d % 5d % 5d % 5d % 10s\n",$q,$q,$names[$q],$cleo[$q],$ghidra[$q],$sc[$q],$wiki[$q],$myl[$q],$res);
 print "\x1b[0m\x1b[92m".$my_code->[$q]."\x1b[0m\n";
+$opcode=sprintf("0x%04X /* % 5d = %- 42s */",$q,$q,$names[$q]);
 
-}
+print oo "if(\$opcode==$opcode){\$params=\"".$my_len->[$q]."\";} #";
+printf(oo "cleo:%d gh:%d sc:%d wiki:%d my:%d\n",$cleo[$q],$ghidra[$q],$sc[$q],$wiki[$q],$myl[$q]);
+
+#}
 
 }
 
