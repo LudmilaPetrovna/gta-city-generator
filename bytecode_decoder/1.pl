@@ -4,8 +4,8 @@ use Data::Dumper;
 
 $source=$ARGV[0]||"Alhambra.cs";
 
-$db=decode_json(read_file("sa.json"));
-$codeparam=decode_json(read_file("codeparam.pl"));
+$db=decode_json(read_file("opcode_db_cleo.json"));
+$codeparam=decode_json(read_file("opcode_db_my_operands.json"));
 $cmds=$db->{extensions}->[0]->{commands};
 $cleo=$db->{extensions}->[1]->{commands};
 

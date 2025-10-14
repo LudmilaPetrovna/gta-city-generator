@@ -1,0 +1,2787 @@
+source: https://gtamods.com/wiki/List_of_opcodes
+
+|[[0000]]||{{Icon|t}}||0||nop||no operation||special use in [[CLEO]]
+|-
+|[[0001]]||{{Icon|t}}||1||int||wait||
+|-
+|[[0002]]||{{Icon|t}}||1||int||jump to [[label]]||
+|-
+|[[0003]]||{{Icon|t}}||1||int||shake camera||
+|-
+|[[0004]]||{{Icon|t}}||2||global var, int||set global to integer ({{Hint|G|global variable}} = {{Hint|I|integer value}})||
+|-
+|[[0005]]||{{Icon|t}}||2||global var, flt||set global to float ({{Hint|G|global variable}} = {{Hint|F|floating-point value}})||
+|-
+|[[0006]]||{{Icon|t}}||2||local var, int||set local to integer ({{Hint|L|local variable}} = {{Hint|I|integer value}}))||
+|-
+|[[0007]]||{{Icon|t}}||2||local var, flt||set local to float ({{Hint|L|local variable}} = {{Hint|F|floating-point value}}))||
+|-
+|[[0008]]||{{Icon|t}}||2||global var, int||add integer to global (G += I)||
+|-
+|[[0009]]||{{Icon|t}}||2||global var, flt||add float to global (G += F)||
+|-
+|[[000A]]||{{Icon|t}}||2||local var, int||add integer to local (L += I)||
+|-
+|[[000B]]||{{Icon|t}}||2||local var, flt||add float to local (L += F)||
+|-
+|[[000C]]||{{Icon|t}}||2||global var, int||subtract integer from global (G -= I)||
+|-
+|[[000D]]||{{Icon|t}}||2||global var, flt||subtract float from global (G -= F)||
+|-
+|[[000E]]||{{Icon|t}}||2||local var, int||subtract integer from local  (L -= I)||
+|-
+|[[000F]]||{{Icon|t}}||2||local var, flt||subtract float from local  (L -= F)||
+|-
+|[[0010]]||{{Icon|t}}||2||global var, int||multiply global by integer (G *= I)||
+|-
+|[[0011]]||{{Icon|t}}||2||global var, flt||multiply global by float (G *= F)||
+|-
+|[[0012]]||{{Icon|t}}||2||local var, int||multiply local by integer (L *= I)||
+|-
+|[[0013]]||{{Icon|t}}||2||local var, flt||multiply local by float (L *= F)||
+|-
+|[[0014]]||{{Icon|t}}||2||global var, int||divide global by integer (G /= I)||
+|-
+|[[0015]]||{{Icon|t}}||2||global var, flt||divide global by float (G /= F)||
+|-
+|[[0016]]||{{Icon|t}}||2||local var, int||divide local by integer (L /= I)||
+|-
+|[[0017]]||{{Icon|t}}||2||local var, flt||divide local by float (L /= F)||
+|-
+|[[0018]]||{{Icon|t}}||2||global var, int||check global greater than integer (G > I)||
+|-
+|[[0019]]||{{Icon|t}}||2||local var, int||check local greater than integer (L > I)||
+|-
+|[[001A]]||{{Icon|t}}||2||int, global var||check integer greater than global (I > G)||
+|-
+|[[001B]]||{{Icon|t}}||2||int, local var||check integer greater than local (I > L)||
+|-
+|[[001C]]||{{Icon|t}}||2||global var, global var||check global integer greater than global int (G > G int)||
+|-
+|[[001D]]||{{Icon|t}}||2||local var, local var||check local integer greater than local int (L > L int)||
+|-
+|[[001E]]||{{Icon|t}}||2||global var, local var||check global integer greater than local int (G > L int)||
+|-
+|[[001F]]||{{Icon|t}}||2||local var, global var||check local integer greater than global int (L > G int)||
+|-
+|[[0020]]||{{Icon|t}}||2||global var, flt||check global greater than float (G > F)||
+|-
+|[[0021]]||{{Icon|t}}||2||local var, flt||check local greater than float (L > F)||
+|-
+|[[0022]]||{{Icon|t}}||2||flt, global var||check float greater than global (F > G)||
+|-
+|[[0023]]||{{Icon|t}}||2||flt, local var||check float greater than local (F > L)||
+|-
+|[[0024]]||{{Icon|t}}||2||global var flt, global var flt||check global float greater than global float (G > G flt)||
+|-
+|[[0025]]||{{Icon|t}}||2||local var flt, local var flt||check local float greater than local float (L > L flt)||
+|-
+|[[0026]]||{{Icon|t}}||2||global var flt, local var flt||check global float greater than local float (G > L flt)||
+|-
+|[[0027]]||{{Icon|t}}||2||local var flt, global var flt||check local float greater than global float (L > G flt)||
+|-
+|[[0028]]||{{Icon|t}}||2||global var flt, int||check global greater than or equal to integer (G >= I)||
+|-
+|[[0029]]||{{Icon|t}}||2||local var, int||check local greater than or equal to integer (L >= I)||
+|-
+|[[002A]]||{{Icon|t}}||2||int, global var||check int greater than or equal to global (I >= G)||
+|-
+|[[002B]]||{{Icon|t}}||2||int, local var||check integer greater than or equal to local (I >= L)||
+|-
+|[[002C]]||{{Icon|t}}||2||global var int, global var int||check global integer greater than or equal to global integer (G >= G int)||
+|-
+|[[002D]]||{{Icon|t}}||2|||local var int, local var int||check local integer greater than or equal to local integer (L >= L int)||
+|-
+|[[002E]]||{{Icon|t}}||2||global var int, local var int||check global integer greater than or equal to local integer (G >= L int)||
+|-
+|[[002F]]||{{Icon|t}}||2|||local var int, global var int||check local integer greater than or equal to local integer (L >= G int)||
+|-
+|[[0030]]||{{Icon|t}}||2||global var, flt||check global greater than or equal to float (G >= F)||
+|-
+|[[0031]]||{{Icon|t}}||2||local var, flt||check local greater than or equal to float (L >= F)||
+|-
+|[[0032]]||{{Icon|t}}||2||flt, global var||check float greater than or equal to global (F >= G)||
+|-
+|[[0033]]||{{Icon|t}}||2||flt, local var||check float greater than or equal to local (F >= L)||
+|-
+|[[0034]]||{{Icon|t}}||2||global var flt, global var flt||check global float greater than or equal to global float (G >= G flt)||
+|-
+|[[0035]]||{{Icon|t}}||2||local var flt, local var flt||check local float greater than or equal to local float (L >= L flt)||
+|-
+|[[0036]]||{{Icon|t}}||2||global var flt, local var flt||check global float greater than or equal to local float (G >= L flt)||
+|-
+|[[0037]]||{{Icon|t}}||2||local var flt, global var flt||check local float greater than or equal to global float (L >= G flt)||
+|-
+|[[0038]]||{{Icon|t}}||2||global var, int||check global equal to integer (G == I)||
+|-
+|[[0039]]||{{Icon|t}}||2||local var, int||check local equal to integer (L == I)||
+|-
+|[[003A]]||{{Icon|t}}||2||global var int, global var int||check global integer equal to global integer (G == G int)||
+|-
+|[[003B]]||{{Icon|t}}||2||local var int, local var int||check local integer equal to local integer (L == L int)||
+|-
+|[[003C]]||{{Icon|t}}||2||global var int, local var int||check global integer equal to local integer (G == L int)||
+|-
+|[[003D]]||{{Icon|uns}}||-||||||
+|-
+|[[003E]]||{{Icon|uns}}||-||||||
+|-
+|[[003F]]||{{Icon|uns}}||-||||||
+|-
+|[[0040]]||{{Icon|uns}}||-||||||
+|-
+|[[0041]]||{{Icon|uns}}||-||||||
+|-
+|[[0042]]||{{Icon|t}}||2||global var, flt||check global equal to float (G == F)||
+|-
+|[[0043]]||{{Icon|t}}||2||local var, flt||check local equal to float (L == F)||
+|-
+|[[0044]]||{{Icon|t}}||2||global var flt, global var flt||check global float equal to global float (G == G flt)||
+|-
+|[[0045]]||{{Icon|t}}||2||local var flt, local var flt||check local float equal to local float (L == L flt)||
+|-
+|[[0046]]||{{Icon|t}}||2||global var flt, local var flt||check global float equal to local float (G == L flt)||
+|-
+|[[0047]]||{{Icon|uns}}||-||||||
+|-
+|[[0048]]||{{Icon|uns}}||-||||||
+|-
+|[[0049]]||{{Icon|uns}}||-||||||
+|-
+|[[004A]]||{{Icon|uns}}||-||||||
+|-
+|[[004B]]||{{Icon|uns}}||-||||||
+|-
+|[[004C]]||{{Icon|3}}||1||int||jump to label if true||
+|-
+|[[004D]]||{{Icon|t}}||1||int||jump to [[label]] if false||
+|-
+|[[004E]]||{{Icon|t}}||0||||terminate this script||
+|-
+|[[004F]]||{{Icon|t}}||-1||int||start new script with args||
+|-
+|[[0050]]||{{Icon|t}}||1||int||gosub||
+|-
+|[[0051]]||{{Icon|t}}||0||||return||
+|-
+|[[0052]]||{{Icon|t}}||6||||nop||
+|-
+|[[0053]]||{{Icon|t}}||5||int, flt, flt, flt, var||create player||parameters rearranged in SB
+|-
+|[[0054]]||{{Icon|3}} {{Icon|VC}}||4||player handle, var, var, var||get player coordinates||
+|-
+|[[0055]]||{{Icon|3}} {{Icon|VC}}||4||player handle, int, int, int||set player coordinates||
+|-
+|[[0056]]||{{Icon|3}} {{Icon|VC}}||6||player handle, flt, flt, flt, flt, int||is player in area 2d||parameters rearranged in SB
+|-
+|[[0057]]||{{Icon|3}} {{Icon|VC}}||8||player handle, flt, flt, flt, flt, flt, flt, int||is player in area 3d||parameters rearranged in SB
+|-
+|[[0058]]||{{Icon|t}}||2||global var int, global var int||add global integer to global integer (G += G int)||
+|-
+|[[0059]]||{{Icon|t}}||2||global var flt, global var flt||add global float to global float (G += G flt)||
+|-
+|[[005A]]||{{Icon|t}}||2||int, int||add local integer to local integer (L += L int)||
+|-
+|[[005B]]||{{Icon|t}}||2||float, float||add local float to local float (L += L flt)||
+|-
+|[[005C]]||{{Icon|t}}||2||int, int||add global integer to local integer (L += G int)||
+|-
+|[[005D]]||{{Icon|t}}||2||float, float||add global float to local float (L += G flt)||
+|-
+|[[005E]]||{{Icon|t}}||2||int, int||add local integer to global integer (G += L int)||
+|-
+|[[005F]]||{{Icon|t}}||2||float, float||add local float to global float (G += L flt)||
+|-
+|[[0060]]||{{Icon|t}}||2||int, int||subtract global integer from global integer (G -= G int)||
+|-
+|[[0061]]||{{Icon|t}}||2||float, float||subtract global float from global float (G -= G flt)||
+|-
+|[[0062]]||{{Icon|t}}||2||int, int||subtract local integer from local integer (L -= L int)||
+|-
+|[[0063]]||{{Icon|t}}||2||float, float||subtract local float from local float (L -= L flt)||
+|-
+|[[0064]]||{{Icon|t}}||2||int, int||subtract global integer from local integer (L -= G int)||
+|-
+|[[0065]]||{{Icon|t}}||2||float, float||subtract global float from local float (L -= G flt)||
+|-
+|[[0066]]||{{Icon|t}}||2||int, int||subtract local integer from global integer (G -= L int)||
+|-
+|[[0067]]||{{Icon|t}}||2||float, float||subtract local float from global float (G -= L flt)||
+|-
+|[[0068]]||{{Icon|t}}||2||global, global||multiply global int by global int (G *= G int)||
+|-
+|[[0069]]||{{Icon|t}}||2||global, global||multiply global float by global float (G *= G flt)||
+|-
+|[[006A]]||{{Icon|t}}||2||local, local||multiply local int by local int (L *= L int)||
+|-
+|[[006B]]||{{Icon|t}}||2||local, local||multiply local float by local float (L *= L flt)||
+|-
+|[[006C]]||{{Icon|t}}||2||local, float||multiply local by float (L *= F)||
+|-
+|[[006D]]||{{Icon|t}}||2||global, float||multiply global by float (G *= F)||
+|-
+|[[006E]]||{{Icon|t}}||2||global, local||multiply global int by local int (G *= L int)||
+|-
+|[[006F]]||{{Icon|t}}||2||global, local||multiply global float by local float (G *= L flt)||
+|-
+|[[0070]]||{{Icon|t}}||2||global, global||divide global int by global int (G /= G int)||
+|-
+|[[0071]]||{{Icon|t}}||2||global, global||divide global float by global float (G /= G flt)||
+|-
+|[[0072]]||{{Icon|t}}||2||local, local||divide local int by local int (L /= L int)||
+|-
+|[[0073]]||{{Icon|t}}||2||local, local||divide local float by local float (L /= L flt)||
+|-
+|[[0074]]||{{Icon|t}}||2||local, global||divide local int by global int (L /= G int)||
+|-
+|[[0075]]||{{Icon|t}}||2||local, global||divide local float by global float (L /= G flt)||
+|-
+|[[0076]]||{{Icon|t}}||2||global, local||divide global int by local int (G /= L int)||
+|-
+|[[0077]]||{{Icon|t}}||2||global, local||divide global float by local float (G /= L flt)||
+|-
+|[[0078]]||{{Icon|t}}||2||global, float||add timed val to global float||
+|-
+|[[0079]]||{{Icon|t}}||2||local, float||add timed val to local float||
+|-
+|[[007A]]||{{Icon|t}}||2||global, global||add timed global to global float||
+|-
+|[[007B]]||{{Icon|t}}||2||local, local||add timed local to local float||
+|-
+|[[007C]]||{{Icon|t}}||2||local, global||add timed global to local float||
+|-
+|[[007D]]||{{Icon|t}}||2||global, local||add timed local to global float||
+|-
+|[[007E]]||{{Icon|t}}||2||global, float||sub timed val from global float||
+|-
+|[[007F]]||{{Icon|t}}||2||local, float||sub timed val from local float||
+|-
+|[[0080]]||{{Icon|t}}||2||global, global||sub timed global from global float||
+|-
+|[[0081]]||{{Icon|t}}||2||local, local||sub timed local from local float||
+|-
+|[[0082]]||{{Icon|t}}||2||local, global||sub timed global from local float||
+|-
+|[[0083]]||{{Icon|t}}||2||global, local||sub timed local from global float||
+|-
+|[[0084]]||{{Icon|t}}||2||global var int, global var int||set global integer equal to global integer (G = G int)||
+|-
+|[[0085]]||{{Icon|t}}||2||local var int, local var int||set local integer equal to local integer (L = L int)||
+|-
+|[[0086]]||{{Icon|t}}||2||global var flt, global var flt||set global float equal to global float (G = G flt)||
+|-
+|[[0087]]||{{Icon|t}}||2||local var flt, local var flt||set local float equal to local float (L = L flt)||
+|-
+|[[0088]]||{{Icon|t}}||2||global var flt, local var flt||set global float equal to local float (G = L flt)||
+|-
+|[[0089]]||{{Icon|t}}||2||local var flt, global var flt||set local float equal to global float (L = G flt)||
+|-
+|[[008A]]||{{Icon|t}}||2||global var int, local var int||set global integer equal to local integer (G = L int)||
+|-
+|[[008B]]||{{Icon|t}}||2||local var int, global var int||set local integer equal to global integer (L = G int)||
+|-
+|[[008C]]||{{Icon|t}}||2||global var int, global var flt||convert global float to global int||
+|-
+|[[008D]]||{{Icon|t}}||2||global var flt, global var int||convert global int to global float||
+|-
+|[[008E]]||{{Icon|t}}||2||local var int, global var flt||convert global float to local int||
+|-
+|[[008F]]||{{Icon|t}}||2||local var flt, global var int||convert global int to local float||
+|-
+|[[0090]]||{{Icon|t}}||2||global var int, local var flt|||convert local float to global int||
+|-
+|[[0091]]||{{Icon|t}}||2||global var flt, local var int||convert local int to global float||
+|-
+|[[0092]]||{{Icon|t}}||2||local var int, local var flt|||convert local float to local int||
+|-
+|[[0093]]||{{Icon|t}}||2||local var flt, local var int||convert local int to local float||
+|-
+|[[0094]]||{{Icon|t}}||1||global var int||absolute value of global int||
+|-
+|[[0095]]||{{Icon|t}}||1||local var int||absolute value of local int||
+|-
+|[[0096]]||{{Icon|t}}||1||global var flt||absolute value of global float||
+|-
+|[[0097]]||{{Icon|t}}||1||local var flt||absolute value of local float||
+|-
+|[[0098]]||{{Icon|t}}||1||flt||generate random float||
+|-
+|[[0099]]||{{Icon|t}}||1||int||generate random integer||
+|-
+|[[009A]]||{{Icon|t}}||6||int, int, flt, flt, flt, var||create char||parameters rearranged in SB
+|-
+|[[009B]]||{{Icon|t}}||1||char handle||delete char||
+|-
+|[[009C]]||{{Icon|3}} {{Icon|VC}}||2||char handle, int||set char to wander path||
+|-
+|[[009D]]||{{Icon|uns}}||-||||||
+|-
+|[[009E]]||{{Icon|3}}<br />{{Icon|VC}}||4<br />6||char handle, flt, flt, flt<br />char handle, flt, flt, flt, flt, int||set char path||
+|-
+|[[009F]]||{{Icon|3}} {{Icon|VC}}||1||char handle||char set idle||
+|-
+|[[00A0]]||{{Icon|t}}||4||char handle, var, var, var||get char coordinates||
+|-
+|[[00A1]]||{{Icon|t}}||4||char handle, flt, flt, flt||set char coordinates||
+|-
+|[[00A2]]||{{Icon|3}}||1||char handle||is char still alive||available for VC and SA through [[0118|8118]], restored in VC
+|-
+|[[00A3]]||{{Icon|t}}||6||char handle, flt, flt, flt, flt, int||is char in area 2d||
+|-
+|[[00A4]]||{{Icon|t}}||8||char handle, flt, flt, flt, flt, flt, flt, int||is char in area 3d||
+|-
+|[[00A5]]||{{Icon|t}}||5||int, flt, flt, flt, var||create car||parameters rearranged in SB
+|-
+|[[00A6]]||{{Icon|t}}||1||car handle||delete car||
+|-
+|[[00A7]]||{{Icon|t}}||4||car handle, flt, flt, flt||car goto coordinates||
+|-
+|[[00A8]]||{{Icon|t}}||1||car handle||car wander randomly||
+|-
+|[[00A9]]||{{Icon|t}}||1||car handle||car set idle||
+|-
+|[[00AA]]||{{Icon|t}}||4||car handle, var, var, var||get car coordinates||
+|-
+|[[00AB]]||{{Icon|t}}||4||car handle, flt, flt, flt||set car coordinates||
+|-
+|[[00AC]]||{{Icon|3}}||1||car handle||is car still alive||restored in VC
+|-
+|[[00AD]]||{{Icon|t}}||2||car handle, flt||set car cruise speed||
+|-
+|[[00AE]]||{{Icon|t}}||2||car handle, int||set car driving style||
+|-
+|[[00AF]]||{{Icon|t}}||2||car handle, int||set car mission||
+|-
+|[[00B0]]||{{Icon|t}}||6||car handle, flt, flt, flt, flt, int||is car in area 2d||
+|-
+|[[00B1]]||{{Icon|t}}||8||car handle, flt, flt, flt, flt, flt, flt, int||is car in area 3d||
+|-
+|[[00B2]]||{{Icon|uns}}||-||||||
+|-
+|[[00B3]]||{{Icon|uns}}||-||||||
+|-
+|[[00B4]]||{{Icon|uns}}||-||||||
+|-
+|[[00B5]]||{{Icon|uns}}||-||||||
+|-
+|[[00B6]]||{{Icon|uns}}||-||||||
+|-
+|[[00B7]]||{{Icon|uns}}||-||||||
+|-
+|[[00B8]]||{{Icon|uns}}||-||||||
+|-
+|[[00B9]]||{{Icon|uns}}||-||||||
+|-
+|[[00BA]]||{{Icon|t}}||3||string, int, int||print big||
+|-
+|[[00BB]]||{{Icon|t}}||3||string, int, int||print||
+|-
+|[[00BC]]||{{Icon|t}}||3||string, int, int||print now||
+|-
+|[[00BD]]||{{Icon|3}}||3||string, int, int||print soon||
+|-
+|[[00BE]]||{{Icon|t}}||0||||clear prints||
+|-
+|[[00BF]]||{{Icon|t}}||2||var, var||get time of day||
+|-
+|[[00C0]]||{{Icon|t}}||2||int, int||set time of day||
+|-
+|[[00C1]]||{{Icon|t}}||3||int, int, var||get minutes to time of day||parameters rearranged in SB
+|-
+|[[00C2]]||{{Icon|t}}||4||flt, flt, flt, flt||is point on screen||
+|-
+|[[00C3]]||{{Icon|t}}||0||||enter debug mode (nop)||
+|-
+|[[00C4]]||{{Icon|t}}||0||||exit debug mode (nop)||
+|-
+|[[00C5]]||{{Icon|3}}||0||||true||restored in VC
+|-
+|[[00C6]]||{{Icon|3}}||0||||false||restored in VC
+|-
+|[[00C7]]||{{Icon|uns}}||-||||||
+|-
+|[[00C8]]||{{Icon|uns}}||-||||||
+|-
+|[[00C9]]||{{Icon|uns}}||-||||||
+|-
+|[[00CA]]||{{Icon|uns}}||-||||||
+|-
+|[[00CB]]||{{Icon|uns}}||-||||||
+|-
+|[[00CC]]||{{Icon|uns}}||-||||||
+|-
+|[[00CD]]||{{Icon|uns}}||-||||||
+|-
+|[[00CE]]||{{Icon|uns}}||-||||||
+|-
+|[[00CF]]||{{Icon|uns}}||-||||||
+|-
+|[[00D0]]||{{Icon|uns}}||-||||||
+|-
+|[[00D1]]||{{Icon|uns}}||-||||||
+|-
+|[[00D2]]||{{Icon|uns}}||-||||||
+|-
+|[[00D3]]||{{Icon|uns}}||-||||||
+|-
+|[[00D4]]||{{Icon|uns}}||-||||||
+|-
+|[[00D5]]||{{Icon|uns}}||-||||||
+|-
+|[[00D6]]||{{Icon|t}}||1||int||if||
+|-
+|[[00D7]]||{{Icon|t}}||1||int||start new script||like 004F but only one parameter
+|-
+|[[00D8]]||{{Icon|t}}||0||||mission has finished||
+|-
+|[[00D9]]||{{Icon|t}}||2||char handle, var||store car char is in||mission only, parameters rearranged in SB
+|-
+|[[00DA]]||{{Icon|3}} {{Icon|VC}}||2||player handle, var||store car player is in||mission only, parameters rearranged in SB
+|-
+|[[00DB]]||{{Icon|t}}||2||char handle, car handle||is char in car||
+|-
+|[[00DC]]||{{Icon|3}} {{Icon|VC}}||2||player handle, car handle||is player in car||
+|-
+|[[00DD]]||{{Icon|t}}||2||char handle, int||is char in model||
+|-
+|[[00DE]]||{{Icon|3}} {{Icon|VC}}||2||player handle, int||is player in model||
+|-
+|[[00DF]]||{{Icon|t}}||1||char handle||is char in any car||
+|-
+|[[00E0]]||{{Icon|3}} {{Icon|VC}}||1||player handle||is player in any car||
+|-
+|[[00E1]]||{{Icon|t}}||2||int, int||is button pressed||
+|-
+|[[00E2]]||{{Icon|3}} {{Icon|SA}}||3||int, int, var||get button pressed||restored in VC
+|-
+|[[00E3]]||{{Icon|3}} {{Icon|VC}}||6||player handle, flt, flt, flt, flt, int||locate player by any means 2d||parameters rearranged in SB
+|-
+|[[00E4]]||{{Icon|3}} {{Icon|VC}}||6||player handle, flt, flt, flt, flt, int||locate player on foot 2d||parameters rearranged in SB
+|-
+|[[00E5]]||{{Icon|3}} {{Icon|VC}}||6||player handle, flt, flt, flt, flt, int||locate player in car 2d||parameters rearranged in SB
+|-
+|[[00E6]]||{{Icon|3}} {{Icon|VC}}||6||player handle, flt, flt, flt, flt, int||locate player stopped by any means 2d||parameters rearranged in SB
+|-
+|[[00E7]]||{{Icon|3}} {{Icon|VC}}||6||player handle, flt, flt, flt, flt, int||locate player stopped on foot 2d||parameters rearranged in SB
+|-
+|[[00E8]]||{{Icon|3}} {{Icon|VC}}||6||player handle, flt, flt, flt, flt, int||locate player stopped in car 2d||parameters rearranged in SB
+|-
+|[[00E9]]||{{Icon|3}} {{Icon|VC}}||5||player handle, char handle, flt, flt, int||locate player by any means near char 2d||parameters rearranged in SB
+|-
+|[[00EA]]||{{Icon|3}} {{Icon|VC}}||5||player handle, char handle, flt, flt, int||locate player on foot near char 2d||parameters rearranged in SB
+|-
+|[[00EB]]||{{Icon|3}} {{Icon|VC}}||5||player handle, char handle, flt, flt, int||locate player in car near char 2d||parameters rearranged in SB
+|-
+|[[00EC]]||{{Icon|t}}||6||char handle, flt, flt, flt, flt, int||locate char by any means 2d||parameters rearranged in SB
+|-
+|[[00ED]]||{{Icon|t}}||6||char handle, flt, flt, flt, flt, int||locate char on foot 2d||parameters rearranged in SB
+|-
+|[[00EE]]||{{Icon|t}}||6||char handle, flt, flt, flt, flt, int||locate char in car 2d||parameters rearranged in SB
+|-
+|[[00EF]]||{{Icon|t}}||6||char handle, flt, flt, flt, flt, int||locate stopped char by any means 2d||parameters rearranged in SB
+|-
+|[[00F0]]||{{Icon|t}}||6||char handle, flt, flt, flt, flt, int||locate stopped char on foot 2d||parameters rearranged in SB
+|-
+|[[00F1]]||{{Icon|t}}||6||char handle, flt, flt, flt, flt, int||locate stopped char in car 2d||parameters rearranged in SB
+|-
+|[[00F2]]||{{Icon|t}}||5||char handle, char handle, flt, flt, int||locate char by any means near char 2d||
+|-
+|[[00F3]]||{{Icon|t}}||5||char handle, char handle, flt, flt, int||locate char on foot near char 2d||
+|-
+|[[00F4]]||{{Icon|t}}||5||char handle, char handle, flt, flt, int||locate char in car near char 2d||
+|-
+|[[00F5]]||{{Icon|3}} {{Icon|VC}}||8||player handle, flt, flt, flt, flt, flt, flt, int||locate player by any means 3d||parameters rearranged in SB
+|-
+|[[00F6]]||{{Icon|3}} {{Icon|VC}}||8||player handle, flt, flt, flt, flt, flt, flt, int||locate player on foot 3d||parameters rearranged in SB
+|-
+|[[00F7]]||{{Icon|3}} {{Icon|VC}}||8||player handle, flt, flt, flt, flt, flt, flt, int||locate player in car 3d||parameters rearranged in SB
+|-
+|[[00F8]]||{{Icon|3}} {{Icon|VC}}||8||player handle, flt, flt, flt, flt, flt, flt, int||locate player stopped by any means 3d||parameters rearranged in SB
+|-
+|[[00F9]]||{{Icon|3}} {{Icon|VC}}||8||player handle, flt, flt, flt, flt, flt, flt, int||locate player stopped on foot 3d||parameters rearranged in SB
+|-
+|[[00FA]]||{{Icon|3}} {{Icon|VC}}||8||player handle, flt, flt, flt, flt, flt, flt, int||locate player stopped in car 3d||parameters rearranged in SB
+|-
+|[[00FB]]||{{Icon|3}} {{Icon|VC}}||6||player handle, char handle, flt, flt, flt, int||locate player by any means near char 3d||parameters rearranged in SB
+|-
+|[[00FC]]||{{Icon|3}} {{Icon|VC}}||6||player handle, char handle, flt, flt, flt, int||locate player on foot near char 3d||parameters rearranged in SB
+|-
+|[[00FD]]||{{Icon|3}} {{Icon|VC}}||6||player handle, char handle, flt, flt, flt, int||locate player in car near char 3d||parameters rearranged in SB
+|-
+|[[00FE]]||{{Icon|t}}||8||char handle, flt, flt, flt, flt, flt, flt, int||locate char by any means 3d||parameters rearranged in SB
+|-
+|[[00FF]]||{{Icon|t}}||8||char handle, flt, flt, flt, flt, flt, flt, int||locate char on foot 3d||parameters rearranged in SB
+|-
+|[[0100]]||{{Icon|t}}||8||char handle, flt, flt, flt, flt, flt, flt, int||locate char in car 3d||
+|-
+|[[0101]]||{{Icon|t}}||8||char handle, flt, flt, flt, flt, flt, flt, int||locate char stopped by any means 3d||
+|-
+|[[0102]]||{{Icon|t}}||8||char handle, flt, flt, flt, flt, flt, flt, int||locate char stopped on foot 3d||
+|-
+|[[0103]]||{{Icon|t}}||8||char handle, flt, flt, flt, flt, flt, flt, int||locate char stopped in car 3d||
+|-
+|[[0104]]||{{Icon|t}}||6||char handle, char handle, flt, flt, flt, flt, int||locate char by any means near char 3d||
+|-
+|[[0105]]||{{Icon|t}}||6||char handle, char handle, flt, flt, flt, flt, int||locate char on foot near char 3d||
+|-
+|[[0106]]||{{Icon|t}}||6||char handle, char handle, flt, flt, flt, flt, int||locate char in car near char 3d||
+|-
+|[[0107]]||{{Icon|t}}||5||int, flt, flt, flt, var||create object||parameters rearranged in SB
+|-
+|[[0108]]||{{Icon|t}}||1||object handle||delete object||
+|-
+|[[0109]]||{{Icon|t}}||2||player handle, int||give player money||
+|-
+|[[010A]]||{{Icon|t}}||2||player handle, int||is money value greater||
+|-
+|[[010B]]||{{Icon|t}}||2||player handle, var||store money value||parameters rearranged in SB
+|-
+|[[010C]]||{{Icon|3}} {{Icon|VC}}||5||player handle, flt, flt, flt, flt||give remote controlled RC Bandit to player||
+|-
+|[[010D]]||{{Icon|t}}||2||player handle, int||set player wanted level||
+|-
+|[[010E]]||{{Icon|t}}||2||player handle, int||alter wanted level no drop||
+|-
+|[[010F]]||{{Icon|t}}||2||player handle, int||is wanted level greater||
+|-
+|[[0110]]||{{Icon|t}}||1||player handle||clear wanted level||
+|-
+|[[0111]]||{{Icon|t}}||1||int||set deatharrest state||
+|-
+|[[0112]]||{{Icon|t}}||0||||has deatharrest executed||special use in [[Create a mission|missions]]
+|-
+|[[0113]]||{{Icon|3}}||3||player handle, int, int||add ammo to player weapon||restored in VC
+|-
+|[[0114]]||{{Icon|t}}||3||char handle, int, int||add ammo to char weapon||
+|-
+|[[0115]]||{{Icon|uns}}||-||||||
+|-
+|[[0116]]||{{Icon|uns}}||-||||||restored in III and VC
+|-
+|[[0117]]||{{Icon|t}}||1||player handle||is player dead||
+|-
+|[[0118]]||{{Icon|t}}||1||char handle||is char dead||
+|-
+|[[0119]]||{{Icon|t}}||1||car handle||is car dead||
+|-
+|[[011A]]||{{Icon|3}} {{Icon|VC}}||2||char handle, int||set char search threat||
+|-
+|[[011B]]||{{Icon|uns}}||-||||||
+|-
+|[[011C]]||{{Icon|3}} {{Icon|VC}}||1||char handle||set char obj no obj||
+|-
+|[[011D]]||{{Icon|uns}}||-||||||
+|-
+|[[011E]]||{{Icon|uns}}||-||||||
+|-
+|[[011F]]||{{Icon|uns}}||-||||||
+|-
+|[[0120]]||{{Icon|uns}}||-||||||
+|-
+|[[0121]]||{{Icon|3}} {{Icon|VC}}||2||player handle, string||is player in zone||
+|-
+|[[0122]]||{{Icon|t}}||1||player handle||is player pressing horn||
+|-
+|[[0123]]||{{Icon|3}} {{Icon|VC}}||2||char handle, player handle||has char spotted player||
+|-
+|[[0124]]||{{Icon|uns}}||-||||||used in memory editing for VC{{Ref|1}}, used in GInput
+|-
+|[[0125]]||{{Icon|uns}}||-||||||used in memory editing for VC{{Ref|1}}
+|-
+|[[0126]]||{{Icon|3}} {{Icon|VC}}||1||char handle||is char objective passed||
+|-
+|[[0127]]||{{Icon|uns}}||-||||||
+|-
+|[[0128]]||{{Icon|uns}}||-||||||
+|-
+|[[0129]]||{{Icon|t}}||4||car handle, int, int, var||create char inside car||parameters rearranged in SB
+|-
+|[[012A]]||{{Icon|3}} {{Icon|VC}}||4||player handle, flt, flt, flt||warp player from car to coord||
+|-
+|[[012B]]||{{Icon|uns}}||-||||||
+|-
+|[[012C]]||{{Icon|uns}}||-||||||
+|-
+|[[012D]]||{{Icon|uns}}||-||||||
+|-
+|[[012E]]||{{Icon|uns}}||-||||||
+|-
+|[[012F]]||{{Icon|uns}}||-||||||
+|-
+|[[0130]]||{{Icon|3}}||1||player handle||has player been arrested||restored in VC
+|-
+|[[0131]]||{{Icon|uns}}||-||||||
+|-
+|[[0132]]||{{Icon|uns}}||-||||||
+|-
+|[[0133]]||{{Icon|uns}}||-||||||
+|-
+|[[0134]]||{{Icon|uns}}||-||||||
+|-
+|[[0135]]||{{Icon|3}}||2||car handle, var||change car lock||parameters rearranged in SB, available for VC and SA through [[020A]], restored in VC
+|-
+|[[0136]]||{{Icon|3}}||4||int, float, float, float||shake camera with point||restored in VC
+|-
+|[[0137]]||{{Icon|t}}||2||car handle, int||is car model||
+|-
+|[[0138]]||{{Icon|uns}}||-||||||
+|-
+|[[0139]]||{{Icon|uns}}||-||||||
+|-
+|[[013A]]||{{Icon|uns}}||-||||||
+|-
+|[[013B]]||{{Icon|3}}||6||car handle, flt, flt, flt, flt, int||is car dead in 2d area||restored in VC
+|-
+|[[013C]]||{{Icon|3}}||8||car handle, flt, flt, flt, flt, flt, flt, int||is car dead in 3d area||restored in VC
+|-
+|[[013D]]||{{Icon|uns}}||-||||||
+|-
+|[[013E]]||{{Icon|uns}}||-||||||
+|-
+|[[013F]]||{{Icon|uns}}||-||||||
+|-
+|[[0140]]||{{Icon|uns}}||-||||||
+|-
+|[[0141]]||{{Icon|uns}}||-||||||
+|-
+|[[0142]]||{{Icon|uns}}||-||||||
+|-
+|[[0143]]||{{Icon|uns}}||-||||||
+|-
+|[[0144]]||{{Icon|uns}}||-||||||
+|-
+|[[0145]]||{{Icon|uns}}||-||||||
+|-
+|[[0146]]||{{Icon|uns}}||-||||||
+|-
+|[[0147]]||{{Icon|uns}}||-||||||
+|-
+|[[0148]]||{{Icon|uns}}||-||||||
+|-
+|[[0149]]||{{Icon|3}}||1||car handle||is car crushed||
+|-
+|[[014A]]||{{Icon|uns}}||-||||||
+|-
+|[[014B]]||{{Icon|t}}||13||flt, flt, flt, flt, int, int, int, int, int, int, int, int, var||create car generator||parameters rearranged in SB
+|-
+|[[014C]]||{{Icon|t}}||2||car generator handle, int||switch car generator||
+|-
+|[[014D]]||{{Icon|3}}||4||string, int, int, int||add pager message||used in Liberty City mod for VC
+|-
+|[[014E]]||{{Icon|3}}<br />{{Icon|VC}} {{Icon|SA}}||1<br />2||global var<br />global var, int||display onscreen timer||
+|-
+|[[014F]]||{{Icon|t}}||1||global var||clear onscreen timer||
+|-
+|[[0150]]||{{Icon|3}} {{Icon|VC}}||2||global var, int||display onscreen counter||
+|-
+|[[0151]]||{{Icon|t}}||1||global var||clear onscreen counter||
+|-
+|[[0152]]||{{Icon|3}}<br />{{Icon|VC}}||11<br />13||string, int, int, int, int, int, int, int, int, int, int<br />string, int, int, int, int, int, int, int, int, int, int, int, int||setup zone car info||
+|-
+|[[0153]]||{{Icon|uns}}||-||||||
+|-
+|[[0154]]||{{Icon|t}}||2||char handle, string||is char in zone||
+|-
+|[[0155]]||{{Icon|3}}||3||string, int, int||set car density||restored in VC
+|-
+|[[0156]]||{{Icon|3}}||3||string, int, int||set ped density||restored in VC
+|-
+|[[0157]]||{{Icon|3}} {{Icon|VC}}||3||player handle, int, int||point camera at player||
+|-
+|[[0158]]||{{Icon|t}}||3||car handle, int, int||point camera at car||
+|-
+|[[0159]]||{{Icon|t}}||3||char handle, int, int||point camera at char||
+|-
+|[[015A]]||{{Icon|t}}||0||||restore camera||
+|-
+|[[015B]]||{{Icon|3}} {{Icon|SA}}||3||int, int, int||shake pad||
+|-
+|[[015C]]||{{Icon|3}}<br />{{Icon|VC}}||11<br />13||string, int, int, int, int, int, int, int, int, int, int<br />string, int, int, int, int, int, int, int, int, int, int, int, int||setup zone ped info||
+|-
+|[[015D]]||{{Icon|t}}||1||flt||set timescale||
+|-
+|[[015E]]||{{Icon|3}}||1||car handle||is car in air||restored in VC
+|-
+|[[015F]]||{{Icon|t}}||6||flt, flt, flt, flt, flt, flt||set fixed camera position||
+|-
+|[[0160]]||{{Icon|t}}||4||flt, flt, flt, int||point camera at point||
+|-
+|[[0161]]||{{Icon|t}}||4||car handle, int, int, var||add blip with properties to car||parameters rearranged in SB
+|-
+|[[0162]]||{{Icon|3}} {{Icon|VC}}||4||char handle, int, int, var||add blip with properties to char||parameters rearranged in SB
+|-
+|[[0163]]||{{Icon|3}}||4||object handle, int, int, var||add blip with properties to object||restored in VC
+|-
+|[[0164]]||{{Icon|t}}||1||blip handle||remove blip||
+|-
+|[[0165]]||{{Icon|t}}||2||blip handle, int||change blip colour||
+|-
+|[[0166]]||{{Icon|3}} {{Icon|VC}}||2||blip handle, int||change blip brightness||
+|-
+|[[0167]]||{{Icon|t}}||6||flt, flt, flt, int, int, var||add blip for coordinate with properties||parameters rearranged in SB
+|-
+|[[0168]]||{{Icon|t}}||2||blip handle, int||change blip scale||
+|-
+|[[0169]]||{{Icon|t}}||3||int, int, int||set fading colour||
+|-
+|[[016A]]||{{Icon|t}}||2||int, int||do fade||parameters rearranged in SB
+|-
+|[[016B]]||{{Icon|t}}||0||||get fading status||
+|-
+|[[016C]]||{{Icon|3}} {{Icon|VC}}<br />{{Icon|SA}}||4<br />5||flt, flt, flt, flt<br />flt, flt, flt, flt, int||add hospital restart||
+|-
+|[[016D]]||{{Icon|3}} {{Icon|VC}}<br />{{Icon|SA}}||4<br />5||flt, flt, flt, flt<br />flt, flt, flt, flt, int||add police restart||
+|-
+|[[016E]]||{{Icon|t}}||4||flt, flt, flt, flt||override next restart||
+|-
+|[[016F]]||{{Icon|3}} {{Icon|SA}}||10||int, flt, flt, flt, flt, flt, int, int, int, int||draw shadow||parameters rearranged in SB, restored in VC
+|-
+|[[0170]]||{{Icon|3}} {{Icon|VC}}||2||player handle, var||get player heading||parameters rearranged in SB
+|-
+|[[0171]]||{{Icon|3}} {{Icon|VC}}||2||player handle, flt||set player heading||
+|-
+|[[0172]]||{{Icon|t}}||2||char handle, var||get char heading||parameters rearranged in SB
+|-
+|[[0173]]||{{Icon|t}}||2||char handle, flt||set char heading||
+|-
+|[[0174]]||{{Icon|t}}||2||car handle, var||get car heading||parameters rearranged in SB
+|-
+|[[0175]]||{{Icon|t}}||2||car handle, flt||set car heading||
+|-
+|[[0176]]||{{Icon|t}}||2||object handle, var||get object heading||parameters rearranged in SB
+|-
+|[[0177]]||{{Icon|t}}||2||object handle, flt||set object heading||
+|-
+|[[0178]]||{{Icon|3}}||2||player handle, object handle||is player touching object||restored in VC
+|-
+|[[0179]]||{{Icon|3}} {{Icon|SA}}||2||char handle, object handle||is char touching object||restored in VC
+|-
+|[[017A]]||{{Icon|3}} {{Icon|VC}}||3||player handle, int, int||set player weapon ammo||
+|-
+|[[017B]]||{{Icon|3}} {{Icon|SA}}||3||char handle, int, int||set char weapon ammo||restored in VC
+|-
+|[[017C]]||{{Icon|uns}}||-||||||
+|-
+|[[017D]]||{{Icon|uns}}||-||||||
+|-
+|[[017E]]||{{Icon|uns}}||-||||||
+|-
+|[[017F]]||{{Icon|uns}}||-||||||
+|-
+|[[0180]]||{{Icon|t}}||1||var||declare mission flag||
+|-
+|[[0181]]||{{Icon|3}}<br>{{Icon|VC}}||2<br>0||int, int<br>nop||declare mission flag for contact||
+|-
+|[[0182]]||{{Icon|3}}||2||int, int||declare base brief id for contact||
+|-
+|[[0183]]||{{Icon|3}} {{Icon|VC}}||2||player handle, int||is player health greater||
+|-
+|[[0184]]||{{Icon|t}}||2||char handle, int||is char health greater||
+|-
+|[[0185]]||{{Icon|t}}||2||car handle, int||is car health greater||
+|-
+|[[0186]]||{{Icon|t}}||2||car handle, var||add blip for car||parameters rearranged in SB
+|-
+|[[0187]]||{{Icon|t}}||2||char handle, var||add blip for char||parameters rearranged in SB
+|-
+|[[0188]]||{{Icon|t}}||2||object handle, var||add blip for object||parameters rearranged in SB
+|-
+|[[0189]]||{{Icon|3}} {{Icon|VC}}||2||flt, flt, flt, var||add blip with sphere to coordinate||parameters rearranged in SB
+|-
+|[[018A]]||{{Icon|t}}||2||flt, flt, flt, var||add blip for coordinate||parameters rearranged in SB
+|-
+|[[018B]]||{{Icon|t}}||2||blip handle, int||change blip display||
+|-
+|[[018C]]||{{Icon|t}}||4||int, flt, flt, flt||add one off sound||
+|-
+|[[018D]]||{{Icon|3}} {{Icon|VC}}||5||flt, flt, flt, int, var||add continuous sound||parameters rearranged in SB
+|-
+|[[018E]]||{{Icon|t}}||1||sound handle||remove sound||
+|-
+|[[018F]]||{{Icon|t}}||1||car handle||check car is flipped for 2 seconds||
+|-
+|[[0190]]||{{Icon|t}}||1||car handle||add car to flipped check||
+|-
+|[[0191]]||{{Icon|t}}||1||car handle||remove car from flipped check||
+|-
+|[[0192]]||{{Icon|3}} {{Icon|VC}}||1||char handle||set char obj wait on foot||
+|-
+|[[0193]]||{{Icon|3}} {{Icon|VC}}||1||char handle||set char objective to act like ped||
+|-
+|[[0194]]||{{Icon|3}} {{Icon|VC}}||4||char handle, flt, flt, flt||set char objective to go to point||
+|-
+|[[0195]]||{{Icon|3}}||5||char handle, flt, flt, flt, flt||set char objective to guard area||
+|-
+|[[0196]]||{{Icon|3}}||1||char handle||set char objective wait in car||
+|-
+|[[0197]]||{{Icon|3}} {{Icon|VC}}||6||player handle, flt, flt, flt, flt, int||is player in area on foot 2d||parameters rearranged in SB
+|-
+|[[0198]]||{{Icon|3}} {{Icon|VC}}||6||player handle, flt, flt, flt, flt, int||is player in area in car 2d||parameters rearranged in SB
+|-
+|[[0199]]||{{Icon|3}} {{Icon|VC}}||6||player handle, flt, flt, flt, flt, int||is player stopped in area 2d||parameters rearranged in SB
+|-
+|[[019A]]||{{Icon|3}} {{Icon|VC}}||6||player handle, flt, flt, flt, flt, int||is player stopped in area on foot 2d||parameters rearranged in SB
+|-
+|[[019B]]||{{Icon|3}} {{Icon|VC}}||6||player handle, flt, flt, flt, flt, int||is player stopped in area in car 2d||parameters rearranged in SB
+|-
+|[[019C]]||{{Icon|3}} {{Icon|VC}}||8||player handle, flt, flt, flt, flt, flt, flt, int||is player in area on foot 3d||parameters rearranged in SB
+|-
+|[[019D]]||{{Icon|3}} {{Icon|VC}}||8||player handle, flt, flt, flt, flt, flt, flt, int||is player in area in car 3d||parameters rearranged in SB
+|-
+|[[019E]]||{{Icon|3}} {{Icon|VC}}||8||player handle, flt, flt, flt, flt, flt, flt, int||is player stopped in area 3d||parameters rearranged in SB
+|-
+|[[019F]]||{{Icon|3}} {{Icon|VC}}||8||player handle, flt, flt, flt, flt, flt, flt, int||is player stopped in area on foot 3d||parameters rearranged in SB
+|-
+|[[01A0]]||{{Icon|3}} {{Icon|VC}}||8||player handle, flt, flt, flt, flt, flt, flt, int||is player stopped in area in car 3d||parameters rearranged in SB
+|-
+|[[01A1]]||{{Icon|t}}||6||char handle, flt, flt, flt, flt, int||is char in area on foot 2d||parameters rearranged in SB
+|-
+|[[01A2]]||{{Icon|t}}||6||char handle, flt, flt, flt, flt, int||is char in area in car 2d||parameters rearranged in SB
+|-
+|[[01A3]]||{{Icon|t}}||6||char handle, flt, flt, flt, flt, int||is char stopped in area 2d||parameters rearranged in SB
+|-
+|[[01A4]]||{{Icon|t}}||6||char handle, flt, flt, flt, flt, int||is char stopped in area on foot 2d||parameters rearranged in SB
+|-
+|[[01A5]]||{{Icon|t}}||6||char handle, flt, flt, flt, flt, int||is char stopped in area in car 2d||parameters rearranged in SB
+|-
+|[[01A6]]||{{Icon|t}}||8||char handle, flt, flt, flt, flt, flt, flt, int||is char in area on foot 3d||parameters rearranged in SB
+|-
+|[[01A7]]||{{Icon|t}}||8||char handle, flt, flt, flt, flt, flt, flt, int||is char in area in car 3d||parameters rearranged in SB
+|-
+|[[01A8]]||{{Icon|t}}||8||char handle, flt, flt, flt, flt, flt, flt, int||is char stopped in area 3d||parameters rearranged in SB
+|-
+|[[01A9]]||{{Icon|t}}||8||char handle, flt, flt, flt, flt, flt, flt, int||is char stopped in area on foot 3d||parameters rearranged in SB
+|-
+|[[01AA]]||{{Icon|t}}||8||char handle, flt, flt, flt, flt, flt, flt, int||is char stopped in area in car 3d||parameters rearranged in SB
+|-
+|[[01AB]]||{{Icon|t}}||6||car handle, flt, flt, flt, flt, int||is car stopped in area 2d||parameters rearranged in SB
+|-
+|[[01AC]]||{{Icon|t}}||8||car handle, flt, flt, flt, flt, flt, flt, int||is car stopped in area 3d||parameters rearranged in SB
+|-
+|[[01AD]]||{{Icon|t}}||6||car handle, flt, flt, flt, flt, int||locate car 2d||parameters rearranged in SB
+|-
+|[[01AE]]||{{Icon|t}}||6||car handle, flt, flt, flt, flt, int||locate stopped car 2d||parameters rearranged in SB
+|-
+|[[01AF]]||{{Icon|t}}||8||car handle, flt, flt, flt, flt, flt, flt, int||locate car 3d||parameters rearranged in SB
+|-
+|[[01B0]]||{{Icon|t}}||8||car handle, flt, flt, flt, flt, flt, flt, int||locate stopped car 3d||parameters rearranged in SB
+|-
+|[[01B1]]||{{Icon|3}} {{Icon|VC}}||3||player handle, int, int||give weapon to player||
+|-
+|[[01B2]]||{{Icon|t}}||3||char handle, int, int||give weapon to char||
+|-
+|[[01B3]]||{{Icon|uns}}||-||||||
+|-
+|[[01B4]]||{{Icon|t}}||2||player handle||set player control||
+|-
+|[[01B5]]||{{Icon|t}}||1||int||force weather||
+|-
+|[[01B6]]||{{Icon|t}}||1||int||force weather now||
+|-
+|[[01B7]]||{{Icon|t}}||0||||release weather||
+|-
+|[[01B8]]||{{Icon|3}} {{Icon|VC}}||2||player handle, int||set current player weapon||
+|-
+|[[01B9]]||{{Icon|t}}||2||char handle, int||set current char weapon||
+|-
+|[[01BA]]||{{Icon|uns}}||-||||||
+|-
+|[[01BB]]||{{Icon|t}}||4||object handle, var, var, var||get object coordinates||
+|-
+|[[01BC]]||{{Icon|t}}||4||object handle, flt, flt, flt||set object coordinates||
+|-
+|[[01BD]]||{{Icon|t}}||1||var||get game timer||
+|-
+|[[01BE]]||{{Icon|3}} {{Icon|VC}}||4||char handle, flt, flt, flt||turn char to face coord||
+|-
+|[[01BF]]||{{Icon|3}}||4||player handle, flt, flt, flt||turn player to face coord||
+|-
+|[[01C0]]||{{Icon|t}}||2||player handle, var||store wanted level||parameters rearranged in SB
+|-
+|[[01C1]]||{{Icon|t}}||1||car handle||is car stopped||
+|-
+|[[01C2]]||{{Icon|t}}||1||char handle||mark char as no longer needed||
+|-
+|[[01C3]]||{{Icon|t}}||1||car handle||mark car as no longer needed||
+|-
+|[[01C4]]||{{Icon|t}}||1||object handle||mark object as no longer needed||
+|-
+|[[01C5]]||{{Icon|t}}||1||char handle||dont remove char||
+|-
+|[[01C6]]||{{Icon|3}}||1||car handle||dont remove car||restored in VC
+|-
+|[[01C7]]||{{Icon|t}}||1||object handle||dont remove object||
+|-
+|[[01C8]]||{{Icon|t}}||5||car handle, int, int, int, var||create char as passenger||parameters rearranged in SB
+|-
+|[[01C9]]||{{Icon|3}} {{Icon|VC}}||2||char handle, char handle||set char obj kill char on foot||
+|-
+|[[01CA]]||{{Icon|3}} {{Icon|VC}}||2||char handle, player handle||set char obj kill player on foot||
+|-
+|[[01CB]]||{{Icon|3}} {{Icon|VC}}||2||char handle, char handle||set char obj kill char by any means||
+|-
+|[[01CC]]||{{Icon|3}} {{Icon|VC}}||2||char handle, player handle||set char obj kill player by any means||
+|-
+|[[01CD]]||{{Icon|3}}||2||char handle, char handle||set char flee char on foot till safe||
+|-
+|[[01CE]]||{{Icon|3}} {{Icon|VC}}||2||char handle, player handle||set char flee player on foot till safe||
+|-
+|[[01CF]]||{{Icon|3}} {{Icon|VC}}||2||char handle, char handle||char avoid char on foot always||
+|-
+|[[01D0]]||{{Icon|3}} {{Icon|VC}}||2||char handle, player handle||char avoid player on foot always||
+|-
+|[[01D1]]||{{Icon|3}} {{Icon|VC}}||2||char handle, char handle||set char obj goto char on foot||
+|-
+|[[01D2]]||{{Icon|3}} {{Icon|VC}}||2||char handle, player handle||set char goto player on foot||
+|-
+|[[01D3]]||{{Icon|3}} {{Icon|VC}}||2||char handle, car handle||set char obj leave car||
+|-
+|[[01D4]]||{{Icon|3}} {{Icon|VC}}||2||char handle, car handle||set char obj enter car as passenger||
+|-
+|[[01D5]]||{{Icon|3}} {{Icon|VC}}||2||char handle, car handle||set char obj enter car as driver||
+|-
+|[[01D6]]||{{Icon|uns}}||-||||||
+|-
+|[[01D7]]||{{Icon|uns}}||-||||||
+|-
+|[[01D8]]||{{Icon|VC}}||2||char handle, object handle||set char obj destroy object||
+|-
+|[[01D9]]||{{Icon|3}} {{Icon|VC}}||2||char handle, car handle||set char obj destroy car||
+|-
+|[[01DA]]||{{Icon|3}}||5||char handle, flt, flt, flt, flt||task actor walk to area||
+|-
+|[[01DB]]||{{Icon|uns}}||-||||||
+|-
+|[[01DC]]||{{Icon|uns}}||-||||||
+|-
+|[[01DD]]||{{Icon|uns}}||-||||||
+|-
+|[[01DE]]||{{Icon|3}} {{Icon|VC}}||2||char handle, char handle||set char as leader||
+|-
+|[[01DF]]||{{Icon|3}} {{Icon|VC}}||2||char handle, player handle||set player as leader||
+|-
+|[[01E0]]||{{Icon|3}} {{Icon|VC}}||1||char handle||leave group||
+|-
+|[[01E1]]||{{Icon|3}} {{Icon|VC}}||3||char handle, int, int||set char obj follow route||
+|-
+|[[01E2]]||{{Icon|3}} {{Icon|VC}}||4||int, flt, flt, flt||add route point||
+|-
+|[[01E3]]||{{Icon|t}}||4||string, int, int, int||print with number big||
+|-
+|[[01E4]]||{{Icon|t}}||4||string, int, int, int||print with number||
+|-
+|[[01E5]]||{{Icon|t}}||4||string, int, int, int||print with number now||
+|-
+|[[01E6]]||{{Icon|uns}}||-||||||
+|-
+|[[01E7]]||{{Icon|t}}||6||flt, flt, flt, flt, flt, flt||switch roads on||
+|-
+|[[01E8]]||{{Icon|t}}||6||flt, flt, flt, flt, flt, flt||switch roads off||
+|-
+|[[01E9]]||{{Icon|t}}||2||car handle, var||get number of passengers||parameters rearranged in SB
+|-
+|[[01EA]]||{{Icon|t}}||2||car handle, var||get maximum number of passengers||parameters rearranged in SB
+|-
+|[[01EB]]||{{Icon|t}}||1||flt||set car density multiplier||
+|-
+|[[01EC]]||{{Icon|t}}||2||car handle, int||set car heavy||
+|-
+|[[01ED]]||{{Icon|3}} {{Icon|VC}}||1||char handle||clear char threat search||
+|-
+|[[01EE]]||{{Icon|3}}||10||flt, flt, flt, flt, flt, flt, flt, flt, flt, flt||activate crane||restored in VC
+|-
+|[[01EF]]||{{Icon|3}}||2||flt, flt||deactivate crane||restored in VC
+|-
+|[[01F0]]||{{Icon|t}}||1||int||set max wanted level||
+|-
+|[[01F1]]||{{Icon|uns}}||-||||||
+|-
+|[[01F2]]||{{Icon|uns}}||-||||||
+|-
+|[[01F3]]||{{Icon|t}}||1||car handle||is car in air proper||
+|-
+|[[01F4]]||{{Icon|t}}||1||car handle||is car upsidedown||
+|-
+|[[01F5]]||{{Icon|t}}||2||player handle, var||get player char||parameters rearranged in SB
+|-
+|[[01F6]]||{{Icon|t}}||0||||cancel override restart||
+|-
+|[[01F7]]||{{Icon|t}}||2||player handle, int||set police ignore player||
+|-
+|[[01F8]]||{{Icon|3}}||5||string, int, int, int, int||print pager text with number||
+|-
+|[[01F9]]||{{Icon|t}}||9||string, int, int, int, int, int, int, int, int||start rampage||
+|-
+|[[01FA]]||{{Icon|t}}||1||var||read rampage status||
+|-
+|[[01FB]]||{{Icon|t}}||2||flt, var||get square root||
+|-
+|[[01FC]]||{{Icon|3}} {{Icon|VC}}||5||player handle, car handle, flt, flt, int||locate player by any means car 2d||
+|-
+|[[01FD]]||{{Icon|3}} {{Icon|VC}}||5||player handle, car handle, flt, flt, int||locate player on foot car 2d||
+|-
+|[[01FE]]||{{Icon|3}} {{Icon|VC}}||5||player handle, car handle, flt, flt, int||locate player in car car 2d||
+|-
+|[[01FF]]||{{Icon|3}} {{Icon|VC}}||6||player handle, car handle, flt, flt, flt, int||locate player by any means car 3d||
+|-
+|[[0200]]||{{Icon|3}} {{Icon|VC}}||6||player handle, car handle, flt, flt, flt, int||locate player on foot car 3d||
+|-
+|[[0201]]||{{Icon|3}} {{Icon|VC}}||6||player handle, car handle, flt, flt, flt, int||locate player in car car 3d||
+|-
+|[[0202]]||{{Icon|t}}||5||char handle, car handle, flt, flt, int||locate char by any means car 2d||
+|-
+|[[0203]]||{{Icon|t}}||5||char handle, car handle, flt, flt, int||locate char on foot car 2d||
+|-
+|[[0204]]||{{Icon|t}}||5||char handle, car handle, flt, flt, int||locate char in car car 2d||
+|-
+|[[0205]]||{{Icon|t}}||6||char handle, car handle, flt, flt, flt, int||locate char by any means car 3d||
+|-
+|[[0206]]||{{Icon|t}}||6||char handle, car handle, flt, flt, flt, int||locate char on foot car 3d||
+|-
+|[[0207]]||{{Icon|t}}||6||char handle, car handle, flt, flt, flt, int||locate char in car car 3d||
+|-
+|[[0208]]||{{Icon|t}}||2||flt, flt, var||generate random float in range||parameters rearranged in SB
+|-
+|[[0209]]||{{Icon|t}}||2||int, int, var||generate random int in range||parameters rearranged in SB
+|-
+|[[020A]]||{{Icon|t}}||2||car handle, int||lock car doors||
+|-
+|[[020B]]||{{Icon|t}}||1||car handle||explode car||
+|-
+|[[020C]]||{{Icon|t}}||4||flt, flt, flt, int||add explosion||parameters rearranged in SB
+|-
+|[[020D]]||{{Icon|t}}||1||car handle||is car upright||
+|-
+|[[020E]]||{{Icon|3}} {{Icon|VC}}||2||char handle, char handle||turn char to face char||
+|-
+|[[020F]]||{{Icon|3}} {{Icon|VC}}||2||char handle, player handle||turn char to face player||
+|-
+|[[0210]]||{{Icon|3}} {{Icon|VC}}||2||player handle, char handle||turn player to face char||
+|-
+|[[0211]]||{{Icon|3}} {{Icon|VC}}||3||char handle, flt, flt||set char obj goto coord on foot||
+|-
+|[[0212]]||{{Icon|uns}}||-||||||
+|-
+|[[0213]]||{{Icon|t}}||6||int, int, flt, flt, flt, var||create pickup||parameters rearranged in SB
+|-
+|[[0214]]||{{Icon|t}}||1||pickup handle||has pickup been collected||
+|-
+|[[0215]]||{{Icon|t}}||1||pickup handle||remove pickup||
+|-
+|[[0216]]||{{Icon|t}}||2||car handle, int||set taxi lights||
+|-
+|[[0217]]||{{Icon|t}}||3||string, int, int||print text big q||
+|-
+|[[0218]]||{{Icon|3}}||4||string, int, int, int||print text with number big q||restored in VC
+|-
+|[[0219]]||{{Icon|3}}<br />{{Icon|VC}}||8<br />10||flt, flt, flt, flt, flt, flt, int, var<br />flt, flt, flt, flt, flt, flt, flt, flt, int, var||create garage||parameters rearranged in SB
+|-
+|[[021A]]||{{Icon|3}}||9||flt, flt, flt, flt, flt, flt, int, int, var||create garage with car model||
+|-
+|[[021B]]||{{Icon|t}}||2||garage handle, car handle||set target car for mission garage||
+|-
+|[[021C]]||{{Icon|3}} {{Icon|VC}}||1||garage handle||is car in mission garage||
+|-
+|[[021D]]||{{Icon|3}}||1||int||set free bombs||restored in VC
+|-
+|[[021E]]||{{Icon|uns}}||-||||||
+|-
+|[[021F]]||{{Icon|3}}||1||int||set all taxi lights||restored in VC
+|-
+|[[0220]]||{{Icon|3}}||1||car handle||does car have car bomb||restored in VC
+|-
+|[[0221]]||{{Icon|t}}||2||player handle, int||set player cannot exit car||
+|-
+|[[0222]]||{{Icon|3}} {{Icon|VC}}||2||player handle, int||set player health||
+|-
+|[[0223]]||{{Icon|t}}||2||char handle, int||set char health||
+|-
+|[[0224]]||{{Icon|t}}||2||car handle, int||set car health||
+|-
+|[[0225]]||{{Icon|3}} {{Icon|VC}}||2||player handle, var||get player health||parameters rearranged in SB
+|-
+|[[0226]]||{{Icon|t}}||2||char handle, var||get char health||parameters rearranged in SB
+|-
+|[[0227]]||{{Icon|t}}||2||car handle, var||get car health||parameters rearranged in SB
+|-
+|[[0228]]||{{Icon|3}}||2||car handle, int||is car armed with bomb||restored in VC
+|-
+|[[0229]]||{{Icon|t}}||3||car handle, int, int||change car colour||
+|-
+|[[022A]]||{{Icon|t}}||6||flt, flt, flt, flt, flt, flt||switch ped paths on||
+|-
+|[[022B]]||{{Icon|t}}||6||flt, flt, flt, flt, flt, flt||switch ped paths off||
+|-
+|[[022C]]||{{Icon|3}} {{Icon|VC}}||2||char handle, char handle||char look at char always||
+|-
+|[[022D]]||{{Icon|3}} {{Icon|VC}}||2||char handle, player handle||char look at player always||
+|-
+|[[022E]]||{{Icon|3}} {{Icon|VC}}||2||player handle, char handle||player look at char always||
+|-
+|[[022F]]||{{Icon|3}} {{Icon|VC}}||1||char handle||stop char looking||
+|-
+|[[0230]]||{{Icon|3}} {{Icon|VC}}||1||player handle||stop player looking||
+|-
+|[[0231]]||{{Icon|3}}||1||int||set second police helicopter||
+|-
+|[[0232]]||{{Icon|uns}}||-||||||
+|-
+|[[0233]]||{{Icon|uns}}||-||||||
+|-
+|[[0234]]||{{Icon|uns}}||-||||||
+|-
+|[[0235]]||{{Icon|VC}}||3||int, int, int||set gang models||
+|-
+|[[0236]]||{{Icon|3}} {{Icon|VC}}||2||int, int||set gang car||
+|-
+|[[0237]]||{{Icon|3}} {{Icon|VC}}<br>{{Icon|SA}}||3<br>4||int, int, int<br>int, int, int, int||set gang weapons||
+|-
+|[[0238]]||{{Icon|3}}||5||player handle, flt, flt, flt, flt||set char obj run to area||
+|-
+|[[0239]]||{{Icon|3}} {{Icon|VC}}||3||char handle, flt, flt||set char obj run to coord||
+|-
+|[[023A]]||{{Icon|3}}||2||player handle, object handle||is player touching object on foot||restored in VC
+|-
+|[[023B]]||{{Icon|3}} {{Icon|SA}}||2||char handle, object handle||is char touching object on foot||restored in VC
+|-
+|[[023C]]||{{Icon|t}}||2||int, string||load special character||parameters rearranged in SB in San Andreas
+|-
+|[[023D]]||{{Icon|t}}||1||string||has special character loaded||
+|-
+|[[023E]]||{{Icon|3}}||2||car handle, int||flash car||restored in VC
+|-
+|[[023F]]||{{Icon|3}}||2||char handle, int||flash char||restored in VC
+|-
+|[[0240]]||{{Icon|3}}||2||object handle, int||flash object||restored in VC
+|-
+|[[0241]]||{{Icon|t}}||1||player handle||is player in remote mode||
+|-
+|[[0242]]||{{Icon|3}}||2||car handle||arm car with bomb||restored in VC
+|-
+|[[0243]]||{{Icon|3}} {{Icon|VC}}||2||char handle, int||set char personality||
+|-
+|[[0244]]||{{Icon|t}}||3||flt, flt, flt||set cutscene offset||
+|-
+|[[0245]]||{{Icon|t}}||2||char handle, int||set anim group for char||
+|-
+|[[0246]]||{{Icon|3}}||2||player handle, int||set anim group for player||
+|-
+|[[0247]]||{{Icon|t}}||1||int||request model||
+|-
+|[[0248]]||{{Icon|t}}||1||int||has model loaded||
+|-
+|[[0249]]||{{Icon|t}}||1||int||mark model as no longer needed||
+|-
+|[[024A]]||{{Icon|3}} {{Icon|VC}}||3||flt, flt, var||get phone||
+|-
+|[[024B]]||{{Icon|3}}||2||phone handle, string||set repeated phone message||restored in VC
+|-
+|[[024C]]||{{Icon|3}}||2||phone handle, string||set phone message||restored in VC
+|-
+|[[024D]]||{{Icon|3}}||1||phone handle||has phone displayed message||restored in VC
+|-
+|[[024E]]||{{Icon|3}} {{Icon|VC}}||1||phone handle||turn phone off||
+|-
+|[[024F]]||{{Icon|t}}||9||flt, flt, flt, flt, int, int, int, int, int||create corona||
+|-
+|[[0250]]||{{Icon|3}}||6||flt, flt, flt, int, int, int||draw light||restored in VC
+|-
+|[[0251]]||{{Icon|3}}||0||||store weather state||
+|-
+|[[0252]]||{{Icon|3}}||0||||restore weather state||
+|-
+|[[0253]]||{{Icon|t}}||0||||save current time||
+|-
+|[[0254]]||{{Icon|t}}||0||||restore current time||
+|-
+|[[0255]]||{{Icon|3}}||4||flt, flt, flt, flt||restart critical mission||restored in VC
+|-
+|[[0256]]||{{Icon|t}}||1||player handle||is player playing||
+|-
+|[[0257]]||{{Icon|uns}}||-||||||
+|-
+|&#8212;||||||||||
+|-
+|[[0291]]||{{Icon|3}} {{Icon|VC}}||2||char handle, int||set char heed threats||
+|-
+|[[0292]]||{{Icon|3}}||2||player handle, int||set player attack when provoked||
+|-
+|[[0293]]||{{Icon|t}}||1||var||get controller mode||
+|-
+|[[0294]]||{{Icon|t}}||2||car handle, int||set can respray car||
+|-
+|[[0295]]||{{Icon|3}}||1||car handle||is car taxi vehicle||restored in VC
+|-
+|[[0296]]||{{Icon|t}}||1||int||unload special character||
+|-
+|[[0297]]||{{Icon|3}} {{Icon|VC}}<br />{{Icon|SA}}||0<br />1||<br/>player handle||reset number of models killed by player||
+|-
+|[[0298]]||{{Icon|3}} {{Icon|VC}}<br />{{Icon|SA}}||2<br />3||int, var<br />player handle, int, var||get number of models killed by player||parameters rearranged in SB
+|-
+|[[0299]]||{{Icon|3}}<br />{{Icon|SA}}||1||garage handle<br />string||activate garage||restored in VC
+|-
+|[[029A]]||{{Icon|3}}||1||int||switch taxi timer||
+|-
+|[[029B]]||{{Icon|t}}||5||int, flt, flt, flt, object handle||create object no offset||parameters rearranged in SB
+|-
+|[[029C]]||{{Icon|3}}||1||car handle||is boat||restored in VC
+|-
+|[[029D]]||{{Icon|3}}||5||char handle, flt, flt, flt, flt||task actor drive then walk to area ||
+|-
+|[[029E]]||{{Icon|uns}}||-||||||
+|-
+|[[029F]]||{{Icon|3}} {{Icon|VC}}||1||player handle||is player stopped||
+|-
+|[[02A0]]||{{Icon|3}}||1||char handle||is char stopped||restored in VC
+|-
+|[[02A1]]||{{Icon|3}}||2||int, int||message wait||restored in VC
+|-
+|[[02A2]]||{{Icon|3}}||5||int, int, flt, flt, flt||add particle effect||restored in VC
+|-
+|[[02A3]]||{{Icon|t}}||1||int||switch widescreen||
+|-
+|[[02A4]]||{{Icon|3}}||3||car handle, int, var||add sprite blip for car||restored in VC
+|-
+|[[02A5]]||{{Icon|3}}||3||char handle, int, var||add sprite blip for char||restored in VC
+|-
+|[[02A6]]||{{Icon|3}}||3||object handle, int, var||add sprite blip for object||restored in VC
+|-
+|[[02A7]]||{{Icon|t}}||5||flt, flt, flt, int, var||add sprite blip for contact point||parameters rearranged in SB
+|-
+|[[02A8]]||{{Icon|t}}||5||flt, flt, flt, int, var||add sprite blip for coord||parameters rearranged in SB
+|-
+|[[02A9]]||{{Icon|t}}||2||char handle, int||set char only damaged by player||
+|-
+|[[02AA]]||{{Icon|t}}||2||car handle, int||set car only damaged by player||
+|-
+|[[02AB]]||{{Icon|t}}||6||char handle, int, int, int, int, int||set char proofs||
+|-
+|[[02AC]]||{{Icon|t}}||6||car handle, int, int, int, int, int||set car proofs||
+|-
+|[[02AD]]||{{Icon|3}} {{Icon|VC}}||7||player handle, flt, flt, flt, flt, flt, int||is player in angled area 2d||
+|-
+|[[02AE]]||{{Icon|3}} {{Icon|VC}}||7||player handle, flt, flt, flt, flt, flt, int||is player in angled area on foot 2d||
+|-
+|[[02AF]]||{{Icon|3}} {{Icon|VC}}||7||player handle, flt, flt, flt, flt, flt, int||is player in angled area in car 2d||
+|-
+|[[02B0]]||{{Icon|3}} {{Icon|VC}}||7||player handle, flt, flt, flt, flt, flt, int||is player stopped in angled area 2d||
+|-
+|[[02B1]]||{{Icon|3}} {{Icon|VC}}||7||player handle, flt, flt, flt, flt, flt, int||is player stopped in angled area on foot 2d||
+|-
+|[[02B2]]||{{Icon|3}} {{Icon|VC}}||7||player handle, flt, flt, flt, flt, flt, int||is player stopped in angled area in car 2d||
+|-
+|[[02B3]]||{{Icon|3}} {{Icon|VC}}||9||player handle, flt, flt, flt, flt, flt, flt, flt, int||is player in angled area 3d||
+|-
+|[[02B4]]||{{Icon|3}} {{Icon|VC}}||9||player handle, flt, flt, flt, flt, flt, flt, flt, int||is player in angled area on foot 3d||
+|-
+|[[02B5]]||{{Icon|3}} {{Icon|VC}}||9||player handle, flt, flt, flt, flt, flt, flt, flt, int||is player in angled area in car 3d||
+|-
+|[[02B6]]||{{Icon|3}} {{Icon|VC}}||9||player handle, flt, flt, flt, flt, flt, flt, flt, int||is player stopped in angled area 3d||
+|-
+|[[02B7]]||{{Icon|3}} {{Icon|VC}}||9||player handle, flt, flt, flt, flt, flt, flt, flt, int||is player stopped in angled area on foot 3d||
+|-
+|[[02B8]]||{{Icon|3}} {{Icon|VC}}||9||player handle, flt, flt, flt, flt, flt, flt, flt, int||is player stopped in angled area in car 3d||
+|-
+|[[02B9]]||{{Icon|3}} {{Icon|SA}}||1||garage handle||deactivate garage||restored in VC
+|-
+|[[02BA]]||{{Icon|3}}||2||garage handle, var||get number of cars collected by garage (unsupported)||
+|-
+|[[02BB]]||{{Icon|3}}||2||garage handle, car handle||has specified car been taken to garage (unsupported)||
+|-
+|[[02BC]]||{{Icon|3}}||1||int||set swat required||restored in VC
+|-
+|[[02BD]]||{{Icon|uns}}||-||||||restored in III and VC, used in Liberty City mod for VC
+|-
+|[[02BE]]||{{Icon|uns}}||-||||||restored in III and VC
+|-
+|[[02BF]]||{{Icon|t}}||1||car handle||is car in water||
+|-
+|[[02C0]]||{{Icon|t}}||6||flt, flt, flt, var, var, var||get closest char node||parameters rearranged in SB
+|-
+|[[02C1]]||{{Icon|t}}||6||flt, flt, flt, var, var, var||get closest car node||parameters rearranged in SB
+|-
+|[[02C2]]||{{Icon|t}}||4||car handle, flt, flt, flt||car goto coordinates accurate||
+|-
+|[[02C3]]||{{Icon|3}}||1||int||start pacman race||restored in VC
+|-
+|[[02C4]]||{{Icon|3}}||0||||save player coords||nothing reads the data
+|-
+|[[02C5]]||{{Icon|3}}||1||var||get number of power pills eaten||restored in VC
+|-
+|[[02C6]]||{{Icon|3}}||0||||clear pacman||restored in VC
+|-
+|[[02C7]]||{{Icon|3}}||5||flt, flt, flt, flt, int||start pacman scramble||parameters rearranged in SB, restored in VC
+|-
+|[[02C8]]||{{Icon|3}}||1||var||get number of power pills carried||restored in VC
+|-
+|[[02C9]]||{{Icon|3}}||0||||clear number of power pills carried||restored in VC
+|-
+|[[02CA]]||{{Icon|t}}||1||car handle||is car on screen||
+|-
+|[[02CB]]||{{Icon|t}}||1||char handle||is char on screen||
+|-
+|[[02CC]]||{{Icon|t}}||1||object handle||is object on screen||
+|-
+|[[02CD]]||{{Icon|3}}||2||int, int||gosub file||restored in VC
+|-
+|[[02CE]]||{{Icon|t}}||4||flt, flt, flt, var||get ground z for 3d coord||parameters rearranged in SB
+|-
+|[[02CF]]||{{Icon|t}}||4||flt, flt, flt, var||start script fire||parameters rearranged in SB
+|-
+|[[02D0]]||{{Icon|t}}||1||fire handle||is fire extinguished||
+|-
+|[[02D1]]||{{Icon|t}}||1||fire handle||remove fire||
+|-
+|[[02D2]]||{{Icon|3}}||2||car handle, int||set comedy controls||
+|-
+|[[02D3]]||{{Icon|t}}||4||car handle, flt, flt, flt||boat goto coords||
+|-
+|[[02D4]]||{{Icon|t}}||1||car handle||boat stop||
+|-
+|[[02D5]]||{{Icon|3}} {{Icon|VC}}||6||player handle, flt, flt, flt, flt, int||is player shooting in area||
+|-
+|[[02D6]]||{{Icon|3}} {{Icon|SA}}||6||char handle, flt, flt, flt, flt, int||is char shooting in area||restored in VC
+|-
+|[[02D7]]||{{Icon|3}} {{Icon|VC}}||2||player handle, int||is current player weapon||
+|-
+|[[02D8]]||{{Icon|t}}||2||char handle, int||is current char weapon||
+|-
+|[[02D9]]||{{Icon|3}}||0||||clear number of power pills eaten||restored in VC
+|-
+|[[02DA]]||{{Icon|3}}||3||flt, flt, flt||add power pill||restored in VC
+|-
+|[[02DB]]||{{Icon|t}}||2||car handle, flt||set boat cruise speed||
+|-
+|[[02DC]]||{{Icon|3}}||5||flt, flt, flt, flt, var||get random char in area||
+|-
+|[[02DD]]||{{Icon|3}}<br />{{Icon|VC}} {{Icon|SA}}||3<br />5||string, var<br />string, int, int, int, var||get random char in zone||parameters rearranged in GTA III in SB
+|-
+|[[02DE]]||{{Icon|3}} {{Icon|VC}}||1||player handle||is player in taxi||
+|-
+|[[02DF]]||{{Icon|3}} {{Icon|VC}}||1||player handle||is player shooting||
+|-
+|[[02E0]]||{{Icon|t}}||1||char handle||is char shooting||
+|-
+|[[02E1]]||{{Icon|t}}||5||flt, flt, flt, int, var||create money pickup||parameters rearranged in SB
+|-
+|[[02E2]]||{{Icon|t}}||2||char handle, int||set char accuracy||
+|-
+|[[02E3]]||{{Icon|t}}||2||car handle, var||get car speed||parameters rearranged in SB
+|-
+|[[02E4]]||{{Icon|t}}||1||string||load cutscene||
+|-
+|[[02E5]]||{{Icon|3}} {{Icon|VC}}||2||int, var||create cutscene object||parameters rearranged in SB
+|-
+|[[02E6]]||{{Icon|3}} {{Icon|VC}}||2||object handle, string||set cutscene anim||
+|-
+|[[02E7]]||{{Icon|t}}||0||||start cutscene||
+|-
+|[[02E8]]||{{Icon|t}}||1||var||get cutscene time||
+|-
+|[[02E9]]||{{Icon|t}}||0||||has cutscene finished||
+|-
+|[[02EA]]||{{Icon|t}}||0||||clear cutscene||
+|-
+|[[02EB]]||{{Icon|t}}||0||||restore camera jumpcut||
+|-
+|[[02EC]]||{{Icon|3}} {{Icon|VC}}||3||flt, flt, flt||create [[hidden package]] pickup||
+|-
+|[[02ED]]||{{Icon|t}}||1||int||set total [[hidden package]]s||
+|-
+|[[02EE]]||{{Icon|3}}||6||flt, flt, flt, flt, flt, flt||is projectile in area||restored in VC
+|-
+|[[02EF]]||{{Icon|3}}||6||flt, flt, flt, flt, flt, flt||destroy projectile in area||IF and SET, restored in VC
+|-
+|[[02F0]]||{{Icon|3}}||3||flt, flt, flt||drop mine||restored in VC
+|-
+|[[02F1]]||{{Icon|3}}||3||flt, flt, flt||drop nautical mine||restored in VC
+|-
+|[[02F2]]||{{Icon|t}}||2||char handle, int||is char model||
+|-
+|[[02F3]]||{{Icon|3}} {{Icon|VC}}||2||int, string||load special model||
+|-
+|[[02F4]]||{{Icon|3}}||3||object handle, int, object handle||create cutscene head||parameters rearranged in SB
+|-
+|[[02F5]]||{{Icon|3}}||2||object handle, string||set cutscene head anim||
+|-
+|[[02F6]]||{{Icon|t}}||2||float, var||get sine||parameters rearranged in SB
+|-
+|[[02F7]]||{{Icon|t}}||2||float, var||get cosine||parameters rearranged in SB
+|-
+|[[02F8]]||{{Icon|t}}||2||car handle, var||get car forward x||
+|-
+|[[02F9]]||{{Icon|t}}||2||car handle, var||get car forward y||
+|-
+|[[02FA]]||{{Icon|t}}||2||garage handle, int||change garage type||
+|-
+|[[02FB]]||{{Icon|3}}||10||flt, flt, flt, flt, flt, flt, flt, flt, flt, flt||create crusher crane||restored in VC
+|-
+|[[02FC]]||{{Icon|3}}||5||string, int, int, int, int||print with 2 numbers||restored in VC
+|-
+|[[02FD]]||{{Icon|t}}||5||string, int, int, int, int||print with 2 numbers now||
+|-
+|[[02FE]]||{{Icon|3}}||5||string, int, int, int, int||print with 2 numbers soon||
+|-
+|[[02FF]]||{{Icon|t}}||6||string, int, int, int, int, int||print with 3 numbers||
+|-
+|[[0300]]||{{Icon|3}}||6||string, int, int, int, int, int||print with 3 numbers now ||restored in VC
+|-
+|[[0301]]||{{Icon|uns}}||-||||||
+|-
+|[[0302]]||{{Icon|t}}||7||string, int, int, int, int, int, int||print with 4 numbers||
+|-
+|[[0303]]||{{Icon|3}} {{Icon|SA}}||7||string, int, int, int, int, int, int||print with 4 numbers now||restored in VC
+|-
+|[[0304]]||{{Icon|uns}}||-||||||
+|-
+|[[0305]]||{{Icon|3}}||8||string, int, int, int, int, int, int, int||print with 5 numbers||restored in VC
+|-
+|[[0306]]||{{Icon|3}}||8||string, int, int, int, int, int, int, int||print with 5 numbers now||restored in VC
+|-
+|[[0307]]||{{Icon|uns}}||-||||||
+|-
+|[[0308]]||{{Icon|t}}||9||string, int, int, int, int, int, int, int, int||print with 6 numbers||
+|-
+|[[0309]]||{{Icon|3}}||9||string, int, int, int, int, int, int, int, int||print with 6 numbers now||restored in VC
+|-
+|[[030A]]||{{Icon|uns}}||-||||||
+|-
+|[[030B]]||{{Icon|3}}||3||char handle, char handle, int||set formation||
+|-
+|[[030C]]||{{Icon|t}}||1||int||player made progress||
+|-
+|[[030D]]||{{Icon|t}}||1||int||set max progress||
+|-
+|[[030E]]||{{Icon|3}} {{Icon|VC}}||1||flt||register jump distance||
+|-
+|[[030F]]||{{Icon|3}} {{Icon|VC}}||1||flt||register jump height||
+|-
+|[[0310]]||{{Icon|3}} {{Icon|VC}}||1||int||register jump flips||
+|-
+|[[0311]]||{{Icon|3}} {{Icon|VC}}||1||int||register jump spins||
+|-
+|[[0312]]||{{Icon|3}} {{Icon|VC}}||1||int||register jump stunt||
+|-
+|[[0313]]||{{Icon|3}} {{Icon|VC}}||0||||register unique jump found||
+|-
+|[[0314]]||{{Icon|3}} {{Icon|VC}}||1||int||set unique jumps total||
+|-
+|[[0315]]||{{Icon|3}} {{Icon|VC}}||0||||register passenger dropped off taxi||
+|-
+|[[0316]]||{{Icon|3}} {{Icon|VC}}||1||int||register money made taxi||
+|-
+|[[0317]]||{{Icon|t}}||0||||register mission given||
+|-
+|[[0318]]||{{Icon|t}}||1||string||register mission passed||
+|-
+|[[0319]]||{{Icon|3}} {{Icon|VC}}||2||char handle, int||set char running||
+|-
+|[[031A]]||{{Icon|t}}||0||||remove all script fires||
+|-
+|[[031B]]||{{Icon|3}}||2||car handle, int||is car primary color||restored in VC
+|-
+|[[031C]]||{{Icon|3}}||2||car handle, int||is car secondary color||restored in VC
+|-
+|[[031D]]||{{Icon|t}}||2||char handle, int||has char been damaged by weapon||
+|-
+|[[031E]]||{{Icon|t}}||2||car handle, int||has car been damaged by weapon||
+|-
+|[[031F]]||{{Icon|3}} {{Icon|VC}}||2||char handle, char handle||is char in chars group||
+|-
+|[[0320]]||{{Icon|3}} {{Icon|VC}}||2||char handle, player handle||is char in players group||
+|-
+|[[0321]]||{{Icon|t}}||1||char handle||explode char head||
+|-
+|[[0322]]||{{Icon|3}} {{Icon|VC}}||1||player handle||explode player head||
+|-
+|[[0323]]||{{Icon|t}}||2||car handle, int||anchor boat||
+|-
+|[[0324]]||{{Icon|3}} {{Icon|VC}}||3||string, int, int||set pedgroup info||
+|-
+|[[0325]]||{{Icon|t}}||2||car handle, var||start car fire||parameters rearranged in SB
+|-
+|[[0326]]||{{Icon|t}}||2||char handle, var||start char fire||parameters rearranged in SB
+|-
+|[[0327]]||{{Icon|t}}||6||flt, flt, flt, flt, int, var||get random car of type in area||parameters rearranged in SB
+|-
+|[[0328]]||{{Icon|3}}||3||string, int, var||get random car of type in zone||
+|-
+|[[0329]]||{{Icon|3}} {{Icon|VC}}||1||garage handle||has respray happened||
+|-
+|[[032A]]||{{Icon|t}}||1||int||set behind camera mode||
+|-
+|[[032B]]||{{Icon|t}}||7||int, int, int, flt, flt, flt, var||create pickup with ammo||parameters rearranged in SB
+|-
+|[[032C]]||{{Icon|3}} {{Icon|VC}}||2||car handle, car handle||set car ram car||
+|-
+|[[032D]]||{{Icon|3}}||2||car handle, car handle||set car block car||restored in VC
+|-
+|[[032E]]||{{Icon|3}}||1||char handle||set char obj catch train||
+|-
+|[[032F]]||{{Icon|uns}}||-||||||
+|-
+|[[0330]]||{{Icon|t}}||2||player handle, int||set player never gets tired||
+|-
+|[[0331]]||{{Icon|t}}||2||player handle, int||set player fast reload||
+|-
+|[[0332]]||{{Icon|t}}||2||char handle, int||set char bleeding||
+|-
+|[[0333]]||{{Icon|3}}||1||car handle||set car funny suspension||
+|-
+|[[0334]]||{{Icon|3}}||2||car handle, int||set car big wheels||
+|-
+|[[0335]]||{{Icon|t}}||1||int||set free resprays||
+|-
+|[[0336]]||{{Icon|3}} {{Icon|VC}}||2||player handle, int||set player visible||
+|-
+|[[0337]]||{{Icon|t}}||2||char handle, int||set char visible||
+|-
+|[[0338]]||{{Icon|3}} {{Icon|SA}}||2||car handle, int||set car visible||restored in VC
+|-
+|[[0339]]||{{Icon|t}}||11||flt, flt, flt, flt, flt, flt, int, int, int, int, int||is area occupied||
+|-
+|[[033A]]||{{Icon|3}}||0||||start incoming cessna||
+|-
+|[[033B]]||{{Icon|3}}||0||||has incoming cessna been completed||
+|-
+|[[033C]]||{{Icon|3}}||0||||has incoming cessna been shot down||
+|-
+|[[033D]]||{{Icon|3}}||1||player handle||put out fire on player||
+|-
+|[[033E]]||{{Icon|t}}||3||flt, flt, string||display text||
+|-
+|[[033F]]||{{Icon|t}}||2||flt, flt||set text scale||
+|-
+|[[0340]]||{{Icon|t}}||4||int, int, int, int||set text colour||
+|-
+|[[0341]]||{{Icon|t}}||1||int||set text justify||
+|-
+|[[0342]]||{{Icon|t}}||1||int||set text centre||
+|-
+|[[0343]]||{{Icon|t}}||1||flt||set text line width||
+|-
+|[[0344]]||{{Icon|3}} {{Icon|SA}}||1||flt||set text centre size||
+|-
+|[[0345]]||{{Icon|t}}||1||int||set text background||
+|-
+|[[0346]]||{{Icon|3}}||4||int, int, int, int||set text background colour||restored in VC
+|-
+|[[0347]]||{{Icon|3}}||1||int||set text background only text||
+|-
+|[[0348]]||{{Icon|t}}||1||int||set text proportional||
+|-
+|[[0349]]||{{Icon|3}} {{Icon|SA}}||1||int||set text font||restored in VC
+|-
+|[[034A]]||{{Icon|3}}||0||||industrial passed||used in Liberty City mod for VC
+|-
+|[[034B]]||{{Icon|3}}||0||||commercial passed||used in Liberty City mod for VC
+|-
+|[[034C]]||{{Icon|3}}||0||||suburban passed||used in Liberty City mod for VC
+|-
+|[[034D]]||{{Icon|t}}||4||object handle, flt, flt, int||rotate object||IF and SET
+|-
+|[[034E]]||{{Icon|t}}||8||object handle, flt, flt, flt, flt, flt, flt, int||slide object||IF and SET
+|-
+|[[034F]]||{{Icon|t}}||1||char handle||remove char elegantly||
+|-
+|[[0350]]||{{Icon|t}}||2||char handle, int||set char stay in same place||
+|-
+|[[0351]]||{{Icon|3}}||0||||is nasty game||restored in VC
+|-
+|[[0352]]||{{Icon|3}} {{Icon|VC}}||2||char handle, string||undress char||
+|-
+|[[0353]]||{{Icon|3}} {{Icon|VC}}||1||char handle||dress char||
+|-
+|[[0354]]||{{Icon|3}}||1||flt||start chase scene||used in Liberty City mod for VC
+|-
+|[[0355]]||{{Icon|3}}||0||||stop chase scene||used in Liberty City mod for VC
+|-
+|[[0356]]||{{Icon|3}} {{Icon|SA}}||7||int, flt, flt, flt, flt, flt, flt||is explosion in area||restored in VC
+|-
+|[[0357]]||{{Icon|3}}||2||int, string||is explosion in zone||restored in VC
+|-
+|[[0358]]||{{Icon|3}}||0||||start drop off cessna||
+|-
+|[[0359]]||{{Icon|3}}||0||||has drop off cessna been shot down||
+|-
+|[[035A]]||{{Icon|3}}||3||var, var, var||find drop off cessna coordinates||
+|-
+|[[035B]]||{{Icon|3}}||4||flt, flt, flt, var||create floating package||parameters rearranged in SB
+|-
+|[[035C]]||{{Icon|t}}||5||object handle, car handle, flt, flt, flt||place object relative to car||
+|-
+|[[035D]]||{{Icon|3}} {{Icon|VC}}<br />{{Icon|SA}}||1<br />2||object handle<br />object handle, int||make object targettable||
+|-
+|[[035E]]||{{Icon|3}} {{Icon|VC}}||2||player handle, int||add armour to player||
+|-
+|[[035F]]||{{Icon|t}}||2||char handle, int||add armour to char||
+|-
+|[[0360]]||{{Icon|t}}||1||garage handle||open garage||
+|-
+|[[0361]]||{{Icon|t}}||1||garage handle||close garage||
+|-
+|[[0362]]||{{Icon|t}}||4||char handle, flt, flt, flt||warp char from car to coord ||
+|-
+|[[0363]]||{{Icon|t}}||6||flt, flt, flt, flt, int, int||set visibility of closest object of type||
+|-
+|[[0364]]||{{Icon|3}} {{Icon|SA}}||2||char handle, char handle||has char spotted char||
+|-
+|[[0365]]||{{Icon|3}} {{Icon|VC}}||1||char handle||set char obj hail taxi||
+|-
+|[[0366]]||{{Icon|t}}||1||object handle||has object been damaged||
+|-
+|[[0367]]||{{Icon|3}}||9||string, int, int, int, int, int, int, int, int||start headshot rampage||restored in VC
+|-
+|[[0368]]||{{Icon|3}}||10||flt, flt, flt, flt, flt, flt, flt, flt, flt, flt||create ev crane||restored in VC
+|-
+|[[0369]]||{{Icon|3}} {{Icon|VC}}||2||player handle, car handle||warp player into car||
+|-
+|[[036A]]||{{Icon|t}}||2||char handle, car handle||warp char into car||
+|-
+|[[036B]]||{{Icon|uns}}||-||||||
+|-
+|[[036C]]||{{Icon|uns}}||-||||||
+|-
+|[[036D]]||{{Icon|t}}||5||string, int, int, int, int||print text with 2 numbers big||
+|-
+|[[036E]]||{{Icon|3}}||6||string, int, int, int, int, int||print text with 3 numbers big||restored in VC
+|-
+|[[036F]]||{{Icon|3}}||7||string, int, int, int, int, int, int||print text with 4 numbers big||restored in VC
+|-
+|[[0370]]||{{Icon|3}}||8||string, int, int, int, int, int, int, int||print text with 5 numbers big||restored in VC
+|-
+|[[0371]]||{{Icon|3}}||9||string, int, int, int, int, int, int, int, int||print text with 6 numbers big||restored in VC
+|-
+|[[0372]]||{{Icon|3}} {{Icon|VC}}||3||char handle, int, int||set char wait state||
+|-
+|[[0373]]||{{Icon|t}}||0||||set camera behind player||
+|-
+|[[0374]]||{{Icon|3}}||1||int||set motion blur||
+|-
+|[[0375]]||{{Icon|3}}||4||||print string in string||
+|-
+|[[0376]]||{{Icon|t}}||4||flt, flt, flt, var||create random char||parameters rearranged in SB
+|-
+|[[0377]]||{{Icon|3}} {{Icon|VC}}||1||char handle||set char obj steal any car||
+|-
+|[[0378]]||{{Icon|3}}||3||||set 2 repeated phone messages||restored in VC
+|-
+|[[0379]]||{{Icon|3}}||3||||set 2 phone messages||restored in VC
+|-
+|[[037A]]||{{Icon|3}}||4||||set 3 repeated phone messages||restored in VC
+|-
+|[[037B]]||{{Icon|3}}||4||||set 3 phone messages||restored in VC
+|-
+|[[037C]]||{{Icon|3}}||5||||set 4 repeated phone messages||restored in VC
+|-
+|[[037D]]||{{Icon|3}}||5||||set 4 phone messages||restored in VC
+|-
+|[[037E]]||{{Icon|3}} {{Icon|VC}}||6||flt, flt, flt, flt, flt, flt||is sniper bullet in area||
+|-
+|[[037F]]||{{Icon|3}}||0||||give player detonator||restored in VC
+|-
+|[[0380]]||{{Icon|uns}}||-||||||
+|-
+|[[0381]]||{{Icon|t}}||4||object handle, flt, flt, flt||set object velocity||
+|-
+|[[0382]]||{{Icon|t}}||2||object handle, int||set object collision||
+|-
+|[[0383]]||{{Icon|3}} {{Icon|VC}}||1||car handle||is ice cream jingle on||
+|-
+|[[0384]]||{{Icon|t}}||4||string, string, int, int||print string in string now||
+|-
+|[[0385]]||{{Icon|SA}}||4||string, string, int, int||print string in string soon||
+|-
+|[[0386]]||{{Icon|3}}||6||||set 5 repeated phone messages||restored in VC
+|-
+|[[0387]]||{{Icon|3}}||6||||set 5 phone messages||restored in VC
+|-
+|[[0388]]||{{Icon|3}}||7||||set 6 repeated phone messages||restored in VC
+|-
+|[[0389]]||{{Icon|3}}||7||||set 6 phone messages||restored in VC
+|-
+|[[038A]]||{{Icon|t}}||6||flt, flt, flt, flt, flt, flt||is point obscured by a mission entity||
+|-
+|[[038B]]||{{Icon|t}}||0||||load all models now||
+|-
+|[[038C]]||{{Icon|t}}||4||object handle, flt, flt, flt||add to object velocity||
+|-
+|[[038D]]||{{Icon|t}}||9||int, flt, flt, flt, flt, int, int, int, int||draw texture||
+|-
+|[[038E]]||{{Icon|t}}||8||flt, flt, flt, flt, int, int, int, int||draw rectangle||
+|-
+|[[038F]]||{{Icon|t}}||2||int, string||get texture from txd||parameters rearranged in SB in San Andreas
+|-
+|[[0390]]||{{Icon|t}}||1||string||load txd||
+|-
+|[[0391]]||{{Icon|t}}||0||||release txd||
+|-
+|[[0392]]||{{Icon|t}}||2||object handle, int||set object dynamic||
+|-
+|[[0393]]||{{Icon|3}}<br>{{Icon|SA}}||2<br>3||char handle, flt<br>char handle, string, flt||set char animation speed||restored in VC
+|-
+|[[0394]]||{{Icon|t}}||1||int||play mission passed tune||
+|-
+|[[0395]]||{{Icon|t}}||5||flt, flt, flt, flt, int||clear area||parameters rearranged in SB
+|-
+|[[0396]]||{{Icon|t}}||1||global var||freeze onscreen timer||
+|-
+|[[0397]]||{{Icon|t}}||2||car handle, int||switch car siren||
+|-
+|[[0398]]||{{Icon|3}}||7||flt, flt, flt, flt, flt, flt, flt||switch ped roads on angled||
+|-
+|[[0399]]||{{Icon|3}}||7||flt, flt, flt, flt, flt, flt, flt||switch ped roads off angled||
+|-
+|[[039A]]||{{Icon|3}}||7||flt, flt, flt, flt, flt, flt, flt||switch roads on angled||
+|-
+|[[039B]]||{{Icon|3}}||7||flt, flt, flt, flt, flt, flt, flt||switch roads off angled||
+|-
+|[[039C]]||{{Icon|t}}||2||car handle, int||set car watertight||
+|-
+|[[039D]]||{{Icon|3}} {{Icon|VC}}||12||int, flt, flt, flt, flt, flt, flt, flt, int, int, int, int||add moving particle effect||parameters rearranged in SB
+|-
+|[[039E]]||{{Icon|t}}||2||char handle, int||set char cant be dragged out||
+|-
+|[[039F]]||{{Icon|t}}||3||car handle, flt, flt||turn car to face coord||
+|-
+|[[03A0]]||{{Icon|3}}||3||car handle, flt, flt||is crane lifting car||restored in VC
+|-
+|[[03A1]]||{{Icon|t}}||4||flt, flt, flt, flt||show sphere at coord||
+|-
+|[[03A2]]||{{Icon|t}}||2||car handle, int||set car status||
+|-
+|[[03A3]]||{{Icon|t}}||1||char handle||is char male||
+|-
+|[[03A4]]||{{Icon|t}}||1||string||script name||
+|-
+|[[03A5]]||{{Icon|3}}||3||garage handle, int, int||change garage type with car model||restored in VC
+|-
+|[[03A6]]||{{Icon|3}}||3||var, var, var||find incoming cessna coordinates||
+|-
+|[[03A7]]||{{Icon|t}}||1||nop||no operation (saved integer to debug file)||
+|-
+|[[03A8]]||{{Icon|t}}||1||nop||no operation (saved float to debug file)||used in mobile GTA III debug
+|-
+|[[03A9]]||{{Icon|t}}||0||nop||no operation (save newline to debug file)||used in mobile GTA III debug
+|-
+|[[03AA]]||{{Icon|3}} {{Icon|VC}}||3||flt, flt, flt||police radio message||
+|-
+|[[03AB]]||{{Icon|t}}||2||car handle, int||set car strong||
+|-
+|[[03AC]]||{{Icon|3}} {{Icon|VC}}||1||int||remove route||
+|-
+|[[03AD]]||{{Icon|3}} {{Icon|VC}}||1||int||switch rubbish||
+|-
+|[[03AE]]||{{Icon|3}} {{Icon|VC}}||6||flt, flt, flt, flt, flt, flt||remove particle effects in area||
+|-
+|[[03AF]]||{{Icon|t}}||1||int||switch streaming||
+|-
+|[[03B0]]||{{Icon|t}}||1||garage handle||is garage open||
+|-
+|[[03B1]]||{{Icon|t}}||1||garage handle||is garage closed||
+|-
+|[[03B2]]||{{Icon|3}}||0||||start catalina heli||
+|-
+|[[03B3]]||{{Icon|3}}||0||||catalina heli take off||
+|-
+|[[03B4]]||{{Icon|3}}||0||||remove catalina heli||
+|-
+|[[03B5]]||{{Icon|3}}||0||||has catalina heli been shot down||
+|-
+|[[03B6]]||{{Icon|t}}||6||flt, flt, flt, flt, int, int||swap nearest building model||
+|-
+|[[03B7]]||{{Icon|t}}||1||int||switch world processing||
+|-
+|[[03B8]]||{{Icon|3}} {{Icon|VC}}||1||player handle||remove all player weapons||
+|-
+|[[03B9]]||{{Icon|3}}||1||car handle||grab catalina heli||
+|-
+|[[03BA]]||{{Icon|t}}||6||flt, flt, flt, flt, flt, flt||clear area of cars||
+|-
+|[[03BB]]||{{Icon|3}} {{Icon|VC}}||1||garage handle||set garage door to rotate||
+|-
+|[[03BC]]||{{Icon|t}}||5||flt, flt, flt, flt, var||add sphere||parameters rearranged in SB
+|-
+|[[03BD]]||{{Icon|t}}||1||sphere handle||remove sphere||
+|-
+|[[03BE]]||{{Icon|3}}||0||||catalina heli hover above||
+|-
+|[[03BF]]||{{Icon|t}}||2||player handle, int||set everyone ignore player||
+|-
+|[[03C0]]||{{Icon|t}}||2||char handle, var||store car char is in no save||parameters rearranged in SB
+|-
+|[[03C1]]||{{Icon|3}} {{Icon|VC}}||2||player handle, var||store car player is in no save||parameters rearranged in SB
+|-
+|[[03C2]]||{{Icon|3}}||1||phone handle||is phone displaying message||restored in VC
+|-
+|[[03C3]]||{{Icon|3}}<br>{{Icon|VC}} {{Icon|SA}}||2<br>3||global var, string<br>global var, int, string||display onscreen timer with string||
+|-
+|[[03C4]]||{{Icon|t}}||3||global var, int, string||display onscreen counter with string||
+|-
+|[[03C5]]||{{Icon|t}}||4||flt, flt, flt, flt||create random car for car park||
+|-
+|[[03C6]]||{{Icon|3}}||1||int||is collision in memory||restored in VC
+|-
+|[[03C7]]||{{Icon|t}}||1||flt||set wanted multiplier||
+|-
+|[[03C8]]||{{Icon|t}}||0||||set camera in front of player||
+|-
+|[[03C9]]||{{Icon|3}}||1||car handle||is car visibly damaged||restored in VC
+|-
+|[[03CA]]||{{Icon|t}}||1||object handle||does object exist||
+|-
+|[[03CB]]||{{Icon|t}}||3||flt, flt, flt||load scene||
+|-
+|[[03CC]]||{{Icon|t}}||3||car handle, flt, int||add stuck car check||
+|-
+|[[03CD]]||{{Icon|t}}||1||car handle||remove stuck car check||
+|-
+|[[03CE]]||{{Icon|t}}||1||car handle||is car stuck||
+|-
+|[[03CF]]||{{Icon|3}}<br />{{Icon|VC}} {{Icon|SA}}||1<br />2||string<br />int, string||load mission audio||parameters rearranged in SB
+|-
+|[[03D0]]||{{Icon|3}}<br />{{Icon|VC}} {{Icon|SA}}||0<br />1||<br />int||has mission audio loaded||
+|-
+|[[03D1]]||{{Icon|3}}<br />{{Icon|VC}} {{Icon|SA}}||0<br />1||<br />int||play mission audio||
+|-
+|[[03D2]]||{{Icon|3}}<br />{{Icon|VC}} {{Icon|SA}}||0<br />1||<br />int||has mission audio finished||
+|-
+|[[03D3]]||{{Icon|t}}||7||flt, flt, flt, var, var, var, var||get closest car node with heading||
+|-
+|[[03D4]]||{{Icon|3}} {{Icon|VC}}||2||garage handle, car handle||has import garage slot been filled||
+|-
+|[[03D5]]||{{Icon|t}}||1||string||clear this print||
+|-
+|[[03D6]]||{{Icon|t}}||1||string||clear this big print||
+|-
+|[[03D7]]||{{Icon|3}}<br />{{Icon|VC}} {{Icon|SA}}||3<br />4||flt, flt, flt<br />int, flt, flt, flt||set mission audio position||
+|-
+|[[03D8]]||{{Icon|t}}||0||||activate save menu||
+|-
+|[[03D9]]||{{Icon|t}}||0||||did save complete successfully||
+|-
+|[[03DA]]||{{Icon|3}} {{Icon|VC}}||1||garage handle||set garage camera follows player||
+|-
+|[[03DB]]||{{Icon|3}}||4||object handle, int, int, var||add blip with properties for pickup||restored in VC
+|-
+|[[03DC]]||{{Icon|t}}||2||pickup handle, var||add blip for pickup||parameters rearranged in SB
+|-
+|[[03DD]]||{{Icon|3}}||3||pickup handle, int, var||add blip sprite for pickup||restored in VC
+|-
+|[[03DE]]||{{Icon|t}}||1||flt||set ped density multiplier||
+|-
+|[[03DF]]||{{Icon|3}} {{Icon|VC}}||1||int||force random ped type||
+|-
+|[[03E0]]||{{Icon|3}} {{Icon|SA}}||1||int||set text draw before fade||
+|-
+|[[03E1]]||{{Icon|3}} {{Icon|VC}}||1||var||get number of packages found||
+|-
+|[[03E2]]||{{Icon|3}}<br />{{Icon|VC}}||1<br />1||int<br />char handle||register el burro time<br />task char exit any car||
+|-
+|[[03E3]]||{{Icon|t}}||1||int||set next texture antialiased||
+|-
+|[[03E4]]||{{Icon|t}}||1||int||set text right justify||
+|-
+|[[03E5]]||{{Icon|t}}||1||string||print help||
+|-
+|[[03E6]]||{{Icon|t}}||0||||clear help||
+|-
+|[[03E7]]||{{Icon|t}}||1||int||flash hud object||
+|-
+|[[03E8]]||{{Icon|uns}}||-||||||
+|-
+|[[03E9]]||{{Icon|3}}||1||char handle||is char in control||restored in VC
+|-
+|[[03EA]]||{{Icon|3}} {{Icon|VC}}||1||int||set generate cars around camera||
+|-
+|[[03EB]]||{{Icon|t}}||0||||clear small prints||
+|-
+|[[03EC]]||{{Icon|3}}||0||||has ev crane collected all cars||restored in VC
+|-
+|[[03ED]]||{{Icon|t}}||2||car handle, int||set upsidedown car not damaged||
+|-
+|[[03EE]]||{{Icon|t}}||1||player handle||can player start mission||
+|-
+|[[03EF]]||{{Icon|t}}||1||player handle||make player safe for cutscene||only use before cutscenes
+|-
+|[[03F0]]||{{Icon|t}}||1||int||use text commands||
+|-
+|[[03F1]]||{{Icon|3}} {{Icon|VC}}||2||int, int||set threat for ped type||
+|-
+|[[03F2]]||{{Icon|3}} {{Icon|VC}}||2||int, int||clear threat for ped type||
+|-
+|[[03F3]]||{{Icon|t}}||3||car handle, var, var||get car colours||
+|-
+|[[03F4]]||{{Icon|t}}||1||int||set all cars can be damaged||
+|-
+|[[03F5]]||{{Icon|t}}||2||car handle, int||set car can be damaged||
+|-
+|[[03F6]]||{{Icon|uns}}||-||||||
+|-
+|[[03F7]]||{{Icon|3}}||1||int||load collision||
+|-
+|[[03F8]]||{{Icon|3}}||1||var||get body cast health||used in Liberty City mod for VC
+|-
+|[[03F9]]||{{Icon|3}} {{Icon|VC}}||3||char handle, char handle, int||set chars chatting||
+|-
+|[[03FA]]||{{Icon|uns}}||-||||||
+|-
+|[[03FB]]||{{Icon|3}}||2||car handle, int||set car stays in current level||restored in VC
+|-
+|[[03FC]]||{{Icon|3}}||2||char handle, int||set char stays in current level||restored in VC
+|-
+|[[03FD]]||{{Icon|3}}<br />{{Icon|VC}} {{Icon|SA}}||1<br />2||int<br />player handle, int||register 4x4 one time<br />set player handling responsiveness||
+|-
+|[[03FE]]||{{Icon|3}}<br />{{Icon|VC}} {{Icon|SA}}||1<br />2||int<br />char handle, int||register 4x4 two time<br />set char money||
+|-
+|[[03FF]]||{{Icon|3}}||1||int||register 4x4 three time||
+|-
+|[[0400]]||{{Icon|3}}<br />{{Icon|VC}} {{Icon|SA}}||1<br />7||int<br />object handle, flt, flt, flt, var, var, var||register 4x4 mayhem time<br />get offset from object in world coords||parameters rearranged in SB
+|-
+|[[0401]]||{{Icon|3}} {{Icon|VC}}||0||||register life saved||
+|-
+|[[0402]]||{{Icon|3}} {{Icon|VC}}||0||||register criminal caught||
+|-
+|[[0403]]||{{Icon|3}} {{Icon|VC}}||1||int||register ambulance level||
+|-
+|[[0404]]||{{Icon|3}} {{Icon|VC}}||0||||register fire extinguished||
+|-
+|[[0405]]||{{Icon|3}} {{Icon|VC}}||1||phone handle||enable phone||
+|-
+|[[0406]]||{{Icon|3}}||1||int||register longest dodo flight||
+|-
+|[[0407]]||{{Icon|3}}<br />{{Icon|VC}} {{Icon|SA}}||1<br />7||int<br />car handle, flt, flt, flt, var, var, var||register defuse bomb time<br />get offset from car in world coords||parameters rearranged in SB
+|-
+|[[0408]]||{{Icon|3}} {{Icon|VC}}||1||int||set total number of rampages||
+|-
+|[[0409]]||{{Icon|3}} {{Icon|VC}}||0||||blow up rc buggy||
+|-
+|[[040A]]||{{Icon|3}}||1||int||remove car from chase scene||
+|-
+|[[040B]]||{{Icon|3}} {{Icon|VC}}||0||||is French game||
+|-
+|[[040C]]||{{Icon|t}}||0||||is German game||
+|-
+|[[040D]]||{{Icon|3}}<br />{{Icon|VC}} {{Icon|SA}}||0<br />1||<br />int||clear mission audio||
+|-
+|[[040E]]||{{Icon|3}}||1||int||set fade in after next arrest||
+|-
+|[[040F]]||{{Icon|3}}||1||int||set fade in after next death||
+|-
+|[[0410]]||{{Icon|3}}||2||int, int||set gang ped model preference||restored in VC
+|-
+|[[0411]]||{{Icon|3}} {{Icon|VC}}||2||char handle, int||set char use pednode seek||
+|-
+|[[0412]]||{{Icon|3}}||2||car handle, int||switch vehicle weapons||
+|-
+|[[0413]]||{{Icon|3}}||2||player handle, int||set get out of jail free||restored in VC
+|-
+|[[0414]]||{{Icon|t}}||2||player handle, int||set free health care||
+|-
+|[[0415]]||{{Icon|3}}||2||car handle, int||is car door closed||restored in VC
+|-
+|[[0416]]||{{Icon|3}} {{Icon|VC}}||0||nop||no operation||
+|-
+|[[0417]]||{{Icon|t}}||1||int||launch mission||
+|-
+|[[0418]]||{{Icon|t}}||2||object handle, int||set object draw last||
+|-
+|[[0419]]||{{Icon|3}} {{Icon|VC}}||3||player handle, int, var||get ammo in player weapon||parameters rearranged in SB
+|-
+|[[041A]]||{{Icon|3}}||3||char handle, int, var||get ammo in char weapon||
+|-
+|[[041B]]||{{Icon|3}}||0||||increment rampage passed||restored in VC
+|-
+|[[041C]]||{{Icon|3}}||2||char handle, int||set char say||restored in VC
+|-
+|[[041D]]||{{Icon|t}}||1||flt||set near clip||
+|-
+|[[041E]]||{{Icon|t}}||2||int, int||set radio channel||
+|-
+|[[041F]]||{{Icon|3}}||1||int||override hospital level||restored in VC
+|-
+|[[0420]]||{{Icon|3}}||1||int||override police station level||restored in VC
+|-
+|[[0421]]||{{Icon|3}}||1||int||force rain||restored in VC
+|-
+|[[0422]]||{{Icon|3}}||2||garage handle, car handle||does garage contain car||restored in VC
+|-
+|[[0423]]||{{Icon|t}}||2||car handle, flt||set car improve handling||
+|-
+|[[0424]]||{{Icon|t}}||0||||are measurements in meters||
+|-
+|[[0425]]||{{Icon|t}}||2||flt, var||convert meters to feet||parameters rearranged in SB
+|-
+|[[0426]]||{{Icon|3}}||6||flt, flt, flt, flt, flt, flt||mark roads between levels||
+|-
+|[[0427]]||{{Icon|3}}||6||flt, flt, flt, flt, flt, flt||mark ped roads between levels||
+|-
+|[[0428]]||{{Icon|t}}||2||car handle, int||set car avoid level transitions||
+|-
+|[[0429]]||{{Icon|3}}||2||char handle, int||set char avoid level transitions||
+|-
+|[[042A]]||{{Icon|3}}||2||int, int||is threat for ped type||restored in VC
+|-
+|[[042B]]||{{Icon|t}}||6||flt, flt, flt, flt, flt, flt||clear area of chars||
+|-
+|[[042C]]||{{Icon|t}}||1||int||set total missions||
+|-
+|[[042D]]||{{Icon|t}}||2||int, var||convert meters to feet int||parameters rearranged in SB
+|-
+|[[042E]]||{{Icon|t}}||2||int, int/flt||register fastest time||
+|-
+|[[042F]]||{{Icon|3}} {{Icon|VC}}||2||int, int/flt||register highest score||
+|-
+|[[0430]]||{{Icon|SA}}||3||char handle, car handle, int||warp char into car as passenger||
+|-
+|[[0431]]||{{Icon|t}}||2||car handle, int||is car passenger seat free||
+|-
+|[[0432]]||{{Icon|3}} {{Icon|SA}}||3||car handle, int, var||get char in passenger seat||restored in VC
+|-
+|[[0433]]||{{Icon|t}}||2||char handle, int||set char is criminal||
+|-
+|[[0434]]||{{Icon|t}}||0||||start credits||
+|-
+|[[0435]]||{{Icon|t}}||0||||stop credits||
+|-
+|[[0436]]||{{Icon|t}}||0||||are credits finished||
+|-
+|[[0437]]||{{Icon|3}} {{Icon|VC}}||8||int, flt, flt, flt, flt, flt, flt, flt||scatter single particle||parameters rearranged in SB
+|-
+|[[0438]]||{{Icon|3}}||2||char handle, int||set char ignore level transitions||restored in VC
+|-
+|[[0439]]||{{Icon|3}}||2||int, car handle||turn chase car into script car||
+|-
+|[[043A]]||{{Icon|3}}||0||||start boat foam animation||
+|-
+|[[043B]]||{{Icon|3}}||1||object handle||update boat foam animation||
+|-
+|[[043C]]||{{Icon|t}}||1||int||set music does fade||
+|-
+|[[043D]]||{{Icon|3}}||1||int||set intro is playing||
+|-
+|[[043E]]||{{Icon|3}} {{Icon|VC}}||2||player handle, char handle||set player hooker||
+|-
+|[[043F]]||{{Icon|3}} {{Icon|VC}}||0||||play end of game tune||
+|-
+|[[0440]]||{{Icon|3}} {{Icon|VC}}||0||||stop end of game tune||
+|-
+|[[0441]]||{{Icon|t}}||2||car handle, var||get car model||parameters rearranged in SB
+|-
+|[[0442]]||{{Icon|3}} {{Icon|VC}}||2||player handle, car handle||is player sitting in car||
+|-
+|[[0443]]||{{Icon|3}} {{Icon|VC}}||1||player handle||is player sitting in any car||
+|-
+|[[0444]]||{{Icon|3}}||2||fire handle, int||set script fire audio||restored in VC
+|-
+|[[0445]]||{{Icon|t}}||0||||are any car cheats activated||
+|-
+|[[0446]]||{{Icon|t}}||2||char handle, int||set char dismemberment||
+|-
+|[[0447]]||{{Icon|3}}||1||player handle||is player lifting a phone||restored in VC
+|-
+|[[0448]]||{{Icon|t}}||2||char handle, car handle||is char sitting in car||
+|-
+|[[0449]]||{{Icon|t}}||1||char handle||is char sitting in any car||
+|-
+|[[044A]]||{{Icon|3}} {{Icon|VC}}||1||player handle||is player on foot||
+|-
+|[[044B]]||{{Icon|t}}||1||char handle||is char on foot||
+|-
+|[[044C]]||{{Icon|3}}||1||int||load collision with screen||
+|-
+|[[044D]]||{{Icon|3}} {{Icon|VC}}||1||string||load splash screen||
+|-
+|[[044E]]||{{Icon|3}}||2||car handle, int||set car ignore level transitions||restored in VC
+|-
+|[[044F]]||{{Icon|3}}||2||car handle, int||make car a bit stronger||restored in VC
+|-
+|[[0450]]||{{Icon|3}} {{Icon|VC}}||1||car handle||set car on path to player||
+|-
+|[[0451]]||{{Icon|3}} {{Icon|VC}}||0||||load end of game tune||
+|-
+|[[0452]]||{{Icon|3}}||0||||enable player control camera||restored in VC
+|-
+|[[0453]]||{{Icon|t}}||4||object handle, flt, flt, flt||set object rotation||
+|-
+|[[0454]]||{{Icon|t}}||3||var, var, var||get debug camera coordinates||
+|-
+|[[0455]]||{{Icon|3}}||3||var, var, var||get debug camera front vector||
+|-
+|[[0456]]||{{Icon|3}}||1||player handle||is player targetting any char||
+|-
+|[[0457]]||{{Icon|t}}||2||player handle, char handle||is player targetting char||
+|-
+|[[0458]]||{{Icon|3}} {{Icon|SA}}||2||player handle, object handle||is player targetting object||
+|-
+|[[0459]]||{{Icon|t}}||1||string||terminate all scripts with this name||
+|-
+|[[045A]]||{{Icon|t}}||4||flt, flt, string, int||display text with number||
+|-
+|[[045B]]||{{Icon|t}}||5||flt, flt, string, int, int||display text with 2 numbers||
+|-
+|[[045C]]||{{Icon|t}}||0||||fail current mission||
+|-
+|[[045D]]||{{Icon|3}}<br />{{Icon|VC}}||6<br />0||flt, flt, flt, flt, int, var<br />nop||get random object of type in area<br />no operation||
+|-
+|[[045E]]||{{Icon|3}}||5||object handle, object handle, flt, flt, flt||place object relative to object||
+|-
+|[[045F]]||{{Icon|3}} {{Icon|VC}}||1||car handle||make all occupants of specified car to exit the car||
+|-
+|[[0460]]||{{Icon|t}}||2||flt, int||set interpolation parameters||
+|-
+|[[0461]]||{{Icon|3}}||9||||get closest car node with heading towards point||
+|-
+|[[0462]]||{{Icon|3}}||9||||get closest car node with heading away point||
+|-
+|[[0463]]||{{Icon|t}}||3||var, var, var||get debug camera point at||
+|-
+|[[0464]]||{{Icon|t}}||8||char handle, car handle, flt, flt, flt, int, flt, int||attach char to car||
+|-
+|[[0465]]||{{Icon|t}}||1||char handle||detach char from car||
+|-
+|[[0466]]||{{Icon|t}}||2||car handle, int||set car change lane||
+|-
+|[[0467]]||{{Icon|t}}||1||char handle||clear char last weapon damage||
+|-
+|[[0468]]||{{Icon|t}}||1||car handle||clear car last weapon damage||
+|-
+|[[0469]]||{{Icon|3}} {{Icon|VC}}||10||flt, flt, flt, flt, int, int, int, int, int, var||get law enforcement in area||parameters rearranged in SB
+|-
+|[[046A]]||{{Icon|3}}||2||string, var||get law enforcement in zone||
+|-
+|[[046B]]||{{Icon|3}} {{Icon|VC}}||2||char handle, car handle||task leave car by any means||
+|-
+|[[046C]]||{{Icon|t}}||2||car handle, var||get driver of car||parameters rearranged in SB
+|-
+|[[046D]]||{{Icon|t}}||2||char handle, var||get char number of followers||parameters rearranged in SB
+|-
+|[[046E]]||{{Icon|t}}||6||player handle, flt, flt, flt, flt, int||give remote controlled model to player||
+|-
+|[[046F]]||{{Icon|3}} {{Icon|VC}}||2||player handle, var||get current player weapon||
+|-
+|[[0470]]||{{Icon|t}}||2||char handle, var||get current char weapon||parameters rearranged in SB
+|-
+|[[0471]]||{{Icon|t}}||5||char handle, object handle, flt, flt, int||locate char any means object 2d||
+|-
+|[[0472]]||{{Icon|t}}||5||char handle, object handle, flt, flt, int||locate char on foot object 2d||
+|-
+|[[0473]]||{{Icon|t}}||5||char handle, object handle, flt, flt, int||locate char in car object 2d||
+|-
+|[[0474]]||{{Icon|t}}||6||char handle, object handle, flt, flt, flt, int||locate char any means object 3d||
+|-
+|[[0475]]||{{Icon|t}}||6||char handle, object handle, flt, flt, flt, int||locate char on foot object 3d||
+|-
+|[[0476]]||{{Icon|t}}||6||char handle, object handle, flt, flt, flt, int||locate char in car object 3d||
+|-
+|[[0477]]||{{Icon|t}}||3||car handle, int, int||set car driving behavior||
+|-
+|[[0478]]||{{Icon|3}}||2||car handle, int||set car handbrake turn right||
+|-
+|[[0479]]||{{Icon|3}}||2||car handle, int||set car handbrake stop||
+|-
+|[[047A]]||{{Icon|t}}||1||char handle||is char on any bike||
+|-
+|[[047B]]||{{Icon|3}}||5||flt, flt, flt, flt, int||locate sniper bullet 2d||
+|-
+|[[047C]]||{{Icon|3}}||7||flt, flt, flt, flt, flt, flt, int||locate sniper bullet 3d||
+|-
+|[[047D]]||{{Icon|3}}||2||int, var||get number of seats in model||restored in VC
+|-
+|[[047E]]||{{Icon|3}} {{Icon|VC}}||1||player handle||is player on any bike||
+|-
+|[[047F]]||{{Icon|3}}||1||char handle||is char lying down||
+|-
+|[[0480]]||{{Icon|t}}||2||char handle, int||is char looking at death of char with pedtype||
+|-
+|[[0481]]||{{Icon|3}} {{Icon|VC}}||1||flt||set enter car range multiplier||
+|-style="background: lightblue"
+|[[0482]]||{{Icon|3}} {{Icon|VC}}||1||flt||set threat reaction range multiplier||last opcode available for GTA III PC
+|-
+|[[0483]]||{{Icon|VC}}||2||char handle, int||set char chase attack timer||
+|-
+|[[0484]]||{{Icon|VC}} {{Icon|SA}}||2||player handle, var||get remote controlled car||parameters rearranged in SB
+|-
+|[[0485]]||{{Icon|VC}} {{Icon|SA}}||0||||check if game is PC version||
+|-
+|[[0486]]||{{Icon|uns}}||-||||||
+|-
+|[[0487]]||{{Icon|uns}}||-||||||
+|-
+|[[0488]]||{{Icon|VC}} {{Icon|SA}}||1||int||is model available||
+|-
+|[[0489]]||{{Icon|VC}} {{Icon|SA}}||2||char handle, int||shut character up||
+|-
+|[[048A]]||{{Icon|VC}} {{Icon|SA}}||1||int||set enable rc detonate||
+|-
+|[[048B]]||{{Icon|VC}} {{Icon|SA}}||2||car handle, int||set car random route seed||
+|-
+|[[048C]]||{{Icon|VC}} {{Icon|SA}}||3||flt, flt, flt||is any pickup at coords||
+|-
+|[[048D]]||{{Icon|uns}}||-||||||
+|-
+|[[048E]]||{{Icon|uns}}||-||||||
+|-
+|[[048F]]||{{Icon|VC}} {{Icon|SA}}||1||char handle||remove all char weapons||
+|-
+|[[0490]]||{{Icon|VC}}||2||player handle, int||has player got weapon||
+|-
+|[[0491]]||{{Icon|SA}}||2||char handle, int||has char got weapon||
+|-
+|[[0492]]||{{Icon|uns}}||-||||||
+|-
+|[[0493]]||{{Icon|VC}}||2||car handle, int||set tank detonate cars||
+|-
+|[[0494]]||{{Icon|VC}} {{Icon|SA}}||5||int, var, var, var, var||get joystick data||
+|-
+|[[0495]]||{{Icon|VC}} {{Icon|SA}}||1||car handle||is car on fire||
+|-
+|[[0496]]||{{Icon|VC}} {{Icon|SA}}||2||car handle, int||is car tyre burst||
+|-
+|[[0497]]||{{Icon|uns}}||-||||||
+|-
+|[[0498]]||{{Icon|uns}}||-||||||
+|-
+|[[0499]]||{{Icon|uns}}||-||||||
+|-
+|[[049A]]||{{Icon|uns}}||-||||||
+|-
+|[[049B]]||{{Icon|uns}}||-||||||
+|-
+|[[049C]]||{{Icon|VC}}||3||int, flt, var||initialise [[Script Path|script path]]||parameters rearranged in SB
+|-
+|[[049D]]||{{Icon|VC}}||2||object handle, path handle||attach object to script path||parameters rearranged in SB
+|-
+|[[049E]]||{{Icon|VC}}||2||path handle, flt||set script path speed||
+|-
+|[[049F]]||{{Icon|VC}}||2||path handle, flt||set script path distance||
+|-
+|[[04A0]]||{{Icon|uns}}||-||||||
+|-
+|[[04A1]]||{{Icon|VC}} {{Icon|SA}}||1||path handle||clear script path||
+|-
+|[[04A2]]||{{Icon|VC}}<br />{{Icon|SA}}||5<br />6||car handle, flt, flt, flt, int<br />car handle, flt, flt, flt, flt, flt||set heli fly to coord||
+|-
+|[[04A3]]||{{Icon|VC}} {{Icon|SA}}||2||||||
+|-
+|[[04A4]]||{{Icon|VC}} {{Icon|SA}}||2||||||
+|-
+|[[04A5]]||{{Icon|VC}} {{Icon|SA}}||4||char handle, flt, flt, flt||get random drop position from char||
+|-
+|[[04A6]]||{{Icon|VC}} {{Icon|SA}}||6||flt, flt, flt, int, int, var||create protection pickup||parameters rearranged in SB
+|-
+|[[04A7]]||{{Icon|SA}}||1||char handle||is char in any boat||restored in VC
+|-
+|[[04A8]]||{{Icon|VC}}||1||player handle||is player in any boat||
+|-
+|[[04A9]]||{{Icon|SA}}||1||char handle||is char in any heli||restored in VC
+|-
+|[[04AA]]||{{Icon|VC}}||1||player handle||is player in any heli||
+|-
+|[[04AB]]||{{Icon|SA}}||1||char handle||is char in any plane||restored in VC
+|-
+|[[04AC]]||{{Icon|VC}}||1||player handle||is player in any plane||
+|-
+|[[04AD]]||{{Icon|VC}} {{Icon|SA}}||1||char handle||is char in water||
+|-
+|[[04AE]]||{{Icon|VC}} {{Icon|SA}}||2||||||
+|-
+|[[04AF]]||{{Icon|VC}} {{Icon|SA}}||2||||||
+|-
+|[[04B0]]||{{Icon|VC}} {{Icon|SA}}||2||||||
+|-
+|[[04B1]]||{{Icon|VC}} {{Icon|SA}}||2||||||
+|-
+|[[04B2]]||{{Icon|VC}} {{Icon|SA}}||2||||||
+|-
+|[[04B3]]||{{Icon|VC}} {{Icon|SA}}||2||||||
+|-
+|[[04B4]]||{{Icon|VC}} {{Icon|SA}}||2||||||
+|-
+|[[04B5]]||{{Icon|VC}} {{Icon|SA}}||2||||||
+|-
+|[[04B6]]||{{Icon|VC}} {{Icon|SA}}||2||||||
+|-
+|[[04B7]]||{{Icon|VC}} {{Icon|SA}}||2||||||
+|-
+|[[04B8]]||{{Icon|VC}} {{Icon|SA}}||5||char handle, int, var, var, var||get char weapon in slot||
+|-
+|[[04B9]]||{{Icon|VC}} {{Icon|SA}}||12||flt, flt, flt, flt, flt, var, var, var, var, var, var, var||get closest straight road||
+|-
+|[[04BA]]||{{Icon|VC}} {{Icon|SA}}||2||car handle, flt||set car forward speed||
+|-
+|[[04BB]]||{{Icon|VC}} {{Icon|SA}}||1||int||set interior||
+|-
+|[[04BC]]||{{Icon|VC}}||1||string||set cutscene animation to loop||
+|-
+|[[04BD]]||{{Icon|VC}} {{Icon|SA}}||2||car handle, int||mark car as convoy car||
+|-
+|[[04BE]]||{{Icon|VC}}||1||player handle||reset player chaos level||
+|-
+|[[04BF]]||{{Icon|VC}}||2||player handle, var||get player chaos level||parameters rearranged in SB
+|-
+|[[04C0]]||{{Icon|VC}} {{Icon|SA}}||6||flt, flt, flt, flt, flt, flt||create police roadblock||
+|-
+|[[04C1]]||{{Icon|VC}} {{Icon|SA}}||0||||release police roadblock||
+|-
+|[[04C2]]||{{Icon|VC}}||2||char handle, char handle||task char go to char||
+|-
+|[[04C3]]||{{Icon|uns}}||-||||||
+|-
+|[[04C4]]||{{Icon|VC}} {{Icon|SA}}||7||char handle, flt, flt, flt, var, var, var||get offset from char in world coords||parameters rearranged in SB
+|-
+|[[04C5]]||{{Icon|VC}} {{Icon|SA}}||1||char handle||has char been photographed||
+|-
+|[[04C6]]||{{Icon|VC}}||2||char handle, char handle||task aim gun at char||
+|-
+|[[04C7]]||{{Icon|VC}}||1||int||set green scanlines||
+|-
+|[[04C8]]||{{Icon|SA}}||1||char handle||is char in flying vehicle||restored in VC
+|-
+|[[04C9]]||{{Icon|VC}}||1||player handle||is player in flying vehicle||
+|-
+|[[04CA]]||{{Icon|uns}}||-||||||
+|-
+|[[04CB]]||{{Icon|uns}}||-||||||
+|-
+|[[04CC]]||{{Icon|uns}}||-||||||restored in VC
+|-
+|[[04CD]]||{{Icon|uns}}||-||||||restored in VC
+|-
+|[[04CE]]||{{Icon|VC}} {{Icon|SA}}||5||flt, flt, flt, int, var||create icon marker||parameters rearranged in SB
+|-
+|[[04CF]]||{{Icon|VC}}||1||int||add to money spent on fashion stat||
+|-
+|[[04D0]]||{{Icon|VC}} {{Icon|SA}}||2||car handle, flt||force heli looking angle||
+|-
+|[[04D1]]||{{Icon|VC}} {{Icon|SA}}||1||car handle||reset heli looking angle||
+|-
+|[[04D2]]||{{Icon|VC}}<br />{{Icon|SA}}||5<br />6||car handle, flt, flt, flt, int<br />car handle, flt, flt, flt, flt, flt||set plane fly to coord||
+|-
+|[[04D3]]||{{Icon|VC}} {{Icon|SA}}||7||flt, flt, flt, int, var, var, var||get Nth closest car node||
+|-
+|[[04D4]]||{{Icon|uns}}||-||||||
+|-
+|[[04D5]]||{{Icon|VC}} {{Icon|SA}}||9||flt, flt, flt, flt, int, int, int, int, int||draw corona||
+|-
+|[[04D6]]||{{Icon|VC}} {{Icon|SA}}||1||int||set enable rc detonate on contact||
+|-
+|[[04D7]]||{{Icon|VC}} {{Icon|SA}}||2||char handle, int||freeze char position||
+|-
+|[[04D8]]||{{Icon|VC}} {{Icon|SA}}||2||char handle, int||set char drowns in water||
+|-
+|[[04D9]]||{{Icon|VC}} {{Icon|SA}}||2||object handle, int||set object records collisions||
+|-
+|[[04DA]]||{{Icon|VC}} {{Icon|SA}}||1||object handle||has object collided with anything||
+|-
+|[[04DB]]||{{Icon|VC}} {{Icon|SA}}||0||||remove rc buggy||
+|-
+|[[04DC]]||{{Icon|uns}}||-||||||
+|-
+|[[04DD]]||{{Icon|VC}} {{Icon|SA}}||2||char handle, var||get char armour||parameters rearranged in SB
+|-
+|[[04DE]]||{{Icon|uns}}||-||||||
+|-
+|[[04DF]]||{{Icon|VC}} {{Icon|SA}}||2||car handle, int||set heli stabiliser||
+|-
+|[[04E0]]||{{Icon|VC}} {{Icon|SA}}||2||car handle, int||set car straight line distance||
+|-
+|[[04E1]]||{{Icon|VC}} {{Icon|SA}}||1||car handle||open and freeze car trunk||
+|-
+|[[04E2]]||{{Icon|VC}}||2||player handle, int||shut player up||
+|-
+|[[04E3]]||{{Icon|VC}} {{Icon|SA}}||3||player handle, int, int||set player mood||
+|-
+|[[04E4]]||{{Icon|VC}} {{Icon|SA}}||2||flt, flt||request collision||
+|-
+|[[04E5]]||{{Icon|VC}} {{Icon|SA}}||6||object handle, flt, flt, flt, flt, int||locate object 2d||
+|-
+|[[04E6]]||{{Icon|VC}} {{Icon|SA}}||8||object handle, flt, flt, flt, flt, flt, flt, int||locate object 3d||
+|-
+|[[04E7]]||{{Icon|VC}} {{Icon|SA}}||1||object handle||is object in water||
+|-
+|[[04E8]]||{{Icon|uns}}||-||||||
+|-
+|[[04E9]]||{{Icon|VC}} {{Icon|SA}}||6||object handle, flt, flt, flt, flt, int||is object in area 2d||
+|-
+|[[04EA]]||{{Icon|VC}} {{Icon|SA}}||8||object handle, flt, flt, flt, flt, flt, flt, int||is object in area 3d||
+|-
+|[[04EB]]||{{Icon|VC}} {{Icon|SA}}||3||char handle, int, int||task duck||
+|-
+|[[04EC]]||{{Icon|VC}}||13||string, int, int, int, int, int, int, int, int, int, int, int, int||set zone car class info||
+|-
+|[[04ED]]||{{Icon|VC}} {{Icon|SA}}||1||string||request anims||
+|-
+|[[04EE]]||{{Icon|VC}} {{Icon|SA}}||1||string||have anims loaded||
+|-
+|[[04EF]]||{{Icon|VC}} {{Icon|SA}}||1||string||remove anims||
+|-
+|[[04F0]]||{{Icon|VC}} {{Icon|SA}}||1||char handle||is char waiting for world collision||
+|-
+|[[04F1]]||{{Icon|VC}} {{Icon|SA}}||1||car handle||is car waiting for world collision||
+|-
+|[[04F2]]||{{Icon|uns}}||-||||||
+|-
+|[[04F3]]||{{Icon|VC}}||1||char handle||set char shuffle into drivers seat||
+|-
+|[[04F4]]||{{Icon|VC}} {{Icon|SA}}||8||char handle, object handle, flt, flt, flt, int, flt, int||attach char to object||
+|-
+|[[04F5]]||{{Icon|VC}}||3||char handle, player handle, int||set char as player friend||
+|-
+|[[04F6]]||{{Icon|uns}}||-||||||
+|-
+|[[04F7]]||{{Icon|VC}} {{Icon|SA}}||4||global var, int, int, string||display nth onscreen counter with string||
+|-
+|[[04F8]]||{{Icon|VC}} {{Icon|SA}}||13||int, flt, flt, flt, flt, flt, flt, flt, flt, flt, flt, flt, flt||define police trigger||
+|-
+|[[04F9]]||{{Icon|VC}} {{Icon|SA}}||2||int, int||set sky colors||
+|-
+|[[04FA]]||{{Icon|VC}} {{Icon|SA}}||1||int||reset interior colors||
+|-
+|[[04FB]]||{{Icon|uns}}||-||||||
+|-
+|[[04FC]]||{{Icon|VC}} {{Icon|SA}}||7||player handle, var, var, var, var, var, var||store stunt data||
+|-
+|[[04FD]]||{{Icon|uns}}||-||||||
+|-
+|[[04FE]]||{{Icon|VC}} {{Icon|SA}}||2||car handle, int||burst car tyre||
+|-
+|[[04FF]]||{{Icon|VC}}||1||char handle||is char obj no obj||
+|-
+|[[0500]]||{{Icon|VC}}<br />{{Icon|SA}}||2<br />3||player handle, string<br />player handle, string, string||change player skin||
+|-
+|[[0501]]||{{Icon|VC}} {{Icon|SA}}||2||player handle, int||set player can do drive by||
+|-
+|[[0502]]||{{Icon|VC}}||3||char handle, flt, flt||task flee to point||
+|-
+|[[0503]]||{{Icon|VC}} {{Icon|SA}}||3||flt, flt, flt||create rappel||
+|-
+|[[0504]]||{{Icon|uns}}||-||||||
+|-
+|[[0505]]||{{Icon|uns}}||-||||||
+|-
+|[[0506]]||{{Icon|VC}} {{Icon|SA}}||3||int, int, int||set car model components||
+|-
+|[[0507]]||{{Icon|VC}}||1||int||set camera interference||
+|-
+|[[0508]]||{{Icon|VC}} {{Icon|SA}}||1||car handle||close all car doors||
+|-
+|[[0509]]||{{Icon|VC}} {{Icon|SA}}||5||flt, flt, flt, flt, var||get distance between coords 2d||parameters rearranged in SB
+|-
+|[[050A]]||{{Icon|VC}} {{Icon|SA}}||7||flt, flt, flt, flt, flt, flt, var||get distance between coords 3d||parameters rearranged in SB
+|-
+|[[050B]]||{{Icon|VC}}||1||car handle||pop car boot||
+|-
+|[[050C]]||{{Icon|uns}}||-||||||
+|-
+|[[050D]]||{{Icon|VC}}||1||char handle||is char shot in vehicle||
+|-
+|[[050E]]||{{Icon|VC}} {{Icon|SA}}||2||object handle, car handle||detach object from car||
+|-
+|[[050F]]||{{Icon|SA}}||1||var||get max wanted level||restored in III and VC
+|-
+|[[0510]]||{{Icon|VC}}||5||char handle, flt, flt, flt, flt||is char wander path clear||
+|-
+|[[0511]]||{{Icon|uns}}||-||||||restored in III and VC
+|-
+|[[0512]]||{{Icon|VC}} {{Icon|SA}}||1||string||print help forever||
+|-
+|[[0513]]||{{Icon|SA}}||2||string, int||print help forever with number||restored in VC
+|-
+|[[0514]]||{{Icon|VC}}||3||char handle, int, int||set char can be damaged by gang members||
+|-
+|[[0515]]||{{Icon|VC}}||1||label||load and launch mission exclusive||
+|-
+|[[0516]]||{{Icon|uns}}||-||||||
+|-
+|[[0517]]||{{Icon|VC}} {{Icon|SA}}||5||string, flt, flt, flt, var||create locked property pickup||parameters rearranged in SB
+|-
+|[[0518]]||{{Icon|VC}} {{Icon|SA}}||6||string, flt, flt, flt, int, var||create forsale property pickup||parameters rearranged in SB
+|-
+|[[0519]]||{{Icon|VC}} {{Icon|SA}}||2||car handle, int||freeze car position||
+|-
+|[[051A]]||{{Icon|VC}} {{Icon|SA}}||2||char handle, char handle||has char been damaged by char||
+|-
+|[[051B]]||{{Icon|SA}}||2||char handle, car handle||has char been damaged by car||
+|-
+|[[051C]]||{{Icon|SA}}||2||car handle, char handle||has car been damaged by char||
+|-
+|[[051D]]||{{Icon|SA}}||2||car handle, car handle||has car been damaged by car||
+|-
+|[[051E]]||{{Icon|SA}}||1||var||get radio channel||
+|-
+|[[051F]]||{{Icon|uns}}||-||||||
+|-
+|[[0520]]||{{Icon|uns}}||-||||||
+|-
+|[[0521]]||{{Icon|VC}}||1||char handle||is char drowning in water||
+|-
+|[[0522]]||{{Icon|VC}}||0||||disable cutscene shadows||
+|-
+|[[0523]]||{{Icon|VC}}||3||flt, flt, flt||has glass been shattered nearby||
+|-
+|[[0524]]||{{Icon|VC}}||3||object handle, object handle, int||attach object to bone||only works on cutscene objects
+|-
+|[[0525]]||{{Icon|VC}}||3||object handle, object handle, string||attach object to component of object||only works on cutscene objects
+|-
+|[[0526]]||{{Icon|VC}} {{Icon|SA}}||2||char handle, int||set char to stay in car when jacked||
+|-
+|[[0527]]||{{Icon|uns}}||-||||||
+|-
+|[[0528]]||{{Icon|VC}}||1||int||add to money spent on weapon stat||
+|-
+|[[0529]]||{{Icon|VC}}||1||int||add to money spent on property stat||
+|-
+|[[052A]]||{{Icon|uns}}||-||||||
+|-
+|[[052B]]||{{Icon|VC}}||2||char handle, int||task use mobile phone||
+|-
+|[[052C]]||{{Icon|VC}} {{Icon|SA}}||2||player handle, int||set drunk cam||
+|-
+|[[052D]]||{{Icon|uns}}||-||||||restored in VC
+|-
+|[[052E]]||{{Icon|uns}}||-||||||
+|-
+|[[052F]]||{{Icon|uns}}||-||||||
+|-
+|[[0530]]||{{Icon|uns}}||-||||||restored in VC
+|-
+|[[0531]]||{{Icon|VC}}||1||int||add to stores knocked off stat||
+|-
+|[[0532]]||{{Icon|uns}}||-||||||restored in VC
+|-
+|[[0533]]||{{Icon|VC}}||1||int||add to assassination contracts stat||
+|-
+|[[0534]]||{{Icon|VC}}||1||int||add to pizzas delivered stat||
+|-
+|[[0535]]||{{Icon|uns}}||-||||||restored in VC
+|-
+|[[0536]]||{{Icon|VC}}||1||int||add to drug deals made ("ice cream sold") stat||
+|-
+|[[0537]]||{{Icon|uns}}||-||||||restored in VC
+|-
+|[[0538]]||{{Icon|uns}}||-||||||restored in VC
+|-
+|[[0539]]||{{Icon|uns}}||-||||||
+|-
+|[[053A]]||{{Icon|uns}}||-||||||
+|-
+|[[053B]]||{{Icon|uns}}||-||||||
+|-
+|[[053C]]||{{Icon|VC}}||2||char handle, int||set char in players group can fight||
+|-
+|[[053D]]||{{Icon|VC}}||1||char handle||clear char wait state||
+|-
+|[[053E]]||{{Icon|VC}} {{Icon|SA}}||6||int, flt, flt, flt, flt, var||get random car of specific type in area (no save)||parameters rearranged in SB
+|-
+|[[053F]]||{{Icon|VC}} {{Icon|SA}}||2||car handle, int||set can burst car tires||
+|-
+|[[0540]]||{{Icon|VC}}||2||player handle, int||set player auto aim||
+|-
+|[[0541]]||{{Icon|VC}} {{Icon|SA}}||1||car handle||fire vehicle gun||
+|-
+|[[0542]]||{{Icon|VC}}||1||int||add property to property owned stat||
+|-
+|[[0543]]||{{Icon|VC}}||1||int||add bloodring kills stat||
+|-
+|[[0544]]||{{Icon|VC}}||1||int||set longest time in Blood Ring||
+|-
+|[[0545]]||{{Icon|VC}}||0||||remove everything for huge cutscene||
+|-
+|[[0546]]||{{Icon|VC}}||2||player handle, car handle||is player touching vehicle||restored in III
+|-
+|[[0547]]||{{Icon|SA}}||2||char handle, car handle||is char touching vehicle||restored in III and VC
+|-
+|[[0548]]||{{Icon|VC}}||6||player handle, int, int, flt, flt, flt||check for ped model around player||
+|-
+|[[0549]]||{{Icon|VC}}||1||char handle||clear char follow path||
+|-
+|[[054A]]||{{Icon|VC}} {{Icon|SA}}||2||char handle, int||set char can be shot in vehicle||
+|-
+|[[054B]]||{{Icon|VC}}||2||object handle, car handle||attach cutscene object to vehicle||only works on cutscene objects
+|-
+|[[054C]]||{{Icon|VC}} {{Icon|SA}}||1||string||load mission text||
+|-
+|[[054D]]||{{Icon|VC}}||1||int||set tonights event||
+|-
+|[[054E]]||{{Icon|VC}} {{Icon|SA}}||1||char handle||clear char last damage entity||
+|-
+|[[054F]]||{{Icon|SA}}||1||car handle||clear car last damage entity||
+|-
+|[[0550]]||{{Icon|VC}} {{Icon|SA}}||2||object handle, int||freeze object position||
+|-
+|[[0551]]||{{Icon|VC}}||1||int||set Kaufman Cabs radio||
+|-
+|[[0552]]||{{Icon|VC}}||1||int||set riot noise||
+|-
+|[[0553]]||{{Icon|uns}}||-||||||
+|-
+|[[0554]]||{{Icon|uns}}||-||||||
+|-
+|[[0555]]||{{Icon|SA}}||2||char handle, int||remove weapon from char||
+|-
+|[[0556]]||{{Icon|VC}}||8||flt, flt, flt, flt, flt, flt, flt, flt||create cab||
+|-
+|[[0557]]||{{Icon|VC}}||0||||release cab||
+|-
+|[[0558]]||{{Icon|uns}}||-||||||
+|-
+|[[0559]]||{{Icon|uns}}||-||||||
+|-
+|[[055A]]||{{Icon|VC}}||1||int||set secondary trash||
+|-
+|[[055B]]||{{Icon|VC}}||5||int, flt, flt, flt, var||create clothes pickup||parameters rearranged in SB
+|-
+|[[055C]]||{{Icon|uns}}||-||||||
+|-
+|[[055D]]||{{Icon|VC}} {{Icon|SA}}||2||player handle, int||make player fire proof||
+|-
+|[[055E]]||{{Icon|VC}} {{Icon|SA}}||2||player handle, int||increase player max health||
+|-
+|[[055F]]||{{Icon|VC}} {{Icon|SA}}||2||player handle, int||increase player max armour||
+|-
+|[[0560]]||{{Icon|VC}} {{Icon|SA}}||2||car handle, var||create random char as driver||
+|-
+|[[0561]]||{{Icon|VC}} {{Icon|SA}}||3||car handle, int, var||create random char as passenger||parameters rearranged in SB
+|-
+|[[0562]]||{{Icon|VC}}||2||char handle, int||set char ignore threats behind objects||
+|-
+|[[0563]]||{{Icon|VC}} {{Icon|SA}}||2||player handle, int||ensure player has a drive-by weapon||
+|-
+|[[0564]]||{{Icon|VC}} {{Icon|SA}}||1||car handle||set helicopter simulate crash land||only works on helicopters
+|-
+|[[0565]]||{{Icon|VC}} {{Icon|SA}}||4||flt, flt, flt, int||add explosion with no sound||
+|-
+|[[0566]]||{{Icon|VC}} {{Icon|SA}}||2||object handle, int||set object area visible||
+|-
+|[[0567]]||{{Icon|uns}}||-||||||
+|-
+|[[0568]]||{{Icon|VC}} {{Icon|SA}}||2||char handle, int||set char never targetted||
+|-
+|[[0569]]||{{Icon|VC}}||1||string||load uncompressed animation||
+|-
+|[[056A]]||{{Icon|VC}} {{Icon|SA}}||0||||has cutscene finished||
+|-
+|[[056B]]||{{Icon|VC}}||2||char handle, int||set char to crouch when threatened||
+|-
+|[[056C]]||{{Icon|VC}} {{Icon|SA}}||1||char handle||is char in any police vehicle||
+|-
+|[[056D]]||{{Icon|VC}} {{Icon|SA}}||1||char handle||does char exist||
+|-
+|[[056E]]||{{Icon|SA}}||1||car handle||does car exist||
+|-
+|[[056F]]||{{Icon|uns}}||-||||||restored in VC
+|-
+|[[0570]]||{{Icon|VC}} {{Icon|SA}}||5||int, flt, flt, flt, var||create asset radar marker with icon||parameters rearranged in SB
+|-
+|[[0571]]||{{Icon|VC}}||1||char handle||is char stuck||
+|-
+|[[0572]]||{{Icon|VC}} {{Icon|SA}}||1||int||set all taxis have jump boost and nitro||nitro unavailable in VC
+|-
+|[[0573]]||{{Icon|VC}}||2||char handle, int||set char stop shoot dont seek entity||
+|-
+|[[0574]]||{{Icon|VC}} {{Icon|SA}}||2||car handle, int||freeze car position and dont load collision||
+|-
+|[[0575]]||{{Icon|SA}}||2||char handle, int||freeze char position and dont load collision||
+|-
+|[[0576]]||{{Icon|uns}}||-||||||
+|-
+|[[0577]]||{{Icon|uns}}||-||||||
+|-
+|[[0578]]||{{Icon|VC}}||1||int||register vigilante level||
+|-
+|[[0579]]||{{Icon|VC}}||1||char handle||clear all char anims||
+|-
+|[[057A]]||{{Icon|VC}}||2||garage handle, int||set maximum number of cars in garage||
+|-
+|[[057B]]||{{Icon|VC}}||0||||wanted stars are flashing||
+|-
+|[[057C]]||{{Icon|VC}}||1||int||set allow hurricanes||
+|-
+|[[057D]]||{{Icon|VC}}||1||int||play announcement||
+|-
+|[[057E]]||{{Icon|VC}} {{Icon|SA}}||1||int||set player is in stadium||
+|-
+|[[057F]]||{{Icon|VC}}||2||player handle, var||get bus fares collected by player||
+|-
+|[[0580]]||{{Icon|VC}}||3||char handle, car handle, var||set char obj buy ice cream||parameters rearranged in SB
+|-
+|[[0581]]||{{Icon|VC}} {{Icon|SA}}||1||int||display radar||
+|-
+|[[0582]]||{{Icon|VC}} {{Icon|SA}}||2||int, int||register best position||
+|-
+|[[0583]]||{{Icon|VC}} {{Icon|SA}}||2||player handle, string||is player in info zone||
+|-
+|[[0584]]||{{Icon|VC}}||1||char handle||clear char ice cream purchase||
+|-
+|[[0585]]||{{Icon|VC}}||0||||is in car fire button pressed||available for III and SA through [[00E1]]
+|-
+|[[0586]]||{{Icon|VC}}||1||char handle||has char attempted attractor||
+|-
+|[[0587]]||{{Icon|VC}} {{Icon|SA}}||2||car handle, int||set load collision for car flag||
+|-
+|[[0588]]||{{Icon|VC}} {{Icon|SA}}||2||char handle, int||set load collision for char flag||
+|-
+|[[0589]]||{{Icon|uns}}||-||||||
+|-
+|[[058A]]||{{Icon|VC}} {{Icon|SA}}||6||flt, flt, flt, flt, flt, flt||add big gun flash||
+|-
+|[[058B]]||{{Icon|VC}}||1||char handle||has char bought ice cream||
+|-
+|[[058C]]||{{Icon|VC}} {{Icon|SA}}||1||var||get progress percentage||
+|-
+|[[058D]]||{{Icon|VC}}||4||flt, flt, flt, flt||set shortcut pickup point||
+|-
+|[[058E]]||{{Icon|VC}}||4||flt, flt, flt, flt||set shortcut dropoff point for mission||
+|-
+|[[058F]]||{{Icon|VC}}||8||char handle, flt, flt, flt, flt, int, int, int||get random ice cream customer in area||
+|-
+|[[0590]]||{{Icon|uns}}||-||||||
+|-
+|[[0591]]||{{Icon|VC}}||4||flt, flt, flt, flt||unlock all car doors in area||
+|-
+|[[0592]]||{{Icon|VC}}||2||int, int||set gang to attack player with cops||
+|-
+|[[0593]]||{{Icon|VC}}||2||char handle, int||set char frightened in jacked car||
+|-
+|[[0594]]||{{Icon|VC}} {{Icon|SA}}||2||car handle, int||set vehicle to fade in||
+|-
+|[[0595]]||{{Icon|VC}} {{Icon|SA}}||0||||register oddjob mission passed||
+|-
+|[[0596]]||{{Icon|VC}}||1||player handle||is player in shortcut taxi||
+|-
+|[[0597]]||{{Icon|VC}} {{Icon|SA}}||1||char handle||is char ducking||
+|-
+|[[0598]]||{{Icon|VC}}||3||object handle, flt, int||create dust effect for cutscene heli||
+|-
+|[[0599]]||{{Icon|VC}}||1||int||register fire level||
+|-
+|[[059A]]||{{Icon|VC}} {{Icon|SA}}||0||||is Australian game||
+|-
+|[[059B]]||{{Icon|VC}}||1||car handle||disarm car bomb||
+|-style="background: lavenderblush"
+|[[059C]]||{{Icon|VC}} {{Icon|SA}}<br>{{Icon|VC}}||2<br>0||global var, int<br>&nbsp;||set onscreen counter flash when first displayed<br>is Japanese game||last opcode available for Vice City JP and Steam
+|-
+|[[059D]]||{{Icon|VC}} {{Icon|SA}}||1||int||shuffle card decks||restored in VC Steam
+|-
+|[[059E]]||{{Icon|VC}} {{Icon|SA}}||1||var||fetch next card||restored in VC Steam
+|-
+|[[059F]]||{{Icon|VC}} {{Icon|SA}}||4||object handle, var, var, var||get object velocity||
+|-
+|[[05A0]]||{{Icon|VC}} {{Icon|SA}}||0||||is debug camera on||
+|-
+|[[05A1]]||{{Icon|VC}} {{Icon|SA}}||4||object handle, flt, flt, flt||add to object rotation velocity||
+|-
+|[[05A2]]||{{Icon|VC}} {{Icon|SA}}||4||object handle, flt, flt, flt||set object rotation velocity||
+|-
+|[[05A3]]||{{Icon|VC}} {{Icon|SA}}||1||object handle||is object static||
+|-
+|[[05A4]]||{{Icon|VC}} {{Icon|SA}}||5||flt, flt, flt, flt, var||get angle between 2D vectors||
+|-
+|[[05A5]]||{{Icon|VC}} {{Icon|SA}}||8||flt, flt, flt, flt, flt, flt, flt, flt||do 2d rectangles collide||
+|-
+|[[05A6]]||{{Icon|VC}} {{Icon|SA}}||4||object handle, var, var, var||get object rotation velocity||
+|-
+|[[05A7]]||{{Icon|VC}} {{Icon|SA}}||4||object handle, var, var, var||add velocity relative to object velocity||
+|-style="background: pink"
+|[[05A8]]||{{Icon|VC}} {{Icon|SA}}||2||object handle, var||get object speed||last opcode available for Vice City PC

@@ -82,7 +82,7 @@ $codes[$opcode]=$params;
 
 }
 
-write_file("codeparam.pl",encode_json(\@codes));
+write_file("opcode_db_my_operands.json",encode_json(\@codes));
 
 print $codes[0x087]."\n";
 
