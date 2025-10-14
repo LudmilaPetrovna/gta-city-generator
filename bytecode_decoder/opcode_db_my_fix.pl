@@ -75,7 +75,7 @@ if($opcode==0x080E && ' 2062 = GET_CHAR_HIGHEST_PRIORITY_EVENT            '){$pa
 if($opcode==0x0844 && ' 2116 = IS_VAR_TEXT_LABEL_EMPTY                    '){$params="p1";} #cleo:1 gh:0 sc:1 wiki:0 my:0
 if($opcode==0x0846 && ' 2118 = IS_VAR_TEXT_LABEL16_EMPTY                  '){$params="p1";} #cleo:1 gh:0 sc:1 wiki:0 my:0
 if($opcode==0x0871 && ' 2161 = SWITCH_START                               '){$params="i4i14";} #cleo:18 gh:0 sc:18 wiki:0 my:4  jump???
-if($opcode==0x0872 && ' 2162 = SWITCH_CONTINUED                           '){$params="i4i18";} #cleo:18 gh:0 sc:18 wiki:0 my:4  jump???
+if($opcode==0x0872 && ' 2162 = SWITCH_CONTINUED                           '){$params="i18";} #cleo:18 gh:0 sc:18 wiki:0 my:4  jump??? not sure
 if($opcode==0x08EF && ' 2287 = SET_MENU_ITEM_WITH_2_NUMBERS               '){$params="i3s8i2";} #cleo:6 gh:0 sc:6 wiki:0 my:5
 if($opcode==0x08F9 && ' 2297 = IS_VAR_TEXT_LABEL16_EQUAL_TO_TEXT_LABEL    '){$params="p1s16";} #cleo:2 gh:0 sc:2 wiki:0 my:0
 if($opcode==0x0913 && ' 2323 = START_NEW_STREAMED_SCRIPT                  '){$params="i1v";} #cleo:2 gh:0 sc:2 wiki:0 my:1001
