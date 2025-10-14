@@ -69,7 +69,7 @@ $codeparam->[0x600]="p7";
 $codeparam->[0x172]="p1p1";
 
 @possible=();
-for($q=0;$q<11280;$q++){
+for($q=0;$q<$file_size;$q++){
 $opcode=unpack("S",substr($file,$q,2))&0x7FFF;
 $is_bad=0;
 
@@ -81,7 +81,7 @@ printf("...try %.4x (%.4d): opcode %04X ($opcode_names{$opcode}) $parameters_cou
 #if(exists $is_nop{$opcode}){$is_bad=1;next;}
 #if($opcode>3000){$is_bad=1;next;} # not defined
 if($codeparam->[$opcode] eq "u"){$is_bad=1;next;} # unknown
-if($codeparam->[$opcode] eq "l"){$is_bad=1;next;} # low propability
+#if($codeparam->[$opcode] eq "l"){$is_bad=1;next;} # low propability
 
 $ppos=$q+2;
 # try to decode params
@@ -105,41 +105,33 @@ if($adv==0){$is_bad=1;last;}
 $ppos+=$adv;
 push(@param_values,$value);
 push(@param_types,"string");
+next;
 }
-if($pt eq "o"){
+if($pt eq "v"){
 $vararg=1;
-$pt="p";
+$pt="i";
 $pc=888;
 }
-if($pt eq "p"){
+
+
+if($pt=~/[piogb]/){
 
 for($p=0;$p<$pc;$p++){
-$value="UNKNOWN";
-$param_code=unpack("C",substr($file,$ppos++,1));
-$param_type=$ptypes[$param_code]->[0];
-$param_size=$ptypes[$param_code]->[1];
-print "param code: $param_code ($param_type)\n";
-if($param_code>0x13){$is_bad=1;last;}
-push(@param_types,$param_type);
+$param_code=unpack("C",substr($file,$ppos,1));
 if($param_code==0){
-if(!$vararg){$is_bad=1;}
+if($vararg){last;}
+$is_bad=1;
 last;
 }
-if($param_type eq "float"){$value=unpack("f",substr($file,$ppos,4));$ppos+=4;}
-if($param_type eq "int32"){$value=unpack("s",substr($file,$ppos,4));$ppos+=4;}
-if($param_type eq "int16"){$value=unpack("s",substr($file,$ppos,2));$ppos+=2;}
-if($param_type eq "int8" ){$value=unpack("c",substr($file,$ppos,1));$ppos+=1;}
-if($ptypes[$param_code]->[2] eq "str"){
-($adv,$value)=read_string($ppos-1,888);
-if($adv==0){$is_bad=1;last;}
-$ppos+=$adv-1;
+
+($adv,$param_code,$value)=decode_operand($ppos,$ppos,$pt,$pc);
+if($adv<=0){
+$is_bad=1;
+next;
 }
+$ppos+=$adv;
+push(@param_types,$param_code);
 push(@param_values,$value);
-
-if($value eq "UNKNOWN"){
-$ppos+=$param_size;
-}
-
 }
 }
 }
@@ -164,7 +156,7 @@ $q=$ppos-1;
 #show hex
 $offset=0;
 $pc=0;
-for($w=0;$w<240;$w++){
+for($w=0;$w<$file_size/16+1;$w++){
 printf("\x1b[1;44;33m%.4x (%.4d)\x1b[0m: ",$offset,$offset);
 $txt="";
 for($q=0;$q<16;$q++){
@@ -192,6 +184,66 @@ print "".(" " x 13).("   "x$q).("  "x($q/4)).$possible[$e]->[2]."\n";
 
 $offset+=16;
 }
+
+
+
+
+
+
+sub decode_operand{
+my $offset=shift;
+my $vararg=shift;
+my $expect_type=shift;
+my $expect_count=shift;
+my $value="UNKNOWN";
+my $is_bad=0;
+my $ppos=$offset;
+=pod
+i - input values, mostly ints or offsets
+o - output values (2, 3, 7, 8)
+p - input pointer to var (no immediate value) (2, A, 0x10 / 3, b, 0x11 / 7, C, 0x12 / 8, D, 0x13)
+g - input pointer to global variable (2, 7 and "int16")
+b - input byte (maybe flag or var)
+s - input string values, number=max string length (9..20)
+=cut
+
+if($expect_type eq "b"){
+return $expect_count;
+}
+
+my $param_code=unpack("C",substr($file,$ppos++,1));
+my $param_type=$ptypes[$param_code]->[0];
+my $param_size=$ptypes[$param_code]->[1];
+if($param_code>0x13){$is_bad=1;return 0;}
+if($expect_type eq "o" && ($param_code!=2 && $param_code!=3 && $param_code!=7 && $param_code!=8)){$is_bad=1;return 0;}
+if($expect_type eq "g" && ($param_code!=2 && $param_code!=7)){$is_bad=1;return 0;}
+
+if($param_code==0){
+if(!$vararg){$is_bad=1;}
+}
+
+if($param_type eq "float"){$value=unpack("f",substr($file,$ppos,4));$ppos+=4;}
+if($param_type eq "int32"){$value=unpack("s",substr($file,$ppos,4));$ppos+=4;}
+if($param_type eq "int16"){$value=unpack("s",substr($file,$ppos,2));$ppos+=2;}
+if($param_type eq "int8" ){$value=unpack("c",substr($file,$ppos,1));$ppos+=1;}
+if($ptypes[$param_code]->[2] eq "str"){
+($adv,$value)=read_string($ppos-1,888);
+if($adv==0){$is_bad=1;}
+$ppos+=$adv-1;
+}
+push(@param_values,$value);
+
+if($value eq "UNKNOWN"){
+$ppos+=$param_size;
+}
+
+if($is_bad){
+return 0;
+}
+return($ppos-$offset,$param_code,$value);
+}
+
+
 
 
 
@@ -224,7 +276,8 @@ if($pcode==20){($gl_var,$arr_ind,$arr_size)=unpack("SSS",substr($file,$offset+$a
 $str=~s/\x00.*//s;
 
 if(!is_string($str)){
-#print STDERR "We got string \"$str\", but this is not text!\n";
+$str=~s/[\x-\x1f\x7f-\xff]/./gs;
+print STDERR "We got string \"$str\", but this is not text!\n";
 return 0;
 }
 

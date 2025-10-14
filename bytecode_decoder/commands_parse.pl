@@ -21,11 +21,11 @@ CRunningScript::ReadParametersForNewlyStartedScript(this, started); (0x4Fu and 0
 =pod
 Legend:
 i - input values, mostly ints or offsets
-o - output values
-p - input pointer to var (no immediate value)
-g - input pointer to global variable
+o - output values (2, 3, 7, 8)
+p - input pointer to var (no immediate value) (2, A, 0x10 / 3, b, 0x11 / 7, C, 0x12 / 8, D, 0x13)
+g - input pointer to global variable (2, 7 and "int16")
 b - input byte (maybe flag or var)
-s - input string values, number=max string length
+s - input string values, number=max string length (9..20)
 v - vararg (enables 0 type)
 
 Stats:
