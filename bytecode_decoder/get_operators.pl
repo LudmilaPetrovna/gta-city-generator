@@ -3,13 +3,13 @@ use File::Slurp;
 use Data::Dumper;
 #0038:   $452 == 4
 
-@operators=();
+@operators=map{0}(0..2010);
 open(dd,$ARGV[0]||"main_raw[1].txt");
 while(<dd>){
 s/[\r\n]//gs;
 s/\s+/ /gs;
 if(/^([\da-fA-F]{4}):\s+([a-z_]+\s+)*([\$\@\#\d\.]+) ([<>\+\-\=\*\/\%\#]+) ([\.\$\@\#\d+])/){
-$operators[hex($1)]=$4
+$operators[hex($1)&0x7fff]=$4;
 }
 
 }
