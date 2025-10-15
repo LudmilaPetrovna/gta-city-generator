@@ -159,9 +159,16 @@ $decoded=sprintf("%s %s%s%s",$opcode_names{$opcode},$param_values[0],$operators-
 $decoded_sb=sprintf("%04X: %s %s %s",$opcode,$param_values[0],$operators->[$opcode],$param_values[1]);
 }
 
-if($opcode==2 || $opcode==0x4d || $opcode==0x50){
+
+# mark labels
+if($opcode==2 || $opcode==0x4d || $opcode==0x50 || $opcode==0x707){
 $labels[-$param_values[0]]=1;
 }
+# add switches
+###0871:
+###0872:
+
+
 
 push(@possible,[$q,$ppos,$decoded,"$decoded_sb"]);
 
