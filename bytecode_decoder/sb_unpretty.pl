@@ -9,7 +9,10 @@ $file=~s/(goto|goto_if_false)\s+\@Label([\da-fA-F]+)/$1." ".-hex($2)/egm; # form
 $file=~s/ \{[a-z_]+\}//gsi; # remove named arguments
 $file=~s/ True/ 1/gs;
 $file=~s/ False/ 0/gs;
-$file=~s/^([\da-fA-F]{4}:)\s+(not )?/$1 /gm;
+$file=~s/^(00D6: if)\s*$/$1 0/gm;
+$file=~s/^([\da-fA-F]{4}:)\s+(not )?/$1 $2/gm; # fix indent
+$file=~s/^([\da-fA-F]{4}:)\s+([a-z\d_]+)\s+(\S+) ([<>\+\-\=\*\/\%\#]{1,2}) (\S+)/$1 $3 $4 $5/gm; # remove operators prefixes
+
 
 print $file;
 

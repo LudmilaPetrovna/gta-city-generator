@@ -6,14 +6,17 @@ $source=$ARGV[0]||"Alhambra.cs";
 
 $db=decode_json(read_file("opcode_db_cleo.json"));
 $codeparam=decode_json(read_file("opcode_db_my_operands.json"));
+$operators=decode_json(read_file("opcode_db_my_operators.json"));
 $cmds=$db->{extensions}->[0]->{commands};
 $cleo=$db->{extensions}->[1]->{commands};
 
 %params=();
 %names=();
 %opcode_names=();
+%opcode_names_sb=();
 %parameters_count=();
 %is_nop=();
+@labels=();
 
 foreach $opcode(map{@{$_}}($cmds,$cleo)){
 $id=hex($opcode->{id});
@@ -24,6 +27,7 @@ $params{$id}=[@types];
 $names{$id}=[@names];
 $parameters_count{$id}=$opcode->{num_params};
 $opcode_names{$id}=$opcode_name;
+$opcode_names_sb{$id}=lc($opcode->{name});
 if($opcode->{attrs}->{is_nop}){
 $is_nop{$id}=1;
 next;
@@ -70,7 +74,9 @@ $codeparam->[0x172]="p1p1";
 
 @possible=();
 for($q=0;$q<$file_size;$q++){
-$opcode=unpack("S",substr($file,$q,2))&0x7FFF;
+$opcode_raw=unpack("S",substr($file,$q,2));
+$opcode=$opcode_raw&0x7FFF;
+$opcode_not=$opcode_raw&0x8000;
 $is_bad=0;
 
 #printf("...try %.4x (%.4d): opcode %04X $parameters_count{$opcode}\n",$q,$q,$opcode);
@@ -139,18 +145,32 @@ push(@param_values,$value);
 if($is_bad){next;}
 
 $params="";
+$params_sb="";
 for($e=0;$e<$parameters_count{$opcode};$e++){
 $params.=($e?", ":"")."(".$param_types[$e].")".$param_values[$e];
+$params_sb.=($e?" ":"").$param_values[$e];
 }
 
 $decoded=sprintf("%s %s",$opcode_names{$opcode},$params);
-push(@possible,[$q,$ppos,$decoded]);
+$opcode_not=$opcode_not?"not ":"";
+$decoded_sb=sprintf("%04X: %s%s %s",$opcode_raw,$opcode_not,$opcode_names_sb{$opcode},$params_sb);
+if($operators->[$opcode]){
+$decoded=sprintf("%s %s%s%s",$opcode_names{$opcode},$param_values[0],$operators->[$opcode],$param_values[1]);
+$decoded_sb=sprintf("%04X: %s %s %s",$opcode,$param_values[0],$operators->[$opcode],$param_values[1]);
+}
+
+if($opcode==2 || $opcode==0x4d || $opcode==0x50){
+$labels[-$param_values[0]]=1;
+}
+
+push(@possible,[$q,$ppos,$decoded,"$decoded_sb"]);
 
 $q=$ppos-1;
 }
 
 @count_colors=qw/90 92 93 91 95 96 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41/;
 
+#die encode_json(\@labels);
 #print Dumper(\@possible);
 
 #show hex
@@ -186,6 +206,14 @@ $offset+=16;
 }
 
 
+open(oo,">Fly_decoded.txt");
+for($e=0;$e<@possible;$e++){
+$addr=$possible[$e]->[0];
+if($labels[$addr]==1){
+printf(oo "\n:LABEL_%04X // %d\n",$addr,-$addr);
+}
+print oo "".$possible[$e]->[3]."\n";
+}
 
 
 
@@ -228,7 +256,7 @@ if($param_code==2){$value=unpack("s",substr($file,$ppos,2));$value_pretty='$'.pr
 if($param_code==3){$value=unpack("s",substr($file,$ppos,2));$value_pretty=$value.'@';$ppos+=2;} # lvar index
 if($param_code==4){$value=unpack("c",substr($file,$ppos,1));$ppos+=1;} # byte
 if($param_code==5){$value=unpack("s",substr($file,$ppos,2));$ppos+=2;} # short
-if($param_code==6){$value=unpack("f",substr($file,$ppos,4));$value_pretty=sprintf("%.01f",$value);$ppos+=4;} # float
+if($param_code==6){$value=unpack("f",substr($file,$ppos,4));$value_pretty=format_float($value);$ppos+=4;} # float
 if($param_code==7){
 ($gl_var,$arr_ind,$arr_size)=unpack("SSS",substr($file,$ppos,6));
 $value="\$$gl_var\[$arr_ind*$arr_size\]";
@@ -318,6 +346,7 @@ if($str=~/^[a-z0-9_]+$/si){return 1;}
 
 sub pretty_gvars{
 my $num=shift;
+return $num;
 if($num==2){return "player1";}
 if($num==3){return "scplayer";}
 if($num==10){return "gf_game_timer";}
@@ -337,3 +366,13 @@ if($num==72){return "heading";}
 if($num==119){return "wasted_help";}
 if($num==120){return "wanted_star_help";}
 }
+
+sub format_float{
+my $f=shift;
+my $o="".$f;
+if(index($o,'.')<0){
+$o.='.0';
+}
+return($o);
+}
+
