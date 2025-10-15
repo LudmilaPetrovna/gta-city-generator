@@ -40,18 +40,18 @@ $codeparam->[$id]='p'.$opcode->{num_params};
 
 $file=read_file($source);
 $file_size=length($file);
-
+$file_size=1280;
 
 @ptypes=();
 $ptypes[0]=["null",0];
 $ptypes[1]=["int32",4,"int"];
-$ptypes[2]=["offset",2,"int/float"];
-$ptypes[3]=["index",2,"int/float"];
+$ptypes[2]=["offset",2,"global int/float"];
+$ptypes[3]=["index",2,"local int/float"];
 $ptypes[4]=["int8",1,"int"];
 $ptypes[5]=["int16",2,"int"];
 $ptypes[6]=["float",4,"float"];
-$ptypes[7]=["offset",6,"int/float/array"];
-$ptypes[8]=["index",6,"int/float/array"];
+$ptypes[7]=["offset",6,"global int/float/array"];
+$ptypes[8]=["index",6,"local int/float/array"];
 $ptypes[9]=["string8",8,"str"];
 $ptypes[0xA]=["offset",2,"str"];
 $ptypes[0xB]=["index",2,"str"];
@@ -130,7 +130,7 @@ $is_bad=1;
 next;
 }
 $ppos+=$adv;
-push(@param_types,$param_code);
+push(@param_types,$ptypes[$param_code]->[2]);
 push(@param_values,$value);
 }
 }
@@ -138,12 +138,12 @@ push(@param_values,$value);
 
 if($is_bad){next;}
 
-$params="[$q..$ppos]";
+$params="";
 for($e=0;$e<$parameters_count{$opcode};$e++){
-$params.=($e?", ":"")."[$names{$opcode}->[$e]]="."(".$param_types[$e].")".$param_values[$e];
+$params.=($e?", ":"")."(".$param_types[$e].")".$param_values[$e];
 }
 
-$decoded=sprintf("%s(%s) %s",$opcode_names{$opcode},$codeparam->[$opcode],$params);
+$decoded=sprintf("%s %s",$opcode_names{$opcode},$params);
 push(@possible,[$q,$ppos,$decoded]);
 
 $q=$ppos-1;
@@ -195,7 +195,8 @@ my $offset=shift;
 my $vararg=shift;
 my $expect_type=shift;
 my $expect_count=shift;
-my $value="UNKNOWN";
+my $value="_____";
+my $value_pretty="_____";
 my $is_bad=0;
 my $ppos=$offset;
 =pod
@@ -222,25 +223,37 @@ if($param_code==0){
 if(!$vararg){$is_bad=1;}
 }
 
-if($param_type eq "float"){$value=unpack("f",substr($file,$ppos,4));$ppos+=4;}
-if($param_type eq "int32"){$value=unpack("s",substr($file,$ppos,4));$ppos+=4;}
-if($param_type eq "int16"){$value=unpack("s",substr($file,$ppos,2));$ppos+=2;}
-if($param_type eq "int8" ){$value=unpack("c",substr($file,$ppos,1));$ppos+=1;}
-if($ptypes[$param_code]->[2] eq "str"){
+if($param_code==1){$value=unpack("i",substr($file,$ppos,4));$ppos+=4;} # int
+if($param_code==2){$value=unpack("s",substr($file,$ppos,2));$value_pretty='$'.pretty_gvars($value/4);$ppos+=2;} # gvar offset, so div by 4
+if($param_code==3){$value=unpack("s",substr($file,$ppos,2));$value_pretty=$value.'@';$ppos+=2;} # lvar index
+if($param_code==4){$value=unpack("c",substr($file,$ppos,1));$ppos+=1;} # byte
+if($param_code==5){$value=unpack("s",substr($file,$ppos,2));$ppos+=2;} # short
+if($param_code==6){$value=unpack("f",substr($file,$ppos,4));$value_pretty=sprintf("%.01f",$value);$ppos+=4;} # float
+if($param_code==7){
+($gl_var,$arr_ind,$arr_size)=unpack("SSS",substr($file,$ppos,6));
+$value="\$$gl_var\[$arr_ind*$arr_size\]";
+$ppos+=6;
+}
+if($param_code==8){
+($gl_var,$arr_ind,$arr_size)=unpack("SSS",substr($file,$ppos,6));
+$value="\@$gl_var\[$arr_ind*$arr_size\]";
+$ppos+=6;
+}
+
+if($value_pretty eq "_____"){
+$value_pretty=$value;
+}
+
+if($param_code>=8){ # strings
 ($adv,$value)=read_string($ppos-1,888);
 if($adv==0){$is_bad=1;}
 $ppos+=$adv-1;
-}
-push(@param_values,$value);
-
-if($value eq "UNKNOWN"){
-$ppos+=$param_size;
 }
 
 if($is_bad){
 return 0;
 }
-return($ppos-$offset,$param_code,$value);
+return($ppos-$offset,$param_code,$value_pretty);
 }
 
 
@@ -303,3 +316,24 @@ if($str=~/^[a-z0-9_]+$/si){return 1;}
 
 
 
+sub pretty_gvars{
+my $num=shift;
+if($num==2){return "player1";}
+if($num==3){return "scplayer";}
+if($num==10){return "gf_game_timer";}
+if($num==11){return "Players_Group";}
+if($num==16){return "game_timer";}
+if($num==21){return "been_in_a_bmx";}
+if($num==34){return "hours";}
+if($num==35){return "minutes";}
+if($num==40){return "weekday";}
+if($num==43){return "main_visible_area";}
+if($num==44){return "trigger_final_synd_mission";}
+if($num==68){return "distance";}
+if($num==69){return "player_x";}
+if($num==70){return "player_y";}
+if($num==71){return "player_z";}
+if($num==72){return "heading";}
+if($num==119){return "wasted_help";}
+if($num==120){return "wanted_star_help";}
+}

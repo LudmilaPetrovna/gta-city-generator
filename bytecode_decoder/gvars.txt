@@ -1,0 +1,121 @@
+PLAYER1	VAR_INT	player1	MAIN	PLAYER_CHAR	$2
+SCPLAYER	VAR_INT	scplayer	MAIN	PLAYER_ACTOR	$3
+STATBIKESTAMINA_CTR	VAR_FLOAT	statbikestamina_ctr	MAIN		$4
+STATBIKELOWMUSCLE_CTR	VAR_FLOAT	statbikelowmuscle_ctr	MAIN		$5
+STATBIKE_TEMP	VAR_FLOAT	statbike_temp	MAIN		$6
+STATTREADSTAMINA_CTR	VAR_FLOAT	stattreadstamina_ctr	MAIN		$7
+STATTREADLOWMUSCLE_CTR	VAR_FLOAT	stattreadlowmuscle_ctr	MAIN		$8
+STATTREAD_TEMP	VAR_FLOAT	stattread_temp	MAIN		$9
+GF_GAME_TIMER	VAR_INT	gf_game_timer	MAIN		$10
+PLAYERS_GROUP	VAR_INT	Players_Group	MAIN	PLAYER_GROUP	$11
+BUTTON_PRESSED	VAR_INT	button_pressed	MAIN		$12
+CONTROLMODE	VAR_INT	controlmode	MAIN		$13
+MISSION_TRIGGER_WAIT_TIME	VAR_INT	mission_trigger_wait_time	MAIN	DEFAULT_WAIT_TIME	$14
+FLAG_CELL_NATION	VAR_INT	flag_cell_nation	MAIN	Phone_Ringing_Flag	$15
+GAME_TIMER	VAR_INT	game_timer	MAIN	Current_Time_in_ms2	$16
+LSTICKX	VAR_INT	LStickX	MAIN	Move_Axis_X	$17
+LSTICKY	VAR_INT	LStickY	MAIN	Move_Axis_Y	$18
+RSTICKX	VAR_INT	RStickX	MAIN	Special_Axis_X	$19
+RSTICKY	VAR_INT	RStickY	MAIN	Special_Axis_Y	$20
+BEEN_IN_A_BMX	VAR_INT	been_in_a_bmx	MAIN	Help_Bicycle_1_Shown	$21
+TUCKING_CONTACT_BLIP	VAR_INT	tucking_contact_blip	MAIN	Marker_Trucking_Mission	$22
+LAUNCH_SHIT_FOR_DEBUG_BUILD	VAR_INT	launch_shit_for_debug_build	MAIN		$23
+GAME_STARTS_FROM_SCRATCH	VAR_INT	game_starts_from_scratch	MAIN	Mission_Intro_Passed	$24
+RETURN_CITIES_PASSED	VAR_INT	Return_cities_passed	MAIN	STAT_Unlocked_Cities_Number	$25
+FLAG_DONT_START_SHOOTING_RANGE	VAR_INT	flag_dont_start_shooting_range	MAIN	Shooting_Available	$26
+TAG_PERCENTAGE	VAR_INT	tag_percentage	MAIN	Tags_Painted_Percentage	$27
+CJ_VOMITS_FOR_MENACE	VAR_INT	cj_vomits_for_menace	MAIN		$28
+TRIGGER_PHONECALL_FAILED	VAR_INT	trigger_phonecall_failed	MAIN	Mission_Running_Dog_Failed	$29
+RECORDING	VAR_INT	recording	MAIN		$30
+EMMETS_SHOP_BLIP	VAR_INT	emmets_shop_blip	MAIN	Marker_Emmets_Gun	$31
+EMMETS_GUN	VAR_INT	emmets_gun	MAIN	Pickup_Emmets_Colt45	$32
+SWIM_STAMINA_CHECK_MAIN	VAR_INT	swim_stamina_check_main	MAIN	STAT_Lung_Capacity	$33
+HOURS	VAR_INT	hours	MAIN	Time_Hours	$34
+MINUTES	VAR_INT	minutes	MAIN	Time_Mins	$35
+LA_HUB_ACTIVITY	VAR_INT	LA_hub_activity	MAIN		$36
+KEYCARD_AQUIRED_FROM_MILLIE	VAR_INT	keycard_aquired_from_millie	MAIN		$37
+PLAYER_IS_COMPLETELY_SAFE	VAR_INT	player_is_completely_safe	MAIN		$38
+PLAYER_IS_COMPLETELY_SAFE_FOR_MOBILE	VAR_INT	player_is_completely_safe_for_mobile	MAIN	Time_From_Last_Call_Got_Flag	$39
+WEEKDAY	VAR_INT	weekday	MAIN	Weekday	$40
+ACTIVATE_MOBILE_PHONE	VAR_INT	activate_mobile_phone	MAIN		$41
+PLAYED_SCIPTED_AIRSCRIPT_CUT	VAR_INT	played_scipted_airscript_cut	MAIN	Flight_School_Intro_Flag	$42
+MAIN_VISIBLE_AREA	VAR_INT	main_visible_area	MAIN	Active_Interior	$43
+TRIGGER_FINAL_SYND_MISSION	VAR_INT	trigger_final_synd_mission	MAIN		$44
+MODEL_INDEX	VAR_INT	model_index	MAIN	Selected_Menu_Item	$45
+TRIGGER_SCRASH2_MISSION	VAR_INT	trigger_scrash2_mission	MAIN		$46
+RETURNED_RESPECT	VAR_INT	returned_respect	MAIN		$47
+CAR	VAR_INT	car	MAIN	tempvar_Actor_Car	$48
+CAR_CLASS	VAR_INT	car_class	MAIN	tempvar_Car_Type	$49
+ODDJOB_HELP_FLAG	VAR_INT	oddjob_help_flag	MAIN	Help_Valet_Shown	$50
+GIRLFRIED_HELP_FLAG	VAR_INT	girlfried_help_flag	MAIN	Help_Denise_Shown	$51
+STEALTH_HELP_FLAG	VAR_INT	stealth_help_flag	MAIN	Help_Stealth_Shown	$52
+F1_WHICH_MISSIONS_ARE_OPEN_FLAG	VAR_INT	f1_which_missions_are_open_flag	MAIN		$53
+VOICE_OVER_AT_HUB	VAR_INT	voice_over_at_hub	MAIN	Help_INTRO_Shown	$54
+AIRSTRIP_CONTACT_BLIP	VAR_INT	airstrip_contact_blip	MAIN		$55
+STOP_GARGAE_FOR_NEIL	VAR_INT	stop_gargae_for_neil	MAIN		$56
+TRIGGER_FINAL_LA1_MISSIONS	VAR_INT	trigger_final_LA1_missions	MAIN	LS_Final_Missions_Started	$57
+TRIGGER_FINAL_LA2_MISSIONS	VAR_INT	trigger_final_LA2_missions	MAIN	Riot_Missions_Started	$58
+TRIGGER_ICE_COLD_MISSION	VAR_INT	trigger_ice_cold_mission	MAIN		$59
+INTRO_BMX	VAR_INT	intro_bmx	MAIN		$60
+INTRO_BMX_BLIP	VAR_INT	intro_bmx_blip	MAIN		$61
+TRUCKING_HELP_FLAG	VAR_INT	trucking_help_flag	MAIN	Help_Trucker_MIssions_Shown	$62
+R3_PLAYER_CAR	VAR_INT	R3_player_car	MAIN		$63
+CAT_COUNTER	VAR_INT	cat_counter	MAIN	Catalina_Total_Passed_Missions	$64
+FUNERAL_MISSION_FINISHED	VAR_INT	funeral_mission_finished	MAIN	Help_Groove_Shown	$65
+SHOWROOM_CONTACT_BLIP	VAR_INT	showroom_contact_blip	MAIN	Marker_Wang_Cars	$66
+ADD_ALL_AMMU_BLIPS	VAR_INT	add_all_ammu_blips	MAIN	AMMU_Icons_Shown	$67
+DISTANCE	VAR_FLOAT	distance	MAIN	Distance_Between_Points	$68
+PLAYER_X	VAR_FLOAT	player_x	MAIN	tempvar_X_coord 	$69
+PLAYER_Y	VAR_FLOAT	player_y	MAIN	tempvar_Y_coord	$70
+PLAYER_Z	VAR_FLOAT	player_z	MAIN	tempvar_Z_coord	$71
+HEADING	VAR_FLOAT	heading	MAIN	tempvar_Angle	$72
+X	VAR_FLOAT	x	MAIN	tempvar_Float_1	$73
+Y	VAR_FLOAT	y	MAIN	tempvar_Float_2	$74
+Z	VAR_FLOAT	z	MAIN	tempvar_Float_3	$75
+ON_FOOTX	VAR_FLOAT	on_footX	MAIN		$76
+ON_FOOTY	VAR_FLOAT	on_footY	MAIN		$77
+ON_FOOTZ	VAR_FLOAT	on_footZ	MAIN		$78
+IN_CARX	VAR_FLOAT	in_carX	MAIN		$79
+IN_CARY	VAR_FLOAT	in_carY	MAIN		$80
+IN_CARZ	VAR_FLOAT	in_carZ	MAIN		$81
+TIME_SPENT_ROAMING_COUNTRYSIDE	VAR_INT	time_spent_roaming_countryside	MAIN		#N/A
+TIME_PLAYER_SPENT_CRIME_FREE	VAR_INT	time_player_spent_crime_free	MAIN		#N/A
+BIKE_HELP	VAR_INT	bike_help	MAIN	Help_Bicycle_2_Shown	$82
+DRIVE_BY_HELP	VAR_INT	drive_by_help	MAIN	Help_DriveBy_Shown	$83
+PRINT_FIRST_HELP	VAR_INT	print_first_help	MAIN	Help_Follow_Icon_Shown	$84
+CAR_HELP_PLAYED	VAR_INT	car_help_played	MAIN	Help_Camera_and_Radio_Shown	$85
+DRIVING_TEST_PASSED	VAR_INT	driving_test_passed	MAIN	Mission_Back_to_School_Passed	$86
+PILOT_TEST_PASSED	VAR_INT	pilot_test_passed	MAIN	Mission_Learning_to_Fly_Passed	$87
+FLAG_MENACE_BUYFOOD	VAR_INT	flag_menace_buyfood	MAIN		$88
+COURIER_TIMER	VAR_INT	courier_timer	MAIN		$89
+FLAG_KICKSTART_PASSED_1STIME	VAR_INT	flag_kickstart_passed_1stime	MAIN	Mission_Kickstart_Passed	$90
+F1_THE90_BEST_SCORE	VAR_INT	f1_the90_best_score	MAIN		$91
+F1_SPINRIGHTGO_BEST_SCORE	VAR_INT	f1_spinrightgo_best_score	MAIN		$92
+F1_SPINLEFTGO_BEST_SCORE	VAR_INT	f1_spinleftgo_best_score	MAIN		$93
+F1_BURNLAPRIGHT_BEST_SCORE	VAR_INT	f1_burnlapright_best_score	MAIN		$94
+F1_BURNLAPLEFT_BEST_SCORE	VAR_INT	f1_burnlapleft_best_score	MAIN		$95
+F1_POPCONTROL_BEST_SCORE	VAR_INT	f1_popcontrol_best_score	MAIN		$96
+F1_CITYSLICKING_BEST_SCORE	VAR_INT	f1_cityslicking_best_score	MAIN		$97
+F1_WHIPRIGHTTERMINATE_BEST_SCORE	VAR_INT	f1_whiprightterminate_best_score	MAIN		$98
+F1_WHIPLEFTTERMINATE_BEST_SCORE	VAR_INT	f1_whipleftterminate_best_score	MAIN		$99
+F1_ALLEYOOP_BEST_SCORE	VAR_INT	f1_alleyoop_best_score	MAIN		$100
+F1_WHEELIEWEAVE_BEST_SCORE	VAR_INT	f1_wheelieweave_best_score	MAIN		$101
+F1_PITTECHNIQUE_BEST_SCORE	VAR_INT	f1_pittechnique_best_score	MAIN		$102
+F1_CONECOILRIGHT_BEST_SCORE	VAR_INT	f1_conecoilright_best_score	MAIN		$103
+F1_CONECOILLEFT_BEST_SCORE	VAR_INT	f1_conecoilleft_best_score	MAIN		$104
+F1_THE180_BEST_SCORE	VAR_INT	f1_the180_best_score	MAIN		$105
+CAMERA_SECRET_HELP	VAR_INT	camera_secret_help	MAIN	Help_SF_Photos_Shown	$106
+F1_THE360_BEST_SCORE	VAR_INT	f1_the360_best_score	MAIN		$107
+ONE_SIXTEENTH	VAR_FLOAT	one_sixteenth	MAIN		$108
+ONE_THIRTYSECOND	VAR_FLOAT	one_thirtysecond	MAIN		$109
+ONE_SIXTYFOURTH	VAR_FLOAT	one_sixtyfourth	MAIN		$110
+COORD_1_X	VAR_FLOAT	coord_1_x	MAIN		$111
+COORD_1_Y	VAR_FLOAT	coord_1_y	MAIN		$112
+COORD_1_Z	VAR_FLOAT	coord_1_z	MAIN		$113
+COORD_2_X	VAR_FLOAT	coord_2_x	MAIN		$114
+COORD_2_Y	VAR_FLOAT	coord_2_y	MAIN		$115
+COORD_C1_X	VAR_FLOAT	coord_c1_x	MAIN		$116
+COORD_C1_Y	VAR_FLOAT	coord_c1_y	MAIN		$117
+COORD_C1_Z	VAR_FLOAT	coord_c1_z	MAIN		$118
+WASTED_HELP	VAR_INT	wasted_help	MAIN	Help_Wasted_Shown	$119
+WANTED_STAR_HELP	VAR_INT	wanted_star_help	MAIN		$120
