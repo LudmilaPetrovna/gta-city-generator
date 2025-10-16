@@ -4,6 +4,7 @@ use Data::Dumper;
 #0038:   $452 == 4
 
 @operators=map{0}(0..2010);
+@negative=map{0}(0..2700);
 
 
 %fixes=map{($nn,$op,$name)=split(/_/,$_,3);$name,$op}split(/\n/,<<AAA);
@@ -79,6 +80,9 @@ s/[\r\n]//gs;
 s/\s+/ /gs;
 if(/^([\da-fA-F]{4}:.+)/){
 $id=hex($1)&0x7fff;
+if(hex($1)&0x8000){
+$negative[$id]=1;
+}
 if(!$operators[$id]){$operators[$id]=[];}
 #$operators[$id]->[1]=$1;
 }
@@ -117,11 +121,19 @@ $fix.='$operators[$q]->[0]=\'\';'." # $names[$q]\n";
 
 
 }
-for($q=0;$q<2010;$q++){
-printf("%04X: %s \x1b[0m\x1b[38;5;10m%s\x1b[0m %s\n",$q,$names[$q],$operators[$q]->[0],$my_len->[$q]);
 
 
+for($q=0;$q<2700;$q++){
+
+if($my_len->[$q] ne "u" && ($negative[$q] || $names[$q]=~/_EXIST$|IS_|HAS_|DOES_|HAS_|LOCATE_|_FINISHED|_LOADED/)){
+$negative[$q]|=2;
+printf("! %04X: %s \x1b[0m\x1b[38;5;10m%s\x1b[0m %s\n",$q,$names[$q],$negative[$q],$my_len->[$q]);
 }
+$negative[$q]*=1;
+}
+
+write_file("opcode_db_my_negative.json",encode_json(\@negative));
+
 
 
 

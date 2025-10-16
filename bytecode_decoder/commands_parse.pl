@@ -17,6 +17,8 @@ CRunningScript::ReadParametersForNewlyStartedScript(this, started); (0x4Fu and 0
 =cut
 
 @codes=map{"u"}(0..0x7fff);
+@exists=map{0}(0..3000);
+@twins=map{0}(0..3000);
 
 =pod
 Legend:
@@ -45,12 +47,15 @@ if($code=~s/\n {8}+((case ([x\da-fA-F]+)u?: ?)+)//s){
 $idlist=$1;
 }
 @lines=split(/;/,$code);
+@ctwins=();
 
 while($idlist=~/case ([x\da-fA-F]+)u?:/g){
 $opcode=hex2dec($1);
 $exists[$opcode]=1;
 $snippets[$opcode]=$code;
 $params="";
+push(@ctwins,$opcode);
+
 #print "Decoding opcode $opcode\n";
 
 foreach $line(@lines){
@@ -218,7 +223,6 @@ do "./opcode_db_my_fix.pl";
 
 $codes[$opcode]=$params;
 }
-
 
 }
 
