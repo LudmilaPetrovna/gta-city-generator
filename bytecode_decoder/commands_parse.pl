@@ -4,7 +4,7 @@ use JSON;
 
 $cmds=read_file("commands.txt");
 $cmds=~tr/\r//d;
-$cmds=~s/(\n {6,9}case [x\da-fA-F]+u?:)+\s+return 0//sg;
+#$cmds=~s/(\n {6,9}case [x\da-fA-F]+u?:)+\s+return 0//sg; # "nop commands" are exists in scripts
 $cmds=~s/((\n {6,9}case [x\da-fA-F]+u?:)+)/"\n".strip_lines($1)/esg;
 @cmds=split(/(?=\n {6,9}case [x\da-fA-F]+u?:)/,$cmds);
 

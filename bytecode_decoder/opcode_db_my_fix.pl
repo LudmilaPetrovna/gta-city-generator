@@ -42,7 +42,7 @@ if($opcode==0x051E && ' 1310 = GET_RADIO_CHANNEL                          '){$pa
 if($opcode==0x0560 && ' 1376 = CREATE_RANDOM_CHAR_AS_DRIVER               '){$params="i1o1";} #cleo:2 gh:1 sc:2 wiki:2 my:1
 if($opcode==0x059F && ' 1439 = GET_OBJECT_VELOCITY                        '){$params="i1o3";} #cleo:4 gh:0 sc:4 wiki:4 my:1
 if($opcode==0x05AD && ' 1453 = IS_VAR_TEXT_LABEL_EQUAL_TO_TEXT_LABEL      '){$params="p1s8";} #cleo:2 gh:0 sc:2 wiki:0 my:0
-if($opcode==0x05B6 && ' 1462 = SAVE_STRING_TO_DEBUG_FILE                  '){$params="b256";} #cleo:1 gh:0 sc:4 wiki:0 my:0
+if($opcode==0x05B6 && ' 1462 = SAVE_STRING_TO_DEBUG_FILE                  '){$params="b128";} #cleo:1 gh:0 sc:4 wiki:0 my:0
 if($opcode==0x0613 && ' 1555 = GET_CHAR_ANIM_CURRENT_TIME                 '){$params="i1s24o1";} #cleo:3 gh:0 sc:3 wiki:0 my:2
 if($opcode==0x061A && ' 1562 = GET_CHAR_ANIM_TOTAL_TIME                   '){$params="i1s24o1";} #cleo:3 gh:0 sc:3 wiki:0 my:2
 if($opcode==0x062E && ' 1582 = GET_SCRIPT_TASK_STATUS                     '){$params="i2o1";} #cleo:3 gh:0 sc:3 wiki:0 my:2
