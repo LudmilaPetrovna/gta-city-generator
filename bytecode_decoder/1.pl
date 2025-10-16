@@ -199,7 +199,7 @@ push(@possible,[$q,$ppos,$decoded,"$decoded_sb"]);
 if($q!=$last_good){
 $aborted=1;
 printf("Gap at %08x...%08x detected, aborted decompilation\n",$last_good,$q);
-exit(1);
+#exit(1);
 }
 
 
@@ -450,7 +450,7 @@ sub pretty_float{
 my $f=shift;
 my $o="".$f;
 if($o=~/\.\d{6}/){
-$o=sprintf("%.5g",$f);
+$o=sprintf("%.5f",$f);
 }
 if(index($o,'.')<0){
 $o.='.0';
