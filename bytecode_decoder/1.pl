@@ -84,7 +84,7 @@ $is_bad=0;
 
 #printf("...try %.4x (%.4d): opcode %04X $parameters_count{$opcode}\n",$q,$q,$opcode);
 
-printf("...try %.4x (%.4d): opcode %04X ($opcode_names{$opcode}) $parameters_count{$opcode} found $param_count, cp:$codeparam->[$opcode]\n",$q,$q,$opcode);
+printf("...try %.4x (%.4d), scm %.4x (scm dec:%d): opcode %04X ($opcode_names{$opcode}) $parameters_count{$opcode} found $param_count, cp:$codeparam->[$opcode]\n",$q,$q,$q+55976,$q+55976,$opcode);
 
 #f(!exists $params{$opcode}){$is_bad=1;next;}
 #if(exists $is_nop{$opcode}){$is_bad=1;next;}
@@ -99,12 +99,12 @@ $ppos=$q+2;
 $param_count=$parameters_count{$opcode};
 
 $ops=$codeparam->[$opcode];
-print "ops $ops\n";
+#print "ops $ops\n";
 $vararg=0;
 while($ops=~/([a-z])(\d*)/g){
 ($pt,$pc)=($1,$2);
 $value="UNKNOWN";
-print "decoding operands $pt $pc\n";
+#print "decoding operands $pt $pc\n";
 
 if($pt eq "s"){
 ($adv,$value)=read_string($ppos,$pc);
@@ -133,7 +133,7 @@ if($pt=~/[piogb]/){
 
 for($p=0;$p<$pc;$p++){
 $param_code=unpack("C",substr($file,$ppos,1));
-printf("decode operand #%d at %08X (code:%d)\n",$p,$ppos,$param_code);
+#printf("decode operand #%d at %08X (code:%d)\n",$p,$ppos,$param_code);
 if($param_code==0){
 if($vararg){
 $ppos++;
@@ -144,7 +144,7 @@ last;
 }
 
 ($adv,$param_code,$value)=decode_operand($ppos,$ppos,$pt,$pc);
-print "advanced by $adv bytes with value $value, operand type $param_code\n";
+#print "advanced by $adv bytes with value $value, operand type $param_code\n";
 if($adv<=0){
 $is_bad=1;
 next;
@@ -162,14 +162,16 @@ if($is_bad){next;}
 
 # mark labels
 if($opcode==2 || $opcode==0x4d || $opcode==0x50 || $opcode==0x707){
-$labels[-$param_values[0]]=1;
-$param_values[0]='@'.pretty_label(-$param_values[0]);
+$addr=abs($param_values[0]);
+$labels[$addr]=1;
+$param_values[0]='@'.pretty_label($addr);
 }
 # add switches
 if($opcode==0x0871 || $opcode==0x0872){
 for($e=($opcode==0x0871?3:1);$e<18;$e+=2){
-$labels[-$param_values[$e]]=1;
-$param_values[$e]='@'.pretty_label(-$param_values[$e]);
+$addr=abs($param_values[$e]);
+$labels[$addr]=1;
+$param_values[$e]='@'.pretty_label($addr);
 }
 }
 
@@ -193,7 +195,7 @@ $decoded_sb=sprintf("%04X: $opcode_not %s %s %s",$opcode_raw,$param_values[0],$o
 
 push(@possible,[$q,$ppos,$decoded,"$decoded_sb"]);
 
-print "last good $last_good, now from $q\n";
+#print "last good $last_good, now from $q\n";
 if($q!=$last_good){
 $aborted=1;
 printf("Gap at %08x...%08x detected, aborted decompilation\n",$last_good,$q);
@@ -218,7 +220,7 @@ $q=$ppos-1;
 #show hex
 $offset=0;
 $pc=0;
-for($w=0;$w<$file_size/1600+1;$w++){
+for($w=0;$w<0;$w++){
 printf("\x1b[1;44;33m%.4x (%.4d)\x1b[0m: ",$offset,$offset);
 $txt="";
 for($q=0;$q<16;$q++){
@@ -364,25 +366,26 @@ my $want=shift;
 my $adv=0;
 my $str="";
 my $sq=0;
+my $is_ptr=0;
 
 my $pcode=ord(substr($file,$offset,1));$adv++;
 if($pcode<9 || $pcode>0x13){
 print STDERR "bad parameter code ($pcode), must be $pcode>=9&&$pcode<=0x13, can't decode string!\n";
 return 0;
 }
-print "reading str at $offset, want:$want, pcode:$pcode\n";
+#print "reading str at $offset, want:$want, pcode:$pcode\n";
 
 if($pcode==9){$str=substr($file,$offset+$adv,8);$adv+=8;$sq=1;}
-if($pcode==10){$str="g8str".unpack("S",substr($file,$offset+$adv,2));$adv+=2;}
-if($pcode==11){$str="l8str".unpack("S",substr($file,$offset+$adv,2));$adv+=2;}
-if($pcode==12){($gl_var,$arr_ind,$arr_size)=unpack("SSS",substr($file,$offset+$adv,6));$adv+=6;$str="g8strarr".$gl_var;}
-if($pcode==13){($gl_var,$arr_ind,$arr_size)=unpack("SSS",substr($file,$offset+$adv,6));$adv+=6;$str="g8strarr".$gl_var;}
+if($pcode==10){$str="s\$".unpack("S",substr($file,$offset+$adv,2));$adv+=2;$is_ptr=1;}
+if($pcode==11){$str="".unpack("S",substr($file,$offset+$adv,2)).'@';$adv+=2;$is_ptr=1;}
+if($pcode==12){($gl_var,$arr_ind,$arr_size)=unpack("SSS",substr($file,$offset+$adv,6));$adv+=6;$str="g8strarr".$gl_var;$is_ptr=1;}
+if($pcode==13){($gl_var,$arr_ind,$arr_size)=unpack("SSS",substr($file,$offset+$adv,6));$adv+=6;$str="g8strarr".$gl_var;$is_ptr=1;}
 if($pcode==14){$str_size=ord(substr($file,$offset+$adv,1));$str=substr($file,$offset+$adv+1,$str_size);$adv+=$str_size+1;}
-if($pcode==16){$str=substr($file,$offset+$adv,16);$adv+=16;}
-if($pcode==17){$str="g16str".unpack("S",substr($file,$offset+$adv,2));$adv+=2;}
-if($pcode==18){$str="l16str".unpack("S",substr($file,$offset+$adv,2));$adv+=2;}
-if($pcode==19){($gl_var,$arr_ind,$arr_size)=unpack("SSS",substr($file,$offset+$adv,6));$adv+=6;$str="g16strarr".$gl_var;}
-if($pcode==20){($gl_var,$arr_ind,$arr_size)=unpack("SSS",substr($file,$offset+$adv,6));$adv+=6;$str="g16strarr".$gl_var;}
+if($pcode==16){$str='v$'.unpack("S",substr($file,$offset+$adv,2));$adv+=2;}
+if($pcode==17){$str="g16str".unpack("S",substr($file,$offset+$adv,2));$adv+=2;$is_ptr=1;}
+if($pcode==18){$str="l16str".unpack("S",substr($file,$offset+$adv,2));$adv+=2;$is_ptr=1;}
+if($pcode==19){($gl_var,$arr_ind,$arr_size)=unpack("SSS",substr($file,$offset+$adv,6));$adv+=6;$str="g16strarr".$gl_var;$is_ptr=1;}
+if($pcode==20){($gl_var,$arr_ind,$arr_size)=unpack("SSS",substr($file,$offset+$adv,6));$adv+=6;$str="g16strarr".$gl_var;$is_ptr=1;}
 
 $str=~s/\x00.*//s;
 
@@ -392,7 +395,7 @@ print STDERR "We got string \"$str\", but this is not text!\n";
 return 0;
 }
 
-if(length($str)>$want){
+if(!$is_ptr && length($str)>$want){
 print STDERR "We got bigger string than expected!\n";
 return 0;
 }

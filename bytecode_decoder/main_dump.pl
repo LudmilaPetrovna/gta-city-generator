@@ -14,4 +14,5 @@ next;
 last;
 }
 
+printf("Main code at offset: 0x%08X (%d)\n",$pos,$pos);
 write_file("main_raw.scm",substr($file,$pos));

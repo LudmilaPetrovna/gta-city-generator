@@ -207,7 +207,7 @@ $params.="p1"; # GetPointerToScriptVariable
 }
 
 if($opcode==0x0180){
-$params="b1";
+$params="i1";
 }
 if($opcode==0x08DB){
 $params.="s8"x10;
