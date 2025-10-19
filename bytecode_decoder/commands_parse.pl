@@ -43,7 +43,7 @@ last_10_values
 =cut
 
 foreach $code(@cmds){
-if($code=~s/\n {8}+((case ([x\da-fA-F]+)u?: ?)+)//s){
+if($code=~s/\n( {8}+(case ([x\da-fA-F]+)u?: ?)+)//s){
 $idlist=$1;
 }
 @lines=split(/;/,$code);
@@ -52,7 +52,7 @@ $idlist=$1;
 while($idlist=~/case ([x\da-fA-F]+)u?:/g){
 $opcode=hex2dec($1);
 $exists[$opcode]=1;
-$snippets[$opcode]=$code;
+$snippets[$opcode]=$idlist.$code;
 $params="";
 push(@ctwins,$opcode);
 

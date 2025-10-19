@@ -3,6 +3,9 @@ use File::Slurp;
 use Data::Dumper;
 
 $source=$ARGV[0]||"Alhambra.cs";
+$out_opcodes=$source.".ops.txt";
+
+open(out_op,'>'.$out_opcodes);
 
 $db=decode_json(read_file("opcode_db_cleo.json"));
 $codeparam=decode_json(read_file("opcode_db_my_operands.json"));
@@ -203,6 +206,8 @@ printf("Gap at %08x...%08x detected, aborted decompilation\n",$last_good,$q);
 }
 
 
+printf(out_op "%04X\n",$opcode_raw);
+
 if($q>0x1E85){
 #die;
 }
@@ -211,6 +216,8 @@ $last_good=$ppos;
 
 $q=$ppos-1;
 }
+
+close(out_op);
 
 @count_colors=qw/90 92 93 91 95 96 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41/;
 
@@ -373,7 +380,7 @@ if($pcode<9 || $pcode>0x13){
 print STDERR "bad parameter code ($pcode), must be $pcode>=9&&$pcode<=0x13, can't decode string!\n";
 return 0;
 }
-#print "reading str at $offset, want:$want, pcode:$pcode\n";
+print "reading str at $offset, want:$want, pcode:$pcode\n";
 
 if($pcode==9){$str=substr($file,$offset+$adv,8);$adv+=8;$sq=1;}
 if($pcode==10){$str="s\$".unpack("S",substr($file,$offset+$adv,2));$adv+=2;$is_ptr=1;}
@@ -381,11 +388,11 @@ if($pcode==11){$str="".unpack("S",substr($file,$offset+$adv,2)).'@';$adv+=2;$is_
 if($pcode==12){($gl_var,$arr_ind,$arr_size)=unpack("SSS",substr($file,$offset+$adv,6));$adv+=6;$str="g8strarr".$gl_var;$is_ptr=1;}
 if($pcode==13){($gl_var,$arr_ind,$arr_size)=unpack("SSS",substr($file,$offset+$adv,6));$adv+=6;$str="g8strarr".$gl_var;$is_ptr=1;}
 if($pcode==14){$str_size=ord(substr($file,$offset+$adv,1));$str=substr($file,$offset+$adv+1,$str_size);$adv+=$str_size+1;}
+if($pcode==15){$str=substr($file,$offset+$adv,16);$adv+=16;$sq=1;}
 if($pcode==16){$str='v$'.unpack("S",substr($file,$offset+$adv,2));$adv+=2;}
-if($pcode==17){$str="g16str".unpack("S",substr($file,$offset+$adv,2));$adv+=2;$is_ptr=1;}
-if($pcode==18){$str="l16str".unpack("S",substr($file,$offset+$adv,2));$adv+=2;$is_ptr=1;}
+if($pcode==17){$str="l16str".unpack("S",substr($file,$offset+$adv,2));$adv+=2;$is_ptr=1;}
+if($pcode==18){($gl_var,$arr_ind,$arr_size)=unpack("SSS",substr($file,$offset+$adv,6));$adv+=6;$str="g16strarr".$gl_var;$is_ptr=1;}
 if($pcode==19){($gl_var,$arr_ind,$arr_size)=unpack("SSS",substr($file,$offset+$adv,6));$adv+=6;$str="g16strarr".$gl_var;$is_ptr=1;}
-if($pcode==20){($gl_var,$arr_ind,$arr_size)=unpack("SSS",substr($file,$offset+$adv,6));$adv+=6;$str="g16strarr".$gl_var;$is_ptr=1;}
 
 $str=~s/\x00.*//s;
 
