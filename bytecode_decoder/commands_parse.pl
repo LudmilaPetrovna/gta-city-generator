@@ -19,6 +19,8 @@ CRunningScript::ReadParametersForNewlyStartedScript(this, started); (0x4Fu and 0
 @codes=map{"u"}(0..0x7fff);
 @exists=map{0}(0..3000);
 @twins=map{0}(0..3000);
+@nops=map{0}(0..3000);
+
 
 =pod
 Legend:
@@ -55,6 +57,10 @@ $exists[$opcode]=1;
 $snippets[$opcode]=$idlist.$code;
 $params="";
 push(@ctwins,$opcode);
+
+if($code=~/^\s*return 0/s){
+$nops[$opcode]=1;
+}
 
 #print "Decoding opcode $opcode\n";
 
@@ -229,6 +235,7 @@ $codes[$opcode]=$params;
 write_file("opcode_db_my_operands.json",encode_json(\@codes));
 write_file("opcode_db_my_exists.json",encode_json(\@exists));
 write_file("opcode_db_my_snippets.json",encode_json(\@snippets));
+write_file("opcode_db_my_nops.json",encode_json(\@nops));
 
 print $codes[0x087]."\n";
 
