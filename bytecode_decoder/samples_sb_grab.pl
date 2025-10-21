@@ -25,6 +25,7 @@ for($q=0;$q<3000;$q++){
 if($operators->[$q]){$seeblack[$q]=1;}
 }
 map{/^(....):/;$seeblack[hex($1)]=1}split(/\n/,<<CODE);
+0000: nop
 0001: wait {time} 0
 00D6: if 
 0002: goto
@@ -79,7 +80,6 @@ push(@opcodes_all,$opcode);
 
 $max=@opcodes_see;
 for($w=0;$w<$max;$w++){
-printf("$w ::: %04X\n",$opcodes_see[$w]);
 $opcode=$opcodes_see[$w];
 $prev="";
 $next="";

@@ -34,6 +34,7 @@ while($ops=~/([a-z])(\d*)/g){
 ($type,$num)=($1,$2*1);
 if($type eq "s"){$num=1;}
 if($type eq "v"){$num=1;}
+if($type eq "b"){$num=1;}
 $count+=$num;
 }
 
@@ -50,6 +51,8 @@ $my_code=decode_json(read_file("opcode_db_my_snippets.json"));
 
 $cleo_sa_cmds=decode_json(read_file("opcode_db_cleo.json"))->{extensions}->[0]->{commands};
 
+$coperators=[];
+
 foreach $cmd(@{$cleo_sa_cmds}){
 $id=hex($cmd->{id});
 $cleo[$id]=$cmd->{num_params};
@@ -57,6 +60,7 @@ $names[$id]=$cmd->{name};
 $desc[$id]=$cmd->{short_desc};
 $oppos=0;
 $inp=$cmd->{input};
+$coperators->[$id]=$cmd->{operator};
 foreach(@{$inp}){
 if(!$opnames[$id]->[$oppos]){
 $opnames[$id]->[$oppos]=$_->{name} || $_->{type};
@@ -81,6 +85,16 @@ $infile=decode_json(read_file("opcode_db_my_infile.json"));
 $used_count=decode_json(read_file("opcode_db_my_count.json"));
 $samples=decode_json(read_file("opcode_db_my_samples.json"));
 $operators=decode_json(read_file("opcode_db_my_operators.json"));
+
+
+
+for($q=0;$q<3000;$q++){
+if($operators->[$q]==0 && $coperators->[$q] eq ""){next;}
+if($operators->[$q] ne $coperators->[$q]){
+#printf("%04X (%d) %s, operator \"%s\" cleo operator \"%s\"\n",$q,$q,$names[$q],$operators->[$q],$coperators->[$q]);
+}
+}
+
 
 
 open(pp,">opcodes.html");
@@ -187,7 +201,7 @@ print pp "<td>".$opnames[$q]->[$e];
 
 
 
-if($operators->[$q]){
+if($operators->[$q] && $operators->[$q] ne "==" && $operators->[$q] ne ">=" && $operators->[$q] ne ">"){
 $writables->[$q]->[0]=1;
 }
 

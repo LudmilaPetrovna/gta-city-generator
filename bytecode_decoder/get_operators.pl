@@ -26,6 +26,10 @@ _==_IS_VAR_TEXT_LABEL_EQUAL_TO_TEXT_LABEL
 _==_IS_LVAR_TEXT_LABEL_EQUAL_TO_TEXT_LABEL
 _=_SET_LVAR_TEXT_LABEL16
 _==_IS_FLOAT_LVAR_EQUAL_TO_FLOAT_VAR
+_=_SET_VAR_TEXT_LABEL
+_=_SET_VAR_TEXT_LABEL16
+_==_IS_VAR_TEXT_LABEL16_EQUAL_TO_TEXT_LABEL
+_==_IS_LVAR_TEXT_LABEL16_EQUAL_TO_TEXT_LABEL
 AAA
 
 @sc_cmds=split(/<Command/s,read_file("opcode_db_gta3sc.xml"));
@@ -97,7 +101,7 @@ $operators[hex($1)&0x7fff]->[0]=$5;
 
 
 @final=();
-for($q=0;$q<2010;$q++){
+for($q=0;$q<2700;$q++){
 $final[$q]=0;
 if($operators[$q] && $operators[$q]->[0]){
 $final[$q]=$operators[$q]->[0];
@@ -107,7 +111,7 @@ $final[$q]=$operators[$q]->[0];
 write_file("opcode_db_my_operators.json",encode_json(\@final));
 
 $fix="";
-for($q=0;$q<2010;$q++){
+for($q=0;$q<2700;$q++){
 if(!$names[$q]){next;}
 $name=$names[$q];
 if($name=~/_INT|_LVAR|_GREATER|_EQUAL|MULT_|DIV_|_INT|_CONSTANT|_LVAR|_FLOAT/ && $myl[$q]==2){
@@ -135,6 +139,7 @@ $negative[$q]*=1;
 write_file("opcode_db_my_negative.json",encode_json(\@negative));
 
 
+die Dumper($operators[2297]);
 
 
 #print $fix;
