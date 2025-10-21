@@ -1,7 +1,29 @@
 use JSON;
 use File::Slurp;
+use Data::Dumper;
 
+@opnames=();
 
+@sc_cmds=split(/<Command/s,read_file("opcode_db_gta3sc.xml"));
+foreach $entry(@sc_cmds){
+$id=-1;
+if($entry=~/ID=\"0x([\da-f]+)/i){
+$id=hex($1);
+}
+$count=0;
+while($entry=~/<Arg ([^>]+)/g){
+$arg=$1;
+$name="";
+if($arg=~/Enum="(.+?)"/){$name=$1;}
+if($arg=~/Entity="(.+?)"/){$name=$1;}
+if($arg=~/Desc="(.+?)"/){$name=$1;}
+if($name && $id>=0){
+$opnames[$id]->[$count]=$name;
+}
+$count++;
+}
+
+}
 
 
 $my_len=decode_json(read_file("opcode_db_my_operands.json"));
@@ -11,7 +33,7 @@ $count=0;
 while($ops=~/([a-z])(\d*)/g){
 ($type,$num)=($1,$2*1);
 if($type eq "s"){$num=1;}
-if($type eq "v"){$num=1000;}
+if($type eq "v"){$num=1;}
 $count+=$num;
 }
 
@@ -21,6 +43,7 @@ $myl[$q]=$count;
 
 
 $nops=decode_json(read_file("opcode_db_my_nops.json"));
+$writables=decode_json(read_file("opcode_db_my_writables.json"));
 $exists=decode_json(read_file("opcode_db_my_exists.json"));
 $seealso=decode_json(read_file("opcode_db_my_seealso.json"));
 $my_code=decode_json(read_file("opcode_db_my_snippets.json"));
@@ -32,12 +55,30 @@ $id=hex($cmd->{id});
 $cleo[$id]=$cmd->{num_params};
 $names[$id]=$cmd->{name};
 $desc[$id]=$cmd->{short_desc};
+$oppos=0;
+$inp=$cmd->{input};
+foreach(@{$inp}){
+if(!$opnames[$id]->[$oppos]){
+$opnames[$id]->[$oppos]=$_->{name} || $_->{type};
+}
+$oppos++;
+}
+$inp=$cmd->{output};
+foreach(@{$inp}){
+if(!$opnames[$id]->[$oppos]){
+$opnames[$id]->[$oppos]=$_->{name} || $_->{type};
+}
+$oppos++;
+}
+
+
 }
 
 
 
+
 $infile=decode_json(read_file("opcode_db_my_infile.json"));
-$count=decode_json(read_file("opcode_db_my_count.json"));
+$used_count=decode_json(read_file("opcode_db_my_count.json"));
 $samples=decode_json(read_file("opcode_db_my_samples.json"));
 $operators=decode_json(read_file("opcode_db_my_operators.json"));
 
@@ -58,6 +99,16 @@ h1.exists0{background:#300;color:#333;}
 textarea{background:black;width:100%;color:gold;font-weight:bold;border:1px #aaa inset;}
 .signature{background:#050;color:#FF0;}
 .no{background:maroon;}
+.opname td{text-align:center;color:white;}
+
+.writable td{text-align:center;}
+.writable .a1{color:lime;background:#070;}
+.writable .a0{color:red;background:#700;}
+.readable td{text-align:center;}
+.readable .a1{color:lime;background:#070;}
+.readable .a0{color:red;background:#700;}
+.n{color:white;text-align:left;}
+
 </style>
 <body>
 
@@ -91,27 +142,77 @@ printf(pp "<div class=desc>%s</div>\n",$descr);
 $sign="";
 $s=$my_len->[$q];
 @arg=();
-while($s=~/([iophbsv])(\d*)/g){
-if($1 eq "i"){push(@arg,"входной параметр - $2шт");}
-if($1 eq "o"){push(@arg,"входной параметр - $2шт");}
-if($1 eq "p"){push(@arg,"указатель");}
-if($1 eq "g"){push(@arg,"глобальный указатель");}
-if($1 eq "b"){push(@arg,"блок в $2 байт");}
-if($1 eq "s"){push(@arg,"строка до $2 символов");}
-if($1 eq "v"){push(@arg,"дополнительные аргументы");}
-}
 $sign=join(", ",@arg);
 if($sign){
 $sign=" ($sign)";
 }
 
-printf(pp "<div class=signature>Параметров: %d, cигнатура: %s%s</div>\n",$myl[$q],$my_len->[$q] || "<span class=no>нет</span>",$sign);
+
+if(!$writables->[$q]){
+$writables->[$q]=[];
+}
+
+printf(pp "<div class=signature>Параметров: %d, cигнатура: %s%s</div>\n",$myl[$q],$my_len->[$q] || "<span class=no>нет</span>");
+
+print pp "<table border=1><tr><td>///";
+$sign=$my_len->[$q];
+$oppos=0;
+$expect_line="<td class=n>Ожидается";
+@readables=();
+while($sign=~/([a-z])(\d*)/g){
+$type="";
+$count=1;
+$is_rw=0;
+if($1 eq "i"){$type="входной параметр";$count=$2;}
+if($1 eq "o"){$type="выходной параметр";$count=$2;$is_rw=1;}
+if($1 eq "p"){$type="указатель";$count=$2;}
+if($1 eq "g"){$type="глобальный указатель";$count=1;}
+if($1 eq "b"){$type="блок в $2 байт";}
+if($1 eq "s"){$type="строка до $2 символов";$count=1;}
+if($1 eq "v"){$type="дополнительные аргументы (если есть, произвольное количество)";$count=1;}
+for($e=0;$e<$count;$e++){
+print pp "<td class=n>Параметр ".($e+$oppos+1);
+$expect_line.="<td class=n>".$type;
+$writables->[$q]->[$e+$oppos]|=$is_rw;
+$readables[$e+$oppos]=1-$is_rw;
+}
+$oppos+=$count;
+}
+
+
+print pp "<tr class=opname><td class=n>Название";
+for($e=0;$e<$myl[$q];$e++){
+print pp "<td>".$opnames[$q]->[$e];
+}
+
+
+
+if($operators->[$q]){
+$writables->[$q]->[0]=1;
+}
+
+print pp "<tr class=readable><td class=n>Чтение";
+for($e=0;$e<$myl[$q];$e++){
+$is_yes=$readables[$e]?1:0;
+print pp "<td class=a$is_yes>".($is_yes?"да":"нет");
+}
+
+print pp "<tr class=writable><td class=n>Запись";
+for($e=0;$e<$myl[$q];$e++){
+$is_yes=$writables->[$q]->[$e]?1:0;
+print pp "<td class=a$is_yes>".($is_yes?"да":"нет");
+}
+
+print pp "<tr>".$expect_line;
+
+print pp "</table>";
+
 if($seealso->[$q]){
-$seealso_text=join(", ",map{sprintf("<a href=#%04x title='%s'>%04X</a>",$_,$names[$_],$_)}@{$seealso->[$q]});
+$seealso_text=join(", ",map{sprintf("<a href=#%04X title='%s'>%04X</a>",$_,$names[$_],$_)}@{$seealso->[$q]});
 
 printf(pp "<div class=usage>Используется совместно с: %s</div>\n",$seealso_text);
 }
-printf(pp "<div class=usage>Встречается в коде скриптов раз: %d, встречается в файлах: %s</div>\n",$count->[$q],$infile->[$q]||"<span class=no>нигде</span>");
+printf(pp "<div class=usage>Встречается в коде скриптов раз: %d, встречается в файлах: %s</div>\n",$used_count->[$q],$infile->[$q]||"<span class=no>нигде</span>");
 $code=$my_code->[$q];
 $code=~s/ /&nbsp;/gs;
 $code=~s/\n/<br>/gs;

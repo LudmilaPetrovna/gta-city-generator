@@ -20,7 +20,7 @@ CRunningScript::ReadParametersForNewlyStartedScript(this, started); (0x4Fu and 0
 @exists=map{0}(0..3000);
 @twins=map{0}(0..3000);
 @nops=map{0}(0..3000);
-
+@writables=map{0}(0..3000);
 
 =pod
 Legend:
@@ -63,17 +63,33 @@ $nops[$opcode]=1;
 }
 
 #print "Decoding opcode $opcode\n";
+$oprw=[];
+$opreg={};
 
 foreach $line(@lines){
 #print "$line\n";
 if($line=~/CRunningScript::StoreParameters[^,]+,\s+([x\da-fA-F]+)/){
-$params.="o".hex2dec($1); # fixme
+$opcount=hex2dec($1); # fixme
+$opnum=calc_position($params);
+$params.="o".$opcount;
+for($aa=0;$aa<$opcount;$aa++){
+$oprw->[$opnum++]=1;
 }
+}
+
 if($line=~/CRunningScript::GetPointerToScriptVariable/){
+$opnum=calc_position($params);
 $params.="p1"; # fixme int 1 operand
+if($line=~/^\s*([a-z][a-z\d_]+) = /i){
+$opreg->{$1}=$opnum;
+}
 }
 if($line=~/CRunningScript::GetIndexOfGlobalVariable/){
+$opnum=calc_position($params);
 $params.="g1"; # fixme int 1 operand
+if($line=~/([a-z][a-z\d_]+) = /i){
+$opreg->{$1}=$opnum;
+}
 }
 if($line=~/CRunningScript::CollectParameters[^,]+,\s+([x\da-fA-F]+)u?\)/){
 $params.="i".hex2dec($1);
@@ -156,7 +172,11 @@ $params.="p6";
 
 if($line=~/return 0/){last;}
 
-
+if($line=~/^\s*\*([a-z][a-z\d_]+) =/i){
+if(defined $opreg->{$1}){
+$oprw->[$opreg->{$1}]=1;
+}
+}
 
 
 if($line=~/sub_488780/){
@@ -226,8 +246,13 @@ $params="i1o1";
 
 do "./opcode_db_my_fix.pl";
 
+if($opcode==16000){
+die Dumper($opreg,$oprw);
+
+}
 
 $codes[$opcode]=$params;
+$writables[$opcode]=$oprw;
 }
 
 }
@@ -236,8 +261,9 @@ write_file("opcode_db_my_operands.json",encode_json(\@codes));
 write_file("opcode_db_my_exists.json",encode_json(\@exists));
 write_file("opcode_db_my_snippets.json",encode_json(\@snippets));
 write_file("opcode_db_my_nops.json",encode_json(\@nops));
+write_file("opcode_db_my_writables.json",encode_json(\@writables));
 
-print $codes[0x087]."\n";
+print Dumper($writables[6]);
 
 
 sub hex2dec{
@@ -253,5 +279,19 @@ my $str=shift;
 $str=~s/\s+/ /gs;
 $str=~s/^\s+/        /s;
 return($str);
+}
+
+
+sub calc_position{
+my $ops=shift;
+my $count=0;
+my($type,$num);
+while($ops=~/([a-z])(\d*)/g){
+($type,$num)=($1,$2*1);
+if($type eq "s"){$num=1;}
+if($type eq "v"){$num=1000;}
+$count+=$num;
+}
+return($count);
 }
 
