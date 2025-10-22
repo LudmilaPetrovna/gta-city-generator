@@ -11,7 +11,9 @@ $file=~s/ True/ 1/gs;
 $file=~s/ False/ 0/gs;
 $file=~s/^(00D6: if)\s*$/$1 0/gm;
 $file=~s/^([\da-fA-F]{4}:)\s+(not )?/$1 $2/gm; # fix indent
-$file=~s/^([\da-fA-F]{4}:)\s+([a-z\d_]+)\s+(\S+) ([<>\+\-\=\*\/\%\#]{1,2}) (\S+)/$1 $3 $4 $5/gm; # remove operators prefixes
+$file=~s/^([\da-fA-F]{4}:)\s+([a-z\d_]+) +(\S+) ([<>\+\-\=\*\/\%\#]{1,2}) (\S+)/$1 $3 $4 $5/gm; # remove operators prefixes
+$file=~s/^:LABEL.+$//gm;
+$file=~s/\n\s+/\n/gs;
 
 
 print $file;

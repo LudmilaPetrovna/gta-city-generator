@@ -168,6 +168,9 @@ $writables->[$q]=[];
 
 printf(pp "<div class=signature>Параметров: %d, cигнатура: %s%s</div>\n",$myl[$q],$my_len->[$q] || "<span class=no>нет</span>");
 
+if($myl[$q]!=0){
+# PARAMETERS
+
 print pp "<table border=1><tr><td>///";
 $sign=$my_len->[$q];
 $oppos=0;
@@ -220,6 +223,9 @@ print pp "<td class=a$is_yes>".($is_yes?"да":"нет");
 print pp "<tr>".$expect_line;
 
 print pp "</table>";
+
+# /PARAMETERS
+}
 
 if($seealso->[$q]){
 $seealso_text=join(", ",map{sprintf("<a href=#%04X title='%s'>%04X</a>",$_,$names[$_],$_)}@{$seealso->[$q]});

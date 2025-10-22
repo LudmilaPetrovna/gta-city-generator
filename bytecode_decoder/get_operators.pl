@@ -138,8 +138,15 @@ $negative[$q]*=1;
 
 write_file("opcode_db_my_negative.json",encode_json(\@negative));
 
+$opnames=[];
+for($q=0;$q<3000;$q++){
+if($operators[$q]->[0]){
+push(@{$opnames},$names[$q]);
+}
+}
 
-die Dumper($operators[2297]);
+print Dumper($operators[2297]);
+print join("|",sort{length($b) <=> length($a)}@{$opnames});
 
 
 #print $fix;
