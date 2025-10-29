@@ -4,6 +4,11 @@ use Data::Dumper;
 
 %opstat=();
 
+@ref_files=map{"scripts.img/decoded/$_"}grep{/\.scm\.cs$/}read_dir("scripts.img/decoded/");
+push(@ref_files,'main_raw.cs');
+
+
+
 $source=$ARGV[0]||"Alhambra.cs";
 $out_opcodes=$source.".ops.txt";
 
@@ -56,8 +61,6 @@ $codeparam->[$id]='p'.$opcode->{num_params};
 
 }
 
-$file=read_file($source);
-$file_size=length($file);
 #$file_size=1280;
 
 @ptypes=();
@@ -86,9 +89,15 @@ $codeparam->[4]="p1p1";
 $codeparam->[0x600]="p7";
 $codeparam->[0x172]="p1p1";
 
+foreach $source(@ref_files){
+
 @possible=();
 $last_good=0;
 $aborted=0;
+
+$file=read_file($source);
+$file_size=length($file);
+
 
 for($q=0;$q<$file_size && !$aborted;$q++){
 $opcode_raw=unpack("S",substr($file,$q,2));
@@ -242,7 +251,7 @@ if($decoded_sb=~/is_area_occupied 2333.48 2439.58/){$cmp_pass=1;}
 if($decoded_sb=~/create_car_generator 1175.0 1366.48 10.1203 282.226/){$cmp_pass=1;}
 if($decoded_sb=~/add_stunt_jump 2770.21 -1177.48 70.7527 2.344 1.99/){$cmp_pass=1;}
 
-if($cmp1 ne $cmp2 && !$cmp_pass){
+if($cmp1 ne $cmp2 && !$cmp_pass && 0){
 print "our: |$decoded_sb|\n";
 print "sb : |$sbcode[$last_el]|\n======";
 for($q=0;$q<80;$q++){
@@ -256,7 +265,7 @@ exit;
 
 
 
-printf(out_op "%04X\n",$opcode_raw);
+#printf(out_op "%04X\n",$opcode_raw);
 
 if($q>0x1E85){
 #die;
@@ -268,10 +277,10 @@ $q=$ppos-1;
 }
 
 close(out_op);
+}
 
-
-print Dumper(\%opstat);
-print encode_json(\%opstat);
+#print Dumper(\%opstat);
+write_file("opcode_db_my_opstat.json",encode_json(\%opstat));
 
 @count_colors=qw/90 92 93 91 95 96 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41/;
 
@@ -555,6 +564,8 @@ if(!$is_ptr){
 $value_pretty=$value_raw;
 $value_pretty=~s/\x00.*//s;
 
+
+
 if(!is_string($value_pretty)){
 $value_pretty=~s/[\x-\x1f\x7f-\xff]/./gs;
 print STDERR "We got string \"$value_pretty\", but this is not text!\n";
@@ -571,6 +582,10 @@ $value_pretty="'$value_pretty'";
 } else {
 $value_pretty="\"$value_pretty\"";
 }
+
+$value_raw=$value_raw;
+$value_raw=~s/([^ -\x7e])/sprintf("[%02X]",ord($1))/egs;
+
 }
 
 if($value_pretty eq ""){

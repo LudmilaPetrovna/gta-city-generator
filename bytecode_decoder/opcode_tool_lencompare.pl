@@ -92,7 +92,7 @@ $res="";
 if($cleo[$q]==$ghidra[$q] && $sc[$q]==$wiki[$q] && $ghidra[$q]==$sc[$q]){
 $res="other_ok";
 }
-if($sc[$q]==$myl[$q]){
+if($cleo[$q]==$myl[$q]){
 $res="all_ok";
 next;
 }

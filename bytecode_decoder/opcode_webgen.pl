@@ -43,6 +43,7 @@ $myl[$q]=$count;
 }
 
 
+$opstat=decode_json(read_file("opcode_db_my_opstat.json"));
 $nops=decode_json(read_file("opcode_db_my_nops.json"));
 $writables=decode_json(read_file("opcode_db_my_writables.json"));
 $exists=decode_json(read_file("opcode_db_my_exists.json"));
@@ -221,8 +222,76 @@ print pp "<td class=a$is_yes>".($is_yes?"да":"нет");
 }
 
 print pp "<tr>".$expect_line;
+print pp "<tr><td class=n>Примеры значений";
+
+if($q==1462){
+$vals={};
+map{map{$vals->{$_}=1}values %{$opstat->{$q}->{0}->{$_}}}keys %{$opstat->{$q}->{0}};
+@vals=keys %{$vals};
+splice(@vals,5);
+print pp "<td class=n><table border=1><tr><td>Блок на 128 байт<tr><td>".join("<br>\n",sort @vals)."</table>";
+} else {
+
+for($e=0;$e<$myl[$q];$e++){
+$vals=$opstat->{$q}->{$e};
+$types=join("",map{
+$type=$_;
+@vals=values %{$vals->{$type}};
+$rangetext="";
+$uniqtext="<span style=color:#AAA>Уникальных: ".@vals."</span><br>";
+if($type==1 || ($type>=4 && $type<=6)){
+$range=[$vals[0],$vals[0]];
+foreach $cv(@vals){
+if($range->[0]>$cv){$range->[0]=$cv;}
+if($range->[1]<$cv){$range->[1]=$cv;}
+}
+$rangetext="<span style=color:cyan>[$range->[0]..$range->[1]]</span><br>";
+}
+
+if($type==9 || $type==14){
+$range=[length($vals[0])-2,length($vals[0])-2];
+foreach $cv0(@vals){
+$cv=length($cv0)-2;
+#if($cv<0){$add="-1:$cv0
+if($range->[0]>$cv){$range->[0]=$cv;}
+if($range->[1]<$cv){$range->[1]=$cv;}
+}
+$rangetext="<span style=color:cyan>{$range->[0]..$range->[1]}</span><br>";
+}
+
+
+splice(@vals,5);
+$typename="";
+if($type==1){$typename="int";}
+if($type==2){$typename="global var";}
+if($type==3){$typename="local var";}
+if($type==4){$typename="byte";}
+if($type==5){$typename="short";}
+if($type==6){$typename="float";}
+if($type==7){$typename="global array";}
+if($type==8){$typename="local array";}
+if($type==9){$typename="string8";}
+if($type==10){$typename="string global var";}
+if($type==11){$typename="string local var";}
+if($type==12){$typename="string global array";}
+if($type==13){$typename="string local array";}
+if($type==14){$typename="string variable size";}
+if($type==15){$typename="string16 never used";}
+if($type==16){$typename="pointer to string16";}
+if($type==17){$typename="???";}
+if($type==18){$typename="string global array";}
+if($type==19){$typename="never used";}
+
+
+"<table border=1><tr><td>Тип $type $typename<tr><td>$uniqtext$rangetext".join("<br>\n",sort @vals)."</table>"}sort keys %{$vals});
+print pp "<td class=n>".$types;
+}
+
+}
 
 print pp "</table>";
+
+#print pp encode_json($opstat->{$q});
 
 # /PARAMETERS
 }

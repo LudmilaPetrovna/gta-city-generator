@@ -4,9 +4,11 @@ use JSON;
 
 $cmds=read_file("commands.txt");
 $cmds=~tr/\r//d;
-#$cmds=~s/(\n {6,9}case [x\da-fA-F]+u?:)+\s+return 0//sg; # "nop commands" are exists in scripts
-$cmds=~s/((\n {6,9}case [x\da-fA-F]+u?:)+)/"\n".strip_lines($1)/esg;
-@cmds=split(/(?=\n {6,9}case [x\da-fA-F]+u?:)/,$cmds);
+####$cmds=~s/(\n {6,9}case [x\da-fA-F]+u?:)+\s+return 0//sg; # "nop commands" are exists in scripts
+#$cmds=~s/((\n {6,9}case [x\da-fA-F]+u?:)+)/"\n".strip_lines($1)/esg;
+#@cmds=split(/(?=\n {6,9}case [x\da-fA-F]+u?:)/,$cmds);
+
+@codeblocks=grep{/case/}split(/CRunningScript::ProcessCommands\d+To\d+/,$cmds);
 
 =pod
 Search this strings to calc parameters count:
@@ -44,21 +46,59 @@ used_chars
 last_10_values
 =cut
 
-foreach $code(@cmds){
-if($code=~s/\n( {8}+(case ([x\da-fA-F]+)u?: ?)+)//s){
-$idlist=$1;
+@cmds=();
+foreach $codeblock(@codeblocks){
+@lines=split(/\n/,$codeblock);
+$linescount=@lines;
+%labels=();
+%cases=();
+for($q=0;$q<$linescount;$q++){
+$line=$lines[$q];
+if($line=~/^([a-zA-Z0-9_\@]+):$/){
+$labels{$1}=$q;
 }
-@lines=split(/;/,$code);
-@ctwins=();
+if($line=~/^ {8}case ([x\da-fA-F]+)u?:/s){
+$cases{hex2dec($1)}=$q." ".$line;
+}
+}
 
-while($idlist=~/case ([x\da-fA-F]+)u?:/g){
-$opcode=hex2dec($1);
+for($opcode=0;$opcode<3000;$opcode++){
+if(!$cases{$opcode}){next;}
+$code="";
+$line=$cases{$opcode};
+while($line<$linescount){
+$codeline=$lines[$line];
+if($codeline=~/goto ([^;]+);/){
+$goto=$1;
+if(!exists $labels{$goto}){die "Wrong goto";}
+$line=$labels{$goto};
+next;
+}
+if($codeline=~/^ {1,7}\S/){last;}
+
+$code.=$lines[$line]."\n";
+print "$opcode| $line: $lines[$line]\n";
+if($codeline=~/return/){last;}
+if($codeline=~/^ {12}break/){last;}
+$line++;
+}
+$cmds[$opcode]=$code;
+}
+
+
+}
+
+
+for($opcode=0;$opcode<3000;$opcode++){
+if(!$cmds[$opcode]){next;}
+@lines=split(/;/,$cmds[$opcode]);
 $exists[$opcode]=1;
-$snippets[$opcode]=$idlist.$code;
+$snippets[$opcode]=$cmds[$opcode];
 $params="";
-push(@ctwins,$opcode);
 
-if($code=~/^\s*return 0/s){
+$nopstest=$cmds[$opcode];
+$nopstest=~s/case ([x\da-fA-F]+)u?://g;
+if($nopstest=~/^\s*return 0/s){
 $nops[$opcode]=1;
 }
 
@@ -228,34 +268,29 @@ if($opcode==0x812){$params.="i6";}
 
 #if(length($code)<10){$params.="l";}
 
-if($opcode==0x1d || $opcode==0x1e){
-$params.="p1"; # GetPointerToScriptVariable
-}
-
 if($opcode==0x0180){
 $params="i1";
 }
-if($opcode==0x08DB){
-$params.="s8"x10;
-}
-
 
 if($opcode==0x06E6){
 $params="i1o1";
 }
 
+if($opcode==2267){
+$params="i2s8s8s8s8s8s8s8s8s8s8s8s8s8";
+}
+
+
 do "./opcode_db_my_fix.pl";
 
 if($opcode==16000){
 die Dumper($opreg,$oprw);
-
 }
 
 $codes[$opcode]=$params;
 $writables[$opcode]=$oprw;
 }
 
-}
 
 write_file("opcode_db_my_operands.json",encode_json(\@codes));
 write_file("opcode_db_my_exists.json",encode_json(\@exists));
@@ -263,7 +298,7 @@ write_file("opcode_db_my_snippets.json",encode_json(\@snippets));
 write_file("opcode_db_my_nops.json",encode_json(\@nops));
 write_file("opcode_db_my_writables.json",encode_json(\@writables));
 
-print Dumper($writables[6]);
+print Dumper($codes[30]);
 
 
 sub hex2dec{
