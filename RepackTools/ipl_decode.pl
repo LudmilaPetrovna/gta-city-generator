@@ -34,7 +34,7 @@ if($sum1 eq $sum2){next;}
 #print "WARNING!!! Collision of key $key: $File::Find::name (previous was $files{$key})\n";
 }
 $files{$key}=$File::Find::name;
-}},"data","img_unpacked","col_unpacked");
+}},"data","/dev/shm/t/gta/unpacked/","col_unpacked");
 
 # step 2: find ids and files
 # we can "restore" names in binary IPL files with this info
@@ -99,7 +99,6 @@ $lod_txd{$txd{$ids{$id}}}=0;
 
 print join("|",sort grep{$lod_txd{$_}} keys %lod_txd);
 
-exit(1);
 #used_count
 #lod_by_coords
 
@@ -117,7 +116,7 @@ exit(1);
 #my $center=[-164,16,9];
 #my $center=[-439.086,1041.41,16.6484];
 my $center=[-3000,-3000,0];
-my $rad=500;
+my $rad=100;
 my $max_count=500000;
 
 
@@ -128,6 +127,8 @@ $center=[$center_preview->[0]/3072*6000-3000,3000-$center_preview->[1]/3072*6000
 
 $center=[-1894.98,105.789,23.1719];
 $center=[1263.88,-770.375,1083]; # in sky
+$center=[2485.77,-1666.38,13.34]; # groove street
+
 
 my @ret=();
 foreach $ipl_key(grep{!/barrier.+ipl/}keys %inst){

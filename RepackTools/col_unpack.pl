@@ -1,14 +1,16 @@
 use File::Find;
+use File::Slurp;
 use File::Path qw(make_path remove_tree);
 use File::Basename;
 
 $src_dir="img_unpacked/models/";
+$src_dir="/dev/shm/t/gta/unpacked/models";
 $dst_dir="col_unpacked/";
 
 remove_tree($dst_dir);
 make_path($dst_dir);
 
-open(rr,">cols_remove.txt");
+#open(rr,">cols_remove.txt");
 
 find({no_chdir=>1,follow=>1,wanted=>sub{
 if(-d($File::Find::name)){return;}
@@ -18,17 +20,16 @@ extract_colls($File::Find::name);
 }
 }},$src_dir);
 
-
+die "Collision files now in \"$dst_dir\"";
 
 sub extract_colls{
 my $path=shift;
 my $basefile=lc(basename($path));
-$basefile=~s/\.col$//is;
 my $basedir=substr(lc(dirname($path)),length($src_dir));
+$basefile=~s/\.col$//is;
 
-
-print STDERR "Extracting collisions from \"$path\"...\n";
-open(dd,$path) or dir $!;
+print STDERR "Extracting collisions from \"$path\", basefile:$basefile, basedir:$basedir...\n";
+open(dd,$path) or die $!;
 binmode(dd);
 
 $filesize=-s(dd);
@@ -39,15 +40,19 @@ while($offset<$filesize){
 read(dd,$header,32);
 ($sign,$size,$model,$obj_id)=unpack("A4IZ22S",$header);
 if($sign ne "COLL" && $sign ne "COL2" && $sign ne "COL3"){
-die "Wrong signature!";
+die "$path: wrong signature!";
 }
 
 if($offset+$size>$filesize){
-die "Chunk data too large, it's more than file size!";
+die "$path: chunk data too large, it's more than file size!";
 }
 
 if($obj_id>=20000){
-die "We got obj_id $obj_id, but expect 0..19999! May be a mod?";
+die "$path: we got obj_id $obj_id, but expect 0..19999! May be a mod?";
+}
+
+if($size<54){
+die "$path: size too small!";
 }
 
 read(dd,$data,$size-22-2);
