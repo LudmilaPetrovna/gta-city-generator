@@ -4,14 +4,6 @@ use File::Basename;
 use Data::Dumper;
 
 my $audio_root='/dev/shm/t/gta/Grand Theft Auto - San Andreas/audio';
-my $want_package=$ARGV[0];
-
-my $sfx_banks=read_file('/dev/shm/gta-city-generator/LearnAudio/sfx_banks.txt');
-map{$is_sfx{$_}++}split(/\n/,$sfx_banks);
-
-my $total_sfx_len=0;
-my %total_package_len=();
-my @total_bank_len=();
 
 # read package list
 $pak=read_file($audio_root.'/CONFIG/PakFiles.dat');
@@ -62,43 +54,32 @@ $total_bank_len=0;
 seek(dd,$bank_offset,0);
 read(dd,$buf,4);
 ($num_sounds,$padding)=unpack("SS",$buf);
-if($num_sounds>400){
-die "Num sounds is $num_sounds, must not be more than 400!";
-}
-
-if($padding!=0){
-die "Padding not 0! This is not error, but very strange!";
-}
-
+if($num_sounds>400){die "Num sounds is $num_sounds, must not be more than 400!";}
+if($padding!=0){die "Padding not 0! This is not error, but very strange!";}
 read(dd,$buf,12*400);
 
 @sounds=();
 for($q=0;$q<$num_sounds;$q++){
 ($buffer_offset,$loop_offset,$sample_rate,$headroom)=unpack("IiSs",substr($buf,$q*12,12));
-$sounds[$q]=[$sample_rate,$buffer_offset];
+$sounds[$q]=[$sample_rate,$loop_offset,$buffer_offset];
 }
 
 # calc len of sound
 for($q=0;$q<$num_sounds;$q++){
-$sounds[$q]->[2]=($q==($num_sounds-1)?$bank_size:$sounds[$q+1]->[1])-$sounds[$q]->[1]; # in samples
-$sounds[$q]->[3]=$sounds[$q]->[2]/2/$sounds[$q]->[0]; # in seconds
-$total_bank_len[$bank_id]+=$sounds[$q]->[3];
+$sounds[$q]->[3]=($q==($num_sounds-1)?$bank_size:$sounds[$q+1]->[2])-$sounds[$q]->[2]; # in samples
+$sounds[$q]->[4]=$sounds[$q]->[3]/2/$sounds[$q]->[0]; # in seconds
 }
 
-# extract or not extract?
-#if($package_name eq $want_package){
-if($is_sfx{$bank_id}){
-
 for($q=0;$q<$num_sounds;$q++){
+($samplerate,$loop,$buf_offset,$buf_len,$time_len)=@{$sounds[$q]};
+if($loop<0){next;} #non loop
 $out_filename=sprintf("sound_sfx/%s/bank%d/sound_%04d.wav",$package_name,$bank_id,$q);
-$buf_offset=$sounds[$q]->[1]+$bank_offset+4+400*12;
-$buf_len=$sounds[$q]->[2];
-$samplerate=$sounds[$q]->[0];
+$buf_offset+=$bank_offset+4+400*12;
 
-print STDERR "Extracting $out_filename (at $buf_offset, size: $buf_len, samplerate: $samplerate)\n";
+print STDERR "Extracting $out_filename (at $buf_offset, size: $buf_len, samplerate: $samplerate, loop: $sounds[$q]->[1])\n";
 
-if($buf_len&1){die "Buffer size must be aligned to 16 bits!";}
-if($buf_len<0){die "Buffer size must not be negative!";}
+####if($buf_len&1){die "Buffer size must be aligned to 16 bits! We have $buf_len bytes";}
+if($buf_len<0){print STDERR "Buffer size must not be negative!";next;}
 
 seek(dd,$buf_offset,0);read(dd,$buf,$buf_len);
 
@@ -109,56 +90,8 @@ binmode(oo);
 print oo $buf;
 close(oo);
 
-=pod
-# resample
-$tmpfile="tmp-resample.wav";
-open(oo,"|ffmpeg -v 0 -f s16le -ar $samplerate -ac 1 -i - -ar 48000 -ac 1 -y $tmpfile");
-binmode(oo);
-print oo $buf;
-close(oo);
-
-$resampled=read_file($tmpfile);
-unlink($tmpfile);
-
-
-
-$outmaxlen=3600;
-if($outpos>$outmaxlen){
-
-
-}
-=cut
-
-#if($uniq>=10){last;}
-
 }
 }
-
-#now all sounds is extracted
-
-$bank_dur=int($total_bank_len[$bank_id]);
-$bank_dur_t=s2time($bank_dur);
-
-$bank_dur_gap=int($total_bank_len[$bank_id])+($num_sounds-1)*3.5;
-$bank_dur_gap_t=s2time($bank_dur_gap);
-
-$total_package_len{$package_name}+=$bank_dur;
-$total_package_len_gap{$package_name}+=$bank_dur_gap;
-
-print "pack:$package_name,bank:$bank_id,banksize:$bank_size,sounds:$num_sounds,dur:$bank_dur ($bank_dur_t),durgap:$bank_dur_gap ($bank_dur_gap_t)\n";
-
-}
-
-foreach(@package_names){
-$total=s2time($total_package_len{$_});
-$total_gap=s2time($total_package_len_gap{$_});
-print "Package: $_, total duration: $total, with gap: $total_gap\n";
-$total_sfx_len+=$total_package_len{$_};
-$total_sfx_len_gap+=$total_package_len_gap{$_};
-}
-
-print "Total game sfx len: ".s2time($total_sfx_len).", with gap: ".s2time($total_sfx_len_gap)."\n";
-
 
 
 sub s2time{
@@ -169,3 +102,12 @@ if($hour==0 && $min==0){return sprintf("%ds",$sec);}
 if($hour==0){return sprintf("%02d:%02d",$min,$sec);}
 return sprintf("%02d:%02d:%02d:%02d",$mday-1,$hour,$min,$sec);
 }
+
+sub s2srt{
+my $s=shift;
+#     0    1    2     3     4    5     6     7     8
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime($s);
+my $ii=$sec+$min*60+$hour*3600;
+return sprintf("%02d:%02d:%02d,%03d",$hour,$min,$sec,int(($s-$ii)*1000));
+}
+

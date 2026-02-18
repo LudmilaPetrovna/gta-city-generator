@@ -6,12 +6,16 @@ use Data::Dumper;
 my $audio_root='/dev/shm/t/gta/Grand Theft Auto - San Andreas/audio';
 my $want_package=$ARGV[0];
 
-my $sfx_banks=read_file('/dev/shm/gta-city-generator/LearnAudio/sfx_banks.txt');
-map{$is_sfx{$_}++}split(/\n/,$sfx_banks);
-
 my $total_sfx_len=0;
 my %total_package_len=();
 my @total_bank_len=();
+
+my $gap_data=read_file('gap.bin');
+my $gap_size=length($gap_data)/2;
+
+my $atlas_id=0;
+my $cur_atlas_id=-1;
+
 
 # read package list
 $pak=read_file($audio_root.'/CONFIG/PakFiles.dat');
@@ -86,8 +90,7 @@ $total_bank_len[$bank_id]+=$sounds[$q]->[3];
 }
 
 # extract or not extract?
-#if($package_name eq $want_package){
-if($is_sfx{$bank_id}){
+if($package_name eq $want_package){
 
 for($q=0;$q<$num_sounds;$q++){
 $out_filename=sprintf("sound_sfx/%s/bank%d/sound_%04d.wav",$package_name,$bank_id,$q);
@@ -95,7 +98,7 @@ $buf_offset=$sounds[$q]->[1]+$bank_offset+4+400*12;
 $buf_len=$sounds[$q]->[2];
 $samplerate=$sounds[$q]->[0];
 
-print STDERR "Extracting $out_filename (at $buf_offset, size: $buf_len, samplerate: $samplerate)\n";
+print STDERR "Extracting $out_filename (at $buf_offset, size: $buf_len, samplerate: $samplerate) to atlas:$atlas_id, time:".s2time($outsamlpos/48000)."\n";
 
 if($buf_len&1){die "Buffer size must be aligned to 16 bits!";}
 if($buf_len<0){die "Buffer size must not be negative!";}
@@ -103,13 +106,13 @@ if($buf_len<0){die "Buffer size must not be negative!";}
 seek(dd,$buf_offset,0);read(dd,$buf,$buf_len);
 
 # simple output as wav
-make_path(dirname($out_filename));
-open(oo,"|ffmpeg -v 0 -f s16le -ar $samplerate -ac 1 -i - -ar 48000 -ac 1 -y $out_filename");
-binmode(oo);
-print oo $buf;
-close(oo);
+#make_path(dirname($out_filename));
+#open(oo,"|ffmpeg -v 0 -f s16le -ar $samplerate -ac 1 -i - -ar 48000 -ac 1 -y $out_filename");
+#binmode(oo);
+#print oo $buf;
+#close(oo);
 
-=pod
+
 # resample
 $tmpfile="tmp-resample.wav";
 open(oo,"|ffmpeg -v 0 -f s16le -ar $samplerate -ac 1 -i - -ar 48000 -ac 1 -y $tmpfile");
@@ -119,20 +122,47 @@ close(oo);
 
 $resampled=read_file($tmpfile);
 unlink($tmpfile);
+$samples_count=length($resampled)/2;
+if($samples_count==0){die "We found empty sound!!!";}
 
 
+if($cur_atlas_id!=$atlas_id){
+$outsamlpos=0;
+$srtnum=0;
+close(srt);
+close(atlas);
 
-$outmaxlen=3600;
-if($outpos>$outmaxlen){
+print "OPENING NEW FILE atlas-$atlas_id.srt\n";
 
-
+open(srt,">atlas-$atlas_id.srt");
+open(atlas,"|ffmpeg -v 0 -f s16le -ar 48000 -ac 1 -i - -acodec libopus -b:a 65k -y atlas-$atlas_id.mp4");
+$cur_atlas_id=$atlas_id;
 }
-=cut
+
+
+++$srtnum;
+$timestart=s2srt($outsamlpos/48000);
+$timeend=s2srt(($outsamlpos+$samples_count)/48000);
+$text="$out_filename ($package_name:$buf_offset:$buf_len)";
+
+print srt "$srtnum\n$timestart --> $timeend\n$text\n\n";
+print atlas $resampled;
+print atlas $gap_data;
+
+$outsamlpos+=$samples_count;
+$outsamlpos+=$gap_size;
+
+if($outsamlpos/48000>3600){
+$atlas_id++;
+}
+
 
 #if($uniq>=10){last;}
 
 }
 }
+
+
 
 #now all sounds is extracted
 
@@ -148,6 +178,10 @@ $total_package_len_gap{$package_name}+=$bank_dur_gap;
 print "pack:$package_name,bank:$bank_id,banksize:$bank_size,sounds:$num_sounds,dur:$bank_dur ($bank_dur_t),durgap:$bank_dur_gap ($bank_dur_gap_t)\n";
 
 }
+
+close(srt);
+close(atlas);
+
 
 foreach(@package_names){
 $total=s2time($total_package_len{$_});
@@ -169,3 +203,12 @@ if($hour==0 && $min==0){return sprintf("%ds",$sec);}
 if($hour==0){return sprintf("%02d:%02d",$min,$sec);}
 return sprintf("%02d:%02d:%02d:%02d",$mday-1,$hour,$min,$sec);
 }
+
+sub s2srt{
+my $s=shift;
+#     0    1    2     3     4    5     6     7     8
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime($s);
+my $ii=$sec+$min*60+$hour*3600;
+return sprintf("%02d:%02d:%02d,%03d",$hour,$min,$sec,int(($s-$ii)*1000));
+}
+
