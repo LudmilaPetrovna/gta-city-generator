@@ -67,12 +67,12 @@ $bank_id_in_package++;
 #print Dumper(\@snddb);
 
 for($aa=0;$aa<10000;$aa++){
-$srtfile="atlas-$aa.srt";
-$mp3file="atlas-$aa-ru-live.mp3";
+$srtfile=$srt_root."/atlas-$aa.srt";
+$mp3file=$trans_root."/atlas-$aa-ru-live.mp3";
 if(!-e($mp3file)){last;}
 
 open(srt,$srtfile) or die $!;
-open(mp3,"ffmpeg -nostdin -hide_banner -loglevel warning -stats -i $mp3file -ar 48000 -ac 1 -f s16le - |") or die $!;
+open(mp3,"ffmpeg -nostdin -hide_banner -loglevel error -i '$mp3file' -ar 48000 -ac 1 -f s16le - |") or die $!;
 binmode(mp3);
 $cursample=0;
 
@@ -80,19 +80,27 @@ while(<srt>){
 if(/(\d{2}):(\d{2}):(\d{2}),(\d{3}) --> (\d{2}):(\d{2}):(\d{2}),(\d{3})/){
 $st=$1*3600+$2*60+$3+('0.'.$4);
 $et=$5*3600+$6*60+$7+('0.'.$8);
+$origdur=$et-$st;
 }
 
 if(/bank(\d+)\/sound_(\d+)\.wav/){
 $sound=$snddb[$1]->[$2];
 if(!defined $sound){die "Can't find sound in bank $1, sound $2\n";}
-print "Processing $_\n";
+print "Processing $_";
 #print Dumper($sound);
 
 ($bank_id,$package_id,$package_name,$bank_offset,$bank_size,$buffer_offset,$buffer_size,$loop_offset,$sample_rate,$headroom,$modloader)=@{$sound};
 
 
 $gamesoundfile="tmp-sound-ingame-$package_name-$bank_id-$buffer_offset.wav";
-$transsoundfile="tmp-sound-trans-$package_name-$bank_id-$buffer_offset.wav";
+$transsoundfile_fast="tmp-sound-transfast-$package_name-$bank_id-$buffer_offset.wav";
+$transsoundfile_norm="tmp-sound-transnorm-$package_name-$bank_id-$buffer_offset.wav";
+
+$ressoundfile=$modloader;
+
+$ressoundfile="tmp-sound-res-$package_name-$bank_id-$buffer_offset.wav";
+$finalsoundfile="tmp-sound-final-$package_name-$bank_id-$buffer_offset.wav";
+
 
 #extract game sound
 close(dd);
@@ -100,7 +108,7 @@ open(dd,$audio_root.'/SFX/'.$package_name) or die $!;
 seek(dd,$buffer_offset,0);read(dd,$buf,$buffer_size);
 
 # simple output as wav
-open(oo,"|ffmpeg -hide_banner -loglevel warning -stats -f s16le -ar $sample_rate -ac 1 -i - -ar 48000 -ac 1 -y $gamesoundfile");
+open(oo,"|ffmpeg -hide_banner -loglevel quiet -f s16le -ar $sample_rate -ac 1 -i - -ar 48000 -ac 1 -y $gamesoundfile");
 binmode(oo);
 print oo $buf;
 close(oo);
@@ -121,10 +129,17 @@ read(mp3,$buf,$len*2);
 $cursample+=$len;
 
 # simple output as wav
-open(oo,"|ffmpeg -hide_banner -loglevel warning -stats -f s16le -ar 48000 -ac 1 -i - -ar 48000 -ac 1 -af silenceremove=stop_periods=-1:stop_threshold=-20dB:stop_duration=0.02:window=0,atempo=1.5 -y $transsoundfile");
+open(oo,"|ffmpeg -hide_banner -loglevel error -f s16le -ar 48000 -ac 1 -i - -ar 48000 -ac 1 -af 'silenceremove=start_periods=1:start_threshold=-30dB:stop_periods=-1:stop_threshold=-40dB:stop_duration=0.02:window=0.1,atempo=1.5' -y $transsoundfile_fast");
 binmode(oo);
 print oo $buf;
 close(oo);
+
+open(oo,"|ffmpeg -hide_banner -loglevel error -f s16le -ar 48000 -ac 1 -i - -ar 48000 -ac 1 -af 'silenceremove=start_periods=1:start_threshold=-30dB:stop_periods=-1:stop_threshold=-40dB:stop_duration=0.02:window=0.1' -y $transsoundfile_norm");
+binmode(oo);
+print oo $buf;
+close(oo);
+
+
 
 $filter_opts="[1:a]asplit[vo][vo_side];";
 $filter_opts.="[0:a]dynaudnorm[orig];";
@@ -134,19 +149,34 @@ $filter_opts.="[vo_norm][ducked]amix=inputs=2:duration=first:dropout_transition=
 
 
 $filter_opts="";
-$filter_opts.="[0:a]volume=.5[orig];";
+$filter_opts.="[0:a]volume=2[orig];";
 $filter_opts.="[1:a]volume=10[vo_norm];";
-$filter_opts.="[vo_norm][orig]amix=inputs=2:duration=longest:dropout_transition=0.2,dynaudnorm[dub]";
+$filter_opts.="[vo_norm][orig]amix=inputs=2:duration=longest:dropout_transition=0.2,dynaudnorm,aresample=$sample_rate,volume=4[dub]";
 
 
+$len_norm=get_file_len($transsoundfile_norm);
+$len_fast=get_file_len($transsoundfile_fast);
 
+$transsoundfile=$len_fast<$origdur?$transsoundfile_norm:$transsoundfile_fast;
+
+print "$len_norm\t$len_fast\t$origdur\t$transsoundfile\n";
 
 make_path(dirname($modloader));
-print "writing  to  $modloader with $sample_rate\n";
-`ffmpeg -nostdin -hide_banner -loglevel warning -v 0 -i $gamesoundfile -i $transsoundfile -filter_complex '$filter_opts' -map [dub] -ar $sample_rate -y $modloader`;
-unlink($gamesoundfile);
-unlink($transsoundfile);
+#print "writing  to  $modloader with $sample_rate\n";
+`ffmpeg -nostdin -hide_banner -loglevel error -i $gamesoundfile -i $transsoundfile -filter_complex '$filter_opts' -map [dub] -y $ressoundfile`;
+`ffmpeg -nostdin -hide_banner -loglevel error -i $ressoundfile -af silenceremove=stop_periods=-1:stop_threshold=-30dB:stop_duration=0.02:window=0 -ar $sample_rate -y $modloader`;
 
+
+#print join("\t",$origdur,map{$info=`ffprobe $_ 2>&1`;if($info=~/Duration: (\d{2}:\d{2}:\d{2}\S+)/){$1}}($gamesoundfile,$transsoundfile_norm,$transsoundfile,$ressoundfile,$finalsoundfile))."\n";
+
+
+unlink($gamesoundfile);
+unlink($transsoundfile_norm);
+unlink($transsoundfile_fast);
+unlink($transsoundfile);
+unlink($ressoundfile);
+
+#if($qqqq++>20){die;}
 
 }
 
@@ -158,4 +188,13 @@ close(mp3);
 
 
 
+sub get_file_len{
+my $filename=shift;
+my $info=`ffprobe $filename 2>&1`;
+my $ret=0;
+if($info=~/Duration: (\d{2}):(\d{2}):(\d{2})\.(\d{2})/){
+$ret=$1*3600+$2*60+$3+("0.".$4);
+}
+return($ret);
+}
 

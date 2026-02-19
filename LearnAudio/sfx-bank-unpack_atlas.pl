@@ -169,7 +169,7 @@ $atlas_id++;
 $bank_dur=int($total_bank_len[$bank_id]);
 $bank_dur_t=s2time($bank_dur);
 
-$bank_dur_gap=int($total_bank_len[$bank_id])+($num_sounds-1)*3.5;
+$bank_dur_gap=int($total_bank_len[$bank_id])+($num_sounds-1)*5;
 $bank_dur_gap_t=s2time($bank_dur_gap);
 
 $total_package_len{$package_name}+=$bank_dur;
