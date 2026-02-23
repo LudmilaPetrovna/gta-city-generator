@@ -139,7 +139,7 @@ binmode(oo);
 print oo $buf;
 close(oo);
 
-
+#ffmpeg -i  -filter_complex "[0:a][1:a]sidechaincompress=threshold=0.05:ratio=3:attack=1:release=50[ducked];[1:a]dynaudnorm,speechnorm,speechnorm,speechnorm,volume=1.2[speech],[ducked][speech]amix=inputs=2:duration=longest:dropout_transition=2:normalize=0:weights='1 0.8'[dub]" -map "[dub]" -y dub.mp3
 
 $filter_opts="[1:a]asplit[vo][vo_side];";
 $filter_opts.="[0:a]dynaudnorm[orig];";

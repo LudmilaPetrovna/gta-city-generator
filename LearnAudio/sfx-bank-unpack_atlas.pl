@@ -16,6 +16,11 @@ my $gap_size=length($gap_data)/2;
 my $atlas_id=0;
 my $cur_atlas_id=-1;
 
+if($want_package=~/bank(\d+)\.\.bank(\d+)/){
+$want_package="perbank";
+$bank_min=$1;
+$bank_max=$2;
+}
 
 # read package list
 $pak=read_file($audio_root.'/CONFIG/PakFiles.dat');
@@ -90,7 +95,7 @@ $total_bank_len[$bank_id]+=$sounds[$q]->[3];
 }
 
 # extract or not extract?
-if($package_name eq $want_package){
+if($package_name eq $want_package || ($want_package eq "perbank" && $bank_id>=$bank_min && $bank_id<=$bank_max)){
 
 for($q=0;$q<$num_sounds;$q++){
 $out_filename=sprintf("sound_sfx/%s/bank%d/sound_%04d.wav",$package_name,$bank_id,$q);
