@@ -1,5 +1,5 @@
 $samplerate=48000;
-$dursec=2;
+$dursec=5;
 $dursam=$dursec*$samplerate;
 
 $half=$dursam/2;

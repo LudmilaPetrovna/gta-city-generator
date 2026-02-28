@@ -3,8 +3,13 @@ use File::Path qw(make_path remove_tree);
 use File::Basename;
 use Data::Dumper;
 
+do "./find_exist_sounds.pl";
+$exist_sounds=find_exist_sounds();
+
 my $audio_root='/dev/shm/t/gta/Grand Theft Auto - San Andreas/audio';
 my $want_package=$ARGV[0];
+my $atlas_len=600;
+my $samplerate=48000;
 
 my $total_sfx_len=0;
 my %total_package_len=();
@@ -12,6 +17,15 @@ my @total_bank_len=();
 
 my $gap_data=read_file('gap.bin');
 my $gap_size=length($gap_data)/2;
+if($gap_size!=48000*5){die "Wrong gap size!";}
+$gap_data="\0" x ($gap_size*2);
+
+my $intro_data=read_file('intro.bin');
+my $intro_size=length($intro_data)/2;
+my $intro_len=300*$samplerate;
+my $intro_pad=$intro_len-$intro_size;
+$intro_data.="\0" x ($intro_pad*2);
+$intro_size=length($intro_data)/2;
 
 my $atlas_id=0;
 my $cur_atlas_id=-1;
@@ -103,6 +117,12 @@ $buf_offset=$sounds[$q]->[1]+$bank_offset+4+400*12;
 $buf_len=$sounds[$q]->[2];
 $samplerate=$sounds[$q]->[0];
 
+
+if($exist_sounds->{$bank_id.'-'.$q}==$buf_offset || $package_name eq 'PAIN_A'){ # already exists
+print STDERR "$out_filename already exists!\n";
+next;
+}
+
 print STDERR "Extracting $out_filename (at $buf_offset, size: $buf_len, samplerate: $samplerate) to atlas:$atlas_id, time:".s2time($outsamlpos/48000)."\n";
 
 if($buf_len&1){die "Buffer size must be aligned to 16 bits!";}
@@ -142,6 +162,9 @@ print "OPENING NEW FILE atlas-$atlas_id.srt\n";
 open(srt,">atlas-$atlas_id.srt");
 open(atlas,"|ffmpeg -v 0 -f s16le -ar 48000 -ac 1 -i - -acodec libopus -b:a 65k -y atlas-$atlas_id.mp4");
 $cur_atlas_id=$atlas_id;
+print atlas $intro_data;
+$outsamlpos+=$intro_size;
+
 }
 
 
@@ -157,7 +180,7 @@ print atlas $gap_data;
 $outsamlpos+=$samples_count;
 $outsamlpos+=$gap_size;
 
-if($outsamlpos/48000>3600){
+if($outsamlpos/48000>$atlas_len){
 $atlas_id++;
 }
 
