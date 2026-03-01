@@ -4,7 +4,7 @@ use Data::Dumper;
 use File::Path qw(make_path remove_tree);
 use File::Basename;
 
-my $srt_root='/dev/shm/Rdown////////////////gta-streams-joined_v3/';
+my $srt_root='/dev/shm/Rdown/Glovemansion  Video  SiteRip 2012 - 2024/Video/gta-streams-joined_v3/';
 my $audio_root='/dev/shm/t/gta/Grand Theft Auto - San Andreas/audio';
 my $raw_root='/dev/shm/t/gta/trans/streams/raw';
 my $edit_root='/dev/shm/t/gta/trans/streams/edited_v3';
@@ -43,11 +43,12 @@ $fileid=$1;
 $orig=~s/\.mp4/.ogg/is;
 $fileid=~s/\.(mp4|ogg)//is;
 }
-$en+=10;
+$en+=5;
 $dur=$en-$st;
 if(!-e($raw_root.'/'.$orig)){die "Can't find original file \"$orig\"!";}
 
 $outfile="$out_root/".uc($fileid).".ogg";
+print "Writing $outfile...\n";
 if(-e($outfile)){next;} # this file already dubbed!
 if(!$fileid){die "Can't find file ID!";}
 
@@ -81,6 +82,7 @@ if(!-e("seg.wav")){die "Can't extract voice!";}
 
 `ffmpeg -v 0 -nostdin -i seg.wav -af 'areverse,silenceremove=start_periods=1,areverse,dynaudnorm,speechnorm,speechnorm,speechnorm,volume=1.2' -y seg-cut.wav`;
 `ffmpeg -v 0 -nostdin -i seg-cut.wav -af 'apad=pad_dur=15s' -y seg-padded.wav`;
+print "using segment with $segsize bytes\n";
 $segsize=-s("seg-cut.wav");
 if($segsize>5000){
 
@@ -89,7 +91,8 @@ if($segsize>5000){
 `ffmpeg -v 0 -nostdin -i back.wav -i "seg-padded.wav" -filter_complex "[0:a][1:a]sidechaincompress=threshold=0.05:ratio=3:attack=1:release=50[ducked]" -map "[ducked]" -y ducked.wav`;
 `ffmpeg -v 0 -nostdin -i ducked.wav -i "seg-cut.wav" -filter_complex "[0:a][1:a]amix=inputs=2:duration=longest:dropout_transition=2:normalize=0:weights='1 0.8'[dub]" -map "[dub]" -y res.wav`;
 
-`ffmpeg -v 0 -nostdin -i res.wav -acodec libvorbis -ac 2 -ar 32000 -qscale:a 0 -compression_level 10 -application voip -map_metadata -1 -y "$outfile"`;
+###`ffmpeg -v 0 -nostdin -i res.wav -acodec libvorbis -ac 2 -ar 32000 -qscale:a 0 -compression_level 10 -application voip -map_metadata -1 -y "$outfile"`;
+`ffmpeg -v 0 -nostdin -i res.wav -acodec libvorbis -ac 2 -ar 32000 -aq 10 -compression_level 10 -application voip -map_metadata -1 -y "$outfile"`;
 
 }
 
@@ -100,7 +103,7 @@ unlink("back.wav");
 unlink("ducked.wav");
 unlink("res.wav");
 
-#if($outfile=~/958/){die;}
+#if($outfile=~/960/){die;}
 
 if($afile){
 #die "afile detected!";

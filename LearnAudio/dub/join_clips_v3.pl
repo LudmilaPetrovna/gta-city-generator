@@ -7,10 +7,12 @@ use File::Basename;
 
 
 $source_dir='/dev/shm/t/gta/trans/streams/raw';
-$output_dir='/dev/shm/t/gta/trans/streams/joined_v3';
+$prev1_dir='/dev/shm/t/gta/trans/streams/dub';
+$prev2_dir='/dev/shm/t/gta/trans/streams/dub_v3';
+$output_dir='/dev/shm/t/gta/trans/streams/joined_v4';
 $max_time=3600*3;
 
-$gap=read_wav("gap2.wav");
+$gap=read_wav("gap3.wav");
 $intro=read_wav("intro.mp4");
 $silence_time=5;
 $silence="\0" x (48000*$silence_time*2);
@@ -30,7 +32,7 @@ $chapters{$1}{$2}++;
 print Dumper(\%chapters);
 
 
-foreach $chapter_id(grep{/^HC/}keys %chapters){
+foreach $chapter_id(grep{!/^(HC|AA|AMBI)/}keys %chapters){
 $chapter=$chapters{$chapter_id};
 @clips_id=keys %{$chapter};
 @clips_id=sort{$a <=> $b}@clips_id;
@@ -43,6 +45,10 @@ foreach $clip_id(@clips_id){
 if($cur_id!=$out_id){
 $outfile=$output_dir.'/streams_'.lc($chapter_id).'_'.$out_id.'.mp4';
 $outfilesrt=$output_dir.'/streams_'.lc($chapter_id).'_'.$out_id.'.srt';
+
+$outfile=$output_dir.'/streams_patch4-'.$out_id.'.mp4';
+$outfilesrt=$output_dir.'/streams_patch4-'.$out_id.'.srt';
+
 close(oo);
 close(oosrt);
 open(oo,"|ffmpeg -f s16le -ar 48000 -ac 1 -i - -acodec libopus -b:a 65k -y \"$outfile\"") or die "Can't open output file!";
@@ -62,6 +68,11 @@ $inclip=$source_dir.'/'.$chapter_id.'_'.$clip_id.'.ogg';
 $inclipsize=-s($inclip);
 
 if($inclip=~/$skip/){next;}
+
+$prev=$prev1_dir.'/'.uc($chapter_id).'_'.$clip_id.'.OGG';
+if(-s($prev)>5000){print "$prev exists, skipping!\n";next;}
+$prev=$prev2_dir.'/'.uc($chapter_id).'_'.$clip_id.'.ogg';
+if(-s($prev)>5000){print "$prev exists, skipping!\n";next;}
 
 if($inclipsize<100){die "$inclip: Too short clip: $inclipsize!";}
 

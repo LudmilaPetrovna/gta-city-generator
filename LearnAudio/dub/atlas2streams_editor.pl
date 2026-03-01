@@ -6,22 +6,28 @@ use Data::Dumper;
 use File::Path qw(make_path remove_tree);
 use File::Basename;
 
-my $srt_root='.';
+my $srt_root='/dev/shm/t/gta/trans/streams/joined_v3';
 my $audio_root='/dev/shm/t/gta/Grand Theft Auto - San Andreas/audio';
 my $raw_root='/dev/shm/t/gta/trans/streams/raw';
 my $out_root='/dev/shm/t/gta/trans/streams/edits';
 
 $out_root='.';
 
-@streams=map{$srt_root.'/'.$_}grep{/^streams.+ru-live.mp3$/}read_dir($srt_root);
+@streams=map{$srt_root.'/'.$_}grep{/^streams.+mp4$/}read_dir($srt_root);
 
 foreach $ss(@streams){
 $fileid=basename($ss);
 $fileid=~s/-ru-live.mp3$//si;
-@srt=read_srt($srt_root.'/'.$fileid.'.srt');
-@rusrt=read_srt($srt_root.'/'.$fileid.'-ru.srt');
+$fileid=~s/\.mp4$//si;
 
-open(pcm,"ffmpeg -nostdin -i \"$ss\" -ar 48000 -ac 1 -f s16le - |");
+$srt_file=$srt_root.'/translated/'.$fileid.'-ru.srt';
+$translated_file=$srt_root.'/translated/'.$fileid.'-ru-live.mp3';
+
+@srt=read_srt($srt_root.'/'.$fileid.'.srt');
+@rusrt=read_srt($srt_file);
+
+print "Opening $ss...\n";
+open(pcm,"ffmpeg -nostdin -i \"$translated_file\" -ar 48000 -ac 1 -f s16le - |");
 $sample_pos=0;
 
 foreach $ent(@srt){
@@ -34,12 +40,12 @@ $fileid=$1;
 $orig=~s/\.mp4/.ogg/is;
 $fileid=~s/\.mp4//is;
 }
-$en+=8;
+$en+=6;
 $dur=$en-$st;
 
 $text="";
 $text=join("|||",map{$_->[2]}grep{($_->[0]>=$st&&$_->[0]<$en) || ($_->[1]>=$st&&$_->[1]<$en)}@rusrt);
-if(index($text,"шарик")<0){next;}
+if(index(lc($text),"шарик")<0){next;}
 
 $st_text=s2srt($st);
 $en_text=s2srt($en);
@@ -61,7 +67,7 @@ $sample_skip-=$buf_size;
 $sample_pos+=$buf_size;
 }
 
-open(oo,"|ffmpeg -f s16le -ar 48000 -ac 1 -i - -y $editfile");
+open(oo,"|ffmpeg -v 0 -f s16le -ar 48000 -ac 1 -i - -y $editfile");
 
 $sample_len=$sample_en-$sample_st;
 while($sample_len>0){
