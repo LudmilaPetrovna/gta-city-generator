@@ -1,0 +1,969 @@
+{$CLEO .cs}
+script_name 'cutview'
+nop
+
+int curtime = 0
+int cutscene_id = 0
+string cutscene_name = ''
+
+int string_buffer
+
+const
+    NULL        = 0
+    WAIT_TIME   = 500
+
+    STRING_SIZE = 128
+
+    SIZE_X = 0.5
+    SIZE_Y = 0.7
+
+    PLAYER_NUM = $2
+    PLAYER_PED = $3
+end // const
+
+/*
+
+// idc, will use sprintf
+
+:init
+use_text_commands True
+clear_prints
+set_text_background False
+set_text_colour 255 255 255 255
+
+// screw this, I'll gonna use sprintf
+add_text_label 'CTVCT' {text} "Cutscene time: ~1~"
+add_text_label 'CTVID' {text} "Cutscene ID: ~1~"
+add_text_label 'CTVSN' {text} "Cutscene name: ~1~"
+*/
+
+:cutview_start // :ready
+wait NULL
+
+while not Pad.IsKeyPressed(KeyCode.F4)
+    wait WAIT_TIME
+end
+
+// MAX VALUE NOT INCLUDED!!! Use 0 156 to get range 0..155
+cutscene_id = Math.RandomIntInRange(0, 135)
+
+Player.MakeSafeForCutscene(PLAYER_NUM)
+Char.HideWeaponForScriptedCutscene(PLAYER_PED)
+Char.ClearTasksImmediately(PLAYER_PED)
+
+Hud.SwitchWidescreen(true)
+
+prepare_cutscene()
+
+//add_text_label 'CTVSN' {text} cutscene_name
+
+Cutscene.Load(cutscene_name)
+
+skip_cutscene_start_internal @cutview_finish_cut
+
+while not Cutscene.HasLoaded()
+    wait 0
+end // while
+
+Cutscene.Start()
+
+while not Cutscene.HasFinished()
+
+    wait NULL
+
+    cutscene.GetTime(curtime)
+
+    Memory.Allocate(STRING_SIZE, STRING_BUFFER)
+    Text.StringFormat(STRING_BUFFER, "Cutscene time: %d", curtime) // display_text_WITH_NUMBER {leftTopX} 10.0 {leftTopY} 50.0 {key} 'CTVCT' {value} curtime
+    Text.DrawString(STRING_BUFFER, DrawEvent.AfterFade, 10.0, 50.0, SIZE_X, SIZE_Y, true, Font.Subtitles)
+    Memory.Free(STRING_BUFFER)
+
+    Memory.Allocate(STRING_SIZE, STRING_BUFFER)
+    Text.StringFormat(STRING_BUFFER, "Cutscene ID: %d", cutscene_id) // display_text_WITH_NUMBER {leftTopX} 10.0 {leftTopY} 60.0 {key} 'CTVID' {value} cutscene_id
+    Text.DrawString(STRING_BUFFER, DrawEvent.AfterFade, 10.0, 60.0, SIZE_X, SIZE_Y, true, Font.Subtitles)
+    Memory.Free(STRING_BUFFER)
+
+    Memory.Allocate(STRING_SIZE, STRING_BUFFER)
+    Text.StringFormat(STRING_BUFFER, "Cutscene name: %s", cutscene_name) //display_text 10.0 70.0 'CTVSN'
+    Text.DrawString(STRING_BUFFER, DrawEvent.AfterFade, 10.0, 60.0, SIZE_X, SIZE_Y, true, Font.Subtitles)
+    Memory.Free(STRING_BUFFER)
+
+end
+
+
+////
+
+:cutview_finish_cut
+
+SKIP_CUTSCENE_END
+Audio.StopBeatTrack()
+Cutscene.Clear()
+World.ClearExtraColors(false)
+Camera.SetFadingColor(0, 0, 0)
+Streaming.SetAreaVisible(0)
+Char.SetAreaVisible(PLAYER_PED, 0)
+Hud.SwitchWidescreen(false)
+Camera.RestoreJumpcut()
+Camera.SetBehindPlayer()
+Player.SetControl(PLAYER_NUM, true)
+Char.ClearTasks(PLAYER_PED)
+Char.SetCoordinates(PLAYER_PED, 2510.05, -1666.61, 12.57)
+Char.SetHeading(PLAYER_PED, 53.89)
+Player.ClearWantedLevel(PLAYER_NUM)
+Text.ClearHelp()
+
+goto @cutview_start
+
+/////
+
+:prepare_cutscene
+
+switch cutscene_id
+case 0
+    Text.LoadMissionText('INTRO1')
+    Streaming.SetAreaVisible(14)
+    cutscene_name='PROLOG1'
+case 1
+    Weather.ForceNow(WeatherType.SunnyCountryside)
+    World.ClearArea(2482.5815, -1729.6418,  12.3906, 500.0, true)
+    Streaming.SetAreaVisible(0)
+    Clock.SetTimeOfDay(6, 30)
+    Streaming.LoadSceneInDirection(2493.3623, -1734.295, 12.3828, 258.7583)
+    cutscene_name='PROLOG3'
+case 2
+    Text.LoadMissionText('INTRO1')
+    Streaming.SetAreaVisible(3)
+    Clock.SetTimeOfDay(9, 0)
+    cutscene_name='INTRO1A'
+case 3
+    Char.SetCoordinates(PLAYER_PED, 910.78, -1075.26, 23.29)
+    Streaming.LoadSceneInDirection(910.78, -1075.26, 23.29, 265.0)
+    Streaming.SetAreaVisible(0)
+    World.ClearArea(2494.9099, -1682.17, 12.32, 50.0, True)
+    Hud.SwitchWidescreen(true)
+    Camera.SetFadingColor(0, 0, 0)
+    Char.SetHeading(PLAYER_PED, 265.0)
+    cutscene_name='INTRO1B'
+case 4
+    Text.LoadMissionText('INTRO2')
+    Streaming.SetAreaVisible(2)
+    cutscene_name='INTRO2A'
+case 5
+    World.ClearArea(2527.8999, -1667.7, 14.1, 10.0, True)
+    Text.LoadMissionText('SWEET1')
+    cutscene_name='SWEET1A'
+case 6
+    Streaming.SetAreaVisible(1)
+    Text.LoadMissionText('SWEET1B')
+    cutscene_name='SWEET1B'
+case 7
+    Streaming.LoadScene(2509.8101, -1670.89, 12.39)
+    Char.SetCoordinates(PLAYER_PED, 2516.95, -1675.23, 13.05)
+    Hud.SwitchWidescreen(true)
+    Char.SetHeading(PLAYER_PED, 56.0)
+    World.ClearArea(2301.0701, -1754.4, 12.54, 20.0, True)
+    Streaming.SetAreaVisible(3)
+    cutscene_name='SWEET1C'
+case 8
+    Text.LoadMissionText('SWEET3')
+    World.ClearArea(2508.7949, -1671.7073, 12.3892, 15.0, True)
+    cutscene_name='SWEET2A'
+case 9
+    Char.SetHeading(PLAYER_PED, 81.2)
+    Streaming.LoadSceneInDirection(2397.6443, -1880.2762, 23.8686, 160.0)
+    World.ClearArea(2404.1001, -1891.5, 12.3, 120.0, True)
+    Hud.SwitchWidescreen(true)
+    Camera.SetFadingColor(0, 0, 0)
+    Char.SetCoordinates(PLAYER_PED, 2364.1926, -1914.0768, 12.4235)
+    cutscene_name='SWEET2B'
+case 10
+    Text.LoadMissionText('SWEET2')
+    Streaming.SetAreaVisible(1)
+    cutscene_name='SWEET3A'
+case 11
+    Char.SetHeading(PLAYER_PED, 81.2)
+    Hud.SwitchWidescreen(true)
+    Streaming.LoadScene(2516.54, -1671.2, 12.87)
+    World.ClearArea(2448.7344, -1976.1932, 12.5469, 200.0, False)
+    Streaming.SetAreaVisible(0)
+    Char.SetCoordinates(PLAYER_PED, 2515.28, -1673.4399, 12.73)
+    force_weather_now {type} WeatherType.SunnyLa
+    cutscene_name='SWEET3B'
+case 12
+    World.ClearArea(2518.0, -1673.0, 14.0, 50.0, False)
+    Text.LoadMissionText('SWEET4')
+    cutscene_name='SWEET4A'
+case 13
+    Text.LoadMissionText('SWEET5')
+    Streaming.SetAreaVisible(1)
+    Char.SetCoordinates(PLAYER_PED, 2769.4922, -1967.3292, 12.3834)
+    cutscene_name='SWEET5A'
+case 14
+    Text.LoadMissionText('SWEET6')
+    Streaming.SetAreaVisible(1)
+    cutscene_name='SWEET6A'
+case 15
+    Hud.SwitchWidescreen(true)
+    Streaming.LoadScene(1791.5741, -1911.4371, 12.4378)
+    Char.SetHeading(PLAYER_PED, 181.4479)
+    Char.SetCoordinates(PLAYER_PED, 2642.6584, -2015.291, 12.5947)
+    World.ClearArea(1784.757, -1890.923, 12.399, 25.0, True)
+    Streaming.SetAreaVisible(0)
+    cutscene_name='SWEET6B'
+case 16
+    force_weather_now {type} WeatherType.SunnyLa
+    Camera.SetFadingColor(0, 0, 0)
+    World.ClearArea(2508.9753, -1671.5371, 12.3853, 500.0, True)
+    Text.LoadMissionText('SWEET7')
+    cutscene_name='SWEET7A'
+case 17
+    Hud.SwitchWidescreen(true)
+    Camera.SetFadingColor(0, 0, 0)
+    Streaming.LoadScene(2311.2341, -1150.6134, 25.8027)
+    Char.SetHeading(PLAYER_PED, 0.0)
+    Text.LoadMissionText('CRASH1')
+    set_current_char_weapon PLAYER_PED {weaponType} WeaponType.Unarmed
+    Char.SetCoordinates(PLAYER_PED, 1038.1704, -1335.2207, 12.5493)
+    World.ClearArea(2419.1685, -1718.1705, 12.7866, 0.5, False)
+    Streaming.SetAreaVisible(17)
+    cutscene_name='CRASH1A'
+case 18
+    Text.LoadMissionText('CRASH3')
+    World.ClearArea(1036.86, -1336.49, 20.0, 20.0, False)
+    cutscene_name='CRASH3A'
+case 19
+    force_weather_now {type} WeatherType.SunnyLa
+    Camera.SetFadingColor(0, 0, 0)
+    Text.LoadMissionText('RYDER1')
+    World.ClearArea(2464.0, -1714.0, 14.0, 100.0, True)
+    cutscene_name='RYDER1A'
+case 20
+    Text.LoadMissionText('RYDER3')
+    Streaming.SetAreaVisible(2)
+    Camera.SetFadingColor(0, 0, 0)
+    cutscene_name='RYDER3A'
+case 21
+    World.ClearArea(2463.4751, -1713.4281, 12.5025, 20.0, True)
+    Text.LoadMissionText('RYDER2')
+    cutscene_name='RYDER2A'
+case 22
+    World.ClearArea(2072.3, -1695.2, 12.5, 80.0, True)
+    Text.LoadMissionText('SMOKE1')
+    cutscene_name='SMOKE1A'
+case 23
+    Char.SetHeading(PLAYER_PED, 33.0)
+    World.ClearArea(1532.8, -1672.9, 12.4, 300.0, True)
+    Char.SetCoordinates(PLAYER_PED, 1496.5, -1672.6, 13.2)
+    Camera.SetFadingColor(0, 0, 0)
+    Hud.SwitchWidescreen(False)
+    cutscene_name='SMOKE1B'
+case 24
+    Camera.SetFadingColor(0, 0, 0)
+    Text.LoadMissionText('SMOKE2')
+    World.ClearArea(2069.8999, -1702.73, 12.59, 100.0, False)
+    cutscene_name='SMOKE2A'
+case 25
+    World.ClearArea(2069.8999, -1702.73, 12.59, 100.0, False)
+    Char.SetHeading(PLAYER_PED, 0.0)
+    Char.SetCoordinates(PLAYER_PED, 2070.8701, -1703.01, 12.55)
+    Camera.SetFadingColor(0, 0, 0)
+    Streaming.LoadScene(2069.8999, -1702.73, 12.59)
+    cutscene_name='SMOKE2B'
+case 26
+    force_weather_now {type} WeatherType.SunnyLa
+    Camera.SetFadingColor(0, 0, 0)
+    Text.LoadMissionText('SMOKE3')
+    World.ClearArea(2077.5801, -1695.929, 150.0, 150.0, True)
+    cutscene_name='SMOKE3A'
+case 27
+    Text.LoadMissionText('SMOKE4')
+    World.ClearArea(2060.0, -1694.0, 50.0, 50.0, True)
+    force_weather_now {type} WeatherType.SunnyLa
+    cutscene_name='SMOKE4A'
+case 28
+    Camera.SetFadingColor(0, 0, 0)
+    Streaming.LoadScene(809.5818, -1630.5734, 12.5469)
+    World.ClearArea(809.5818, -1630.5734, 12.5469, 100.0, False)
+    Text.LoadMissionText('STRAP1')
+    cutscene_name='STRAP1A'
+case 29
+    Streaming.SetAreaVisible(10)
+    Text.LoadMissionText('STRAP2')
+    Camera.SetFadingColor(0, 0, 0)
+    cutscene_name='STRAP2A'
+case 30
+    Streaming.SetAreaVisible(10)
+    Text.LoadMissionText('STRAP3')
+    Camera.SetFadingColor(0, 0, 0)
+    cutscene_name='STRAP3A'
+case 31
+    Streaming.SetAreaVisible(3)
+    World.ClearArea(2484.8999, -1649.2, 12.5, 160.0, False)
+    Text.LoadMissionText('STRAP4')
+    Camera.SetFadingColor(0, 0, 0)
+    cutscene_name='STRP4B1'
+case 32
+    World.ClearArea(2503.0, -1658.8, 12.3, 5.0, True)
+    Streaming.SetAreaVisible(0)
+    Camera.SetFadingColor(0, 0, 0)
+    cutscene_name='STRP4B2'
+case 33
+    Text.LoadMissionText('CESAR1')
+    World.ClearArea(1796.0, -2118.0, 14.0, 25.0, True)
+    cutscene_name='CESAR1A'
+case 34
+    Streaming.SetAreaVisible(1)
+    Text.LoadMissionText('LAFIN1')
+    cutscene_name='FINAL1A'
+case 35
+    Char.SetCoordinates(PLAYER_PED, 1624.5371, -1863.4377, 12.5549)
+    Hud.SwitchWidescreen(true)
+    Text.LoadMissionText('LAFIN2')
+    Streaming.SetAreaVisible(1)
+    cutscene_name='FINAL2A'
+case 36
+    Streaming.SetAreaVisible(0)
+    Char.SetCoordinates(PLAYER_PED, 2519.8254, -1677.7141, 13.7425)
+    clear_area_of_cars {leftBottomX} 1626.6332 {leftBottomY} -1876.4004 {leftBottomZ} 16.8284 {rightTopX} 1601.1116 {rightTopY} -1902.1034 {rightTopZ} 10.6931
+    Char.SetHeading(PLAYER_PED, 67.0)
+    Hud.SwitchWidescreen(False)
+    clear_area_of_chars {leftBottomX} 1626.6332 {leftBottomY} -1876.4004 {leftBottomZ} 16.8284 {rightTopX} 1601.1116 {rightTopY} -1902.1034 {rightTopZ} 10.6931
+    Camera.SetFadingColor(0, 0, 0)
+    Streaming.LoadScene(2518.7893, -1677.2203, 13.5079)
+    cutscene_name='FINAL2B'
+case 37
+    set_current_char_weapon PLAYER_PED {weaponType} WeaponType.Unarmed
+    Char.SetCoordinates(PLAYER_PED, -2011.4375, -2501.2871, 34.0624)
+    Streaming.LoadSceneInDirection(1584.2905, -1143.8766, 23.8226, 180.0)
+    World.ClearArea(-2011.4375, -2501.2871, 34.0624, 100.0, True)
+    Streaming.LoadScene(-2011.4375, -2501.2871, 34.0624)
+    Hud.SwitchWidescreen(true)
+    Text.LoadMissionText('BCRASH1')
+    Char.SetHeading(PLAYER_PED, 80.0)
+    cutscene_name='BCRAS1'
+case 38
+    // where???
+    cutscene_name='BCRAS2'
+case 39
+    Text.LoadMissionText('CAT')
+    Streaming.SetAreaVisible(1)
+    cutscene_name='CAT_1'
+case 40
+    Char.SetCoordinates(PLAYER_PED, 681.1634, -478.1859, 15.3281)
+    force_weather_now {type} WeatherType.ExtraSunnyCountryside
+    Streaming.SetAreaVisible(0)
+    World.ClearArea(868.521, -30.0862, 63.1875, 5.8, False)
+    Streaming.LoadScene(681.1634, -478.1859, 15.3281)
+    Char.SetHeading(PLAYER_PED, 177.0008)
+    cutscene_name='CAT_2'
+case 41
+    Char.SetHeading(PLAYER_PED, 157.9281)
+    Streaming.SetAreaVisible(0)
+    World.ClearArea(868.521, -30.0862, 63.1875, 5.8, False)
+    Char.SetCoordinates(PLAYER_PED, 868.4825, -29.6753, 62.1875)
+    Streaming.LoadScene(868.4825, -29.6753, 62.1875)
+    cutscene_name='CAT_3'
+case 42
+    Streaming.LoadScene(868.4825, -29.6753, 62.1875)
+    Char.SetCoordinates(PLAYER_PED, 868.4825, -29.6753, 62.1875)
+    Char.SetHeading(PLAYER_PED, 157.9281)
+    Streaming.SetAreaVisible(0)
+    World.ClearArea(868.521, -30.0862, 63.1875, 5.8, False)
+    cutscene_name='CAT_4'
+case 43
+    Streaming.SetAreaVisible(2)
+    Text.LoadMissionText('BCESAR2')
+    cutscene_name='BCESAR2'
+case 44
+    Text.LoadMissionText('TRU1')
+    Streaming.SetAreaVisible(12)
+    cutscene_name='TRUTH_1'
+case 45
+    Text.LoadMissionText('TRU2')
+    World.ClearArea(-1110.2, -1638.5, 76.0, 20.0, True)
+    cutscene_name='TRUTH_2'
+case 46
+    Text.LoadMissionText('BCESAR4')
+    World.ClearArea(1557.1616, 24.305, 22.7313, 100.0, True)
+    cutscene_name='BCESAR4'
+case 47
+    Text.LoadMissionText('BCESAR4')
+    World.ClearArea(-526.7778, -189.0571, 76.9917, 100.0, True)
+    Hud.SwitchWidescreen(False)
+    cutscene_name='BCESA4W'
+case 48
+    Char.SetCoordinates(PLAYER_PED, -495.9034, -196.2218, 77.3986)
+    World.ClearArea(-526.7778, -189.0571, 76.9917, 100.0, True)
+    Char.SetHeading(PLAYER_PED, 53.0)
+    Text.LoadMissionText('BCESAR4')
+    cutscene_name='BCESAR5'
+case 49
+    Text.LoadMissionText('BCESAR4')
+    World.ClearArea(1557.1616, 24.305, 22.7313, 100.0, True)
+    cutscene_name='BCESA5W'
+case 50
+    Streaming.SetAreaVisible(1)
+    Text.LoadMissionText('GARAGE1')
+    force_weather_now {type} WeatherType.SunnySf
+    cutscene_name='GARAG1B'
+case 51
+    Char.SetHeading(PLAYER_PED, 267.0)
+    Hud.SwitchWidescreen(true)
+    Camera.SetFadingColor(0, 0, 0)
+    World.ClearArea(-1659.92, 751.31, 17.29, 1000.0, True)
+    Streaming.SetAreaVisible(1)
+    set_current_char_weapon PLAYER_PED {weaponType} WeaponType.Unarmed
+    Char.SetCoordinates(PLAYER_PED, -2028.0, 177.0, 28.2)
+    cutscene_name='GARAG1C'
+case 52
+    Streaming.SetAreaVisible(1)
+    Text.LoadMissionText('GARAGE2')
+    Camera.SetFadingColor(0, 0, 0)
+    Streaming.LoadScene(-2031.0, 149.0, 29.0)
+    cutscene_name='GARAG3A'
+case 53
+    Streaming.SetAreaVisible(1)
+    Text.LoadMissionText('VALET1')
+    Camera.SetFadingColor(0, 0, 0)
+    cutscene_name='SCRASH1'
+case 54
+    Streaming.SetAreaVisible(1)
+    World.ClearArea(383.3648, -1930.4478, 6.8301, 5.0, True)
+    Char.SetCoordinates(PLAYER_PED, 383.3648, -1930.4478, 6.8301)
+    Text.LoadMissionText('SCRASH2')
+    Char.SetHeading(PLAYER_PED, 88.4042)
+    Streaming.LoadScene(-2031.0, 149.0, 29.0)
+    cutscene_name='SCRASH2'
+case 55
+    Text.LoadMissionText('WUZI1')
+    Char.SetHeading(PLAYER_PED, 270.0)
+    Streaming.LoadSceneInDirection(-2155.2659, 645.0895, 51.3516, 270.0)
+    Streaming.SetAreaVisible(1)
+    Streaming.LoadScene(-2155.2659, 645.0895, 51.3)
+    Char.SetCoordinates(PLAYER_PED, -2155.2659, 645.0895, 51.3516)
+    cutscene_name='WOOZI1A'
+case 56
+    // where???
+    cutscene_name='WOOZI1B'
+case 57
+    Camera.SetFadingColor(0, 0, 0)
+    Streaming.SetAreaVisible(1)
+    Text.LoadMissionText('FARLIE4')
+    cutscene_name='FARL_4A'
+case 58
+    Camera.SetFadingColor(0, 0, 0)
+    Streaming.SetAreaVisible(1)
+    Text.LoadMissionText('FARLIE5')
+    cutscene_name='FARL_5A'
+case 59
+    Streaming.SetAreaVisible(1)
+    Text.LoadMissionText('WUZI2')
+    cutscene_name='W2_ALT'
+case 60
+    Streaming.SetAreaVisible(1)
+    cutscene_name='WOOZIE2'
+case 61
+    Streaming.SetAreaVisible(1)
+    Text.LoadMissionText('WUZI4')
+    cutscene_name='WOOZIE4'
+case 62
+    Text.LoadMissionText('SYN2')
+    Streaming.SetAreaVisible(1)
+    cutscene_name='SYND_2A'
+case 63
+    Char.SetCoordinates(PLAYER_PED, -2031.2542, 161.408, 28.0391)
+    Streaming.SetAreaVisible(3)
+    Char.SetHeading(PLAYER_PED, 270.0)
+    cutscene_name='SYND_2B'
+case 64
+    World.ClearArea(-1665.27, 412.923, 6.192, 50.0, False)
+    Char.SetCoordinates(PLAYER_PED, -2030.4, 148.83, 27.84)
+    Char.SetHeading(PLAYER_PED, 270.0)
+    Text.LoadMissionText('SYN3')
+    Hud.SwitchWidescreen(False)
+    Streaming.LoadScene(-2030.4, 148.83, 27.84)
+    Camera.SetFadingColor(0, 0, 0)
+    cutscene_name='SYND_3A'
+case 65
+    Text.LoadMissionText('SYN4')
+    Streaming.SetAreaVisible(1)
+    Streaming.LoadScene(-2031.0, 149.0, 29.0)
+    Camera.SetFadingColor(0, 0, 0)
+    cutscene_name='SYND_4A'
+case 66
+    Camera.SetFadingColor(0, 0, 0)
+    Char.SetHeading(PLAYER_PED, 197.6688)
+    Streaming.SetAreaVisible(0)
+    World.ClearArea(-2624.5486, 1412.1306, 6.1094, 10.0, True)
+    set_char_coordinates_dont_warp_gang PLAYER_PED, -2661.0549, 1416.0194, 921.1953
+    Streaming.LoadSceneInDirection(-2031.1965, 161.1839, 27.8359, 268.0468)
+    cutscene_name='SYND_4B'
+case 67
+    Streaming.LoadScene(-2031.0, 149.0, 29.0)
+    Camera.SetFadingColor(0, 0, 0)
+    Text.LoadMissionText('SYN7')
+    Streaming.SetAreaVisible(1)
+    cutscene_name='SYND_7'
+case 68
+    Camera.SetFadingColor(0, 0, 0)
+    Streaming.SetAreaVisible(3)
+    Text.LoadMissionText('FARLIE2')
+    cutscene_name='FARL_2A'
+case 69
+    Camera.SetFadingColor(0, 0, 0)
+    Text.LoadMissionText('FARLIE3')
+    Streaming.SetAreaVisible(3)
+    cutscene_name='FARL_3A'
+case 70
+    Hud.SwitchWidescreen(true)
+    Streaming.SetAreaVisible(0)
+    Streaming.LoadSceneInDirection(-2623.6399, 1403.9, 6.2, 214.0)
+    Char.SetHeading(PLAYER_PED, 214.0)
+    cutscene_name='FARL_3B'
+case 71
+    force_weather_now {type} WeatherType.SunnySf
+    Streaming.SetAreaVisible(1)
+    Text.LoadMissionText('STEAL1')
+    cutscene_name='STEAL_1'
+case 72
+    Streaming.LoadScene(-2031.0, 149.0, 29.0)
+    Text.LoadMissionText('STEAL2')
+    Streaming.SetAreaVisible(1)
+    cutscene_name='STEAL_2'
+case 73
+    Text.LoadMissionText('STEAL4')
+    Streaming.SetAreaVisible(1)
+    Streaming.LoadScene(-2031.0, 149.0, 29.0)
+    cutscene_name='STEAL_4'
+case 74
+    Streaming.SetAreaVisible(1)
+    Text.LoadMissionText('STEAL5')
+    Streaming.LoadScene(-2031.0, 149.0, 29.0)
+    cutscene_name='STEAL_5'
+
+end // switch
+
+
+switch
+case 75
+    Char.SetCoordinates(PLAYER_PED, -2214.4363, 123.9208, 56.4219)
+    Camera.SetFadingColor(0, 0, 0)
+    Streaming.SetAreaVisible(6)
+    Text.LoadMissionText('ZERO1')
+    cutscene_name='ZERO_1'
+case 76
+    Streaming.SetAreaVisible(6)
+    Text.LoadMissionText('ZERO2')
+    Camera.SetFadingColor(0, 0, 0)
+    force_weather_now {type} WeatherType.SunnySf
+    cutscene_name='ZERO_2'
+case 77
+    Streaming.SetAreaVisible(6)
+    Text.LoadMissionText('ZERO4')
+    cutscene_name='ZERO_4'
+case 78
+    World.ClearArea(-694.4335, 964.9288, 11.2431, 100.0, True)
+    Text.LoadMissionText('TORENO1')
+    force_weather_now {type} WeatherType.SunnyCountryside
+    Camera.SetFadingColor(0, 0, 0)
+    cutscene_name='DESERT1'
+case 79
+    force_weather_now {type} WeatherType.ExtraSunnyVegas
+    World.ClearArea(-692.2, 948.0, 11.2, 100.0, True)
+    Text.LoadMissionText('TORENO2')
+    cutscene_name='DESERT2'
+case 80
+    Text.LoadMissionText('DSERT3')
+    World.ClearArea(-691.0, 941.0, 13.0, 10.0, True)
+    cutscene_name='DESERT3'
+case 81
+    Text.LoadMissionText('DSERT4')
+    World.ClearArea(-688.1717, 937.9888, 12.6328, 10.0, True)
+    force_weather_now {type} WeatherType.ExtraSunnyDesert
+    cutscene_name='DESERT4'
+case 82
+    Text.LoadMissionText('DSERT6')
+    Char.SetHeading(PLAYER_PED, 7.1386)
+    World.ClearArea(335.0, 2529.0, 16.0, 20.0, True)
+    Camera.SetFadingColor(0, 0, 0)
+    Char.SetCoordinates(PLAYER_PED, 384.4035, 2449.3503, 15.4921)
+    cutscene_name='DESERT6'
+case 83
+    Char.SetCoordinates(PLAYER_PED, 403.0466, 2522.1899, 15.4843)
+    clear_area_of_cars {leftBottomX} -120.5297 {leftBottomY} 2593.665 {leftBottomZ} 69.1939 {rightTopX} 502.5016 {rightTopY} 2365.4182 {rightTopZ} -1.2447
+    Streaming.LoadSceneInDirection(404.7372, 2524.8567, 15.5671, 300.0)
+    clear_area_of_chars {leftBottomX} -120.5297 {leftBottomY} 2593.665 {leftBottomZ} 69.1939 {rightTopX} 502.5016 {rightTopY} 2365.4182 {rightTopZ} -1.2447
+    Camera.SetFadingColor(0, 0, 0)
+    set_char_coordinates_no_offset PLAYER_PED, 222.7755, 2508.9717, 15.5214
+    Text.LoadMissionText('DSERT9')
+    Char.SetHeading(PLAYER_PED, 136.0)
+    cutscene_name='DESERT9'
+case 84
+    World.ClearArea(405.2136, 2525.9004, 16.4918, 7.5, False)
+    Text.LoadMissionText('DSERT8')
+    force_weather_now {type} WeatherType.SunnyDesert
+    cutscene_name='D8_ALT'
+case 85
+    World.ClearArea(419.4488, 2529.9143, 15.6219, 0.5, False)
+    Char.SetHeading(PLAYER_PED, 180.0)
+    Char.SetCoordinates(PLAYER_PED, 419.4488, 2529.9143, 15.6219)
+    Streaming.LoadScene(419.4488, 2529.9143, 15.6219)
+    cutscene_name='DESERT8'
+case 86
+    force_weather_now {type} WeatherType.ExtraSunnyDesert
+    World.ClearArea(405.2136, 2525.9004, 16.4918, 7.5, False)
+    Text.LoadMissionText('DSERT10')
+    cutscene_name='D10_ALT'
+case 87
+    Streaming.LoadScene(419.4488, 2529.9143, 15.6219)
+    Char.SetCoordinates(PLAYER_PED, 419.4488, 2529.9143, 15.6219)
+    Char.SetHeading(PLAYER_PED, 180.0)
+    World.ClearArea(419.6919, 2529.9143, 16.6612, 6.86, False)
+    cutscene_name='DES_10A'
+case 88
+    Streaming.LoadScene(419.4488, 2529.9143, 15.6219)
+    Char.SetCoordinates(PLAYER_PED, 419.4488, 2529.9143, 15.6219)
+    Char.SetHeading(PLAYER_PED, 180.0)
+    World.ClearArea(398.7038, 2529.7346, 16.563, 7.35, False)
+    cutscene_name='DES_10B'
+case 89
+    Streaming.SetAreaVisible(11)
+    Text.LoadMissionText('CASINO1')
+    cutscene_name='CAS_1A'
+case 90
+    Text.LoadMissionText('CASINO2')
+    Streaming.SetAreaVisible(11)
+    Camera.SetFadingColor(0, 0, 0)
+    cutscene_name='CAS_2'
+case 91
+    Char.SetCoordinates(PLAYER_PED, 2027.3912, 1008.0874, 9.8203)
+    Streaming.SetAreaVisible(11)
+    Char.SetHeading(PLAYER_PED, 297.1696)
+    Text.LoadMissionText('CASINO3')
+    cutscene_name='CAS_3'
+case 92
+    Text.LoadMissionText('CASINO7')
+    Streaming.SetAreaVisible(11)
+    cutscene_name='CAS_7B'
+case 93
+    Char.SetHeading(PLAYER_PED, 265.5486)
+    Text.LoadMissionText('CASINO4')
+    World.ClearArea(2027.3585, 1007.738, 9.8127, 10.0, True)
+    force_weather_now {type} WeatherType.SunnyVegas
+    Camera.SetFadingColor(0, 0, 0)
+    cutscene_name='CAS_4A'
+case 94
+    World.ClearArea(-738.0978, 2391.5923, 127.9015, 100.0, True)
+    Char.SetHeading(PLAYER_PED, 265.5486)
+    Hud.SwitchWidescreen(true)
+    force_weather_now {type} WeatherType.SunnyDesert
+    Char.SetCoordinates(PLAYER_PED, 2062.0, 1362.0, 10.7)
+    Camera.SetFadingColor(0, 0, 0)
+    cutscene_name='CAS_4B'
+case 95
+    Char.SetHeading(PLAYER_PED, 269.249)
+    Hud.SwitchWidescreen(true)
+    Camera.SetFadingColor(0, 0, 0)
+    Streaming.SetAreaVisible(2)
+    World.ClearArea(-25.7433, 2334.6292, 23.1328, 100.0, True)
+    force_weather_now {type} WeatherType.SunnyVegas
+    Char.SetCoordinates(PLAYER_PED, 2187.0, 1680.0, 11.4)
+    cutscene_name='CAS_4C'
+case 96
+    Char.SetCoordinates(PLAYER_PED, 2175.4116, 1681.5483, 9.8203)
+    Text.LoadMissionText('CASINO5')
+    Char.SetHeading(PLAYER_PED, 90.0)
+    Streaming.SetAreaVisible(2)
+    cutscene_name='CAS_5A'
+case 97
+    Text.LoadMissionText('CASINO6')
+    Char.SetHeading(PLAYER_PED, 108.0825)
+    Streaming.SetAreaVisible(2)
+    Char.SetCoordinates(PLAYER_PED, 2179.9343, 1684.1483, 10.0533)
+    cutscene_name='CAS_6A'
+case 98
+    Streaming.LoadSceneInDirection(2179.9343, 1684.1483, 10.0533, 108.0825)
+    set_char_coordinates_dont_warp_gang PLAYER_PED, 963.7808, 2165.3496, 1010.0312
+    Streaming.SetAreaVisible(1)
+    clear_area_of_chars {leftBottomX} 930.0 {leftBottomY} 2178.0 {leftBottomZ} 1008.0 {rightTopX} 964.0 {rightTopY} 2095.0 {rightTopZ} 1014.0
+    cutscene_name='CAS6B_1'
+case 99
+    cutscene_name='CAS6B_2'
+case 100
+    Char.SetCoordinates(PLAYER_PED, 2175.4116, 1681.5483, 9.8203)
+    Streaming.SetAreaVisible(2)
+    Char.SetHeading(PLAYER_PED, 90.0)
+    Text.LoadMissionText('CASINO9')
+    cutscene_name='CAS_9A1'
+case 101
+    cutscene_name='CAS_9A2'
+case 102
+    Text.LoadMissionText('CASIN10')
+    Char.SetHeading(PLAYER_PED, 80.0)
+    set_current_char_weapon PLAYER_PED {weaponType} WeaponType.Unarmed
+    Char.SetCoordinates(PLAYER_PED, 2163.5891, 1682.2469, 9.86)
+    World.ClearArea(2163.5891, 1682.2469, 9.86, 1.0, True)
+    Streaming.SetAreaVisible(2)
+    cutscene_name='CAS_11A'
+case 103
+    Text.LoadMissionText('VCR1')
+    force_weather_now {type} WeatherType.ExtraSunnyVegas
+    cutscene_name='CRASHV1'
+case 104
+    force_weather_now {type} WeatherType.ExtraSunnyDesert
+    Text.LoadMissionText('VCR2')
+    World.ClearArea(-359.5421, 2225.5249, 42.4562, 30.9, False)
+    cutscene_name='CRASV2A'
+case 105
+    World.ClearArea(-359.5421, 2225.5249, 42.4562, 30.9, False)
+    force_weather_now {type} WeatherType.ExtraSunnyDesert
+    cutscene_name='CRASV2B'
+case 106
+    Camera.SetFadingColor(0, 0, 0)
+    Text.LoadMissionText('DOC2')
+    World.ClearArea(2159.8992, 1443.0424, 9.8203, 40.0, True)
+    cutscene_name='DOC_2'
+case 107
+    force_weather_now {type} WeatherType.RainyCountryside
+    Char.SetCoordinates(PLAYER_PED, 2026.2247, 1007.4234, 9.8203)
+    Clock.SetTimeOfDay(0, 0)
+    Streaming.SetAreaVisible(10)
+    Text.LoadMissionText('HEIST1')
+    Char.SetHeading(PLAYER_PED, 307.0)
+    cutscene_name='HEIST1A'
+case 108
+    Camera.SetFadingColor(0, 0, 0)
+    force_weather_now {type} WeatherType.SunnyVegas
+    Streaming.SetAreaVisible(10)
+    Text.LoadMissionText('HEIST3')
+    cutscene_name='HEIST2A'
+case 109
+    Streaming.SetAreaVisible(10)
+    Text.LoadMissionText('HEIST2')
+    force_weather_now {type} WeatherType.SunnyVegas
+    Camera.SetFadingColor(0, 0, 0)
+    cutscene_name='HEIST4A'
+case 110
+    Char.SetHeading(PLAYER_PED, 288.0)
+    Text.LoadMissionText('HEIST4')
+    Streaming.SetAreaVisible(10)
+    Char.SetCoordinates(PLAYER_PED, 2033.9742, 1017.2899, 9.8203)
+    cutscene_name='HEIST5A'
+case 111
+    Char.SetCoordinates(PLAYER_PED, 2030.108, 1007.929, 9.852)
+    Streaming.SetAreaVisible(10)
+    World.ClearArea(2030.108, 1007.929, 9.852, 1.0, False)
+    Char.SetHeading(PLAYER_PED, 270.0)
+    Text.LoadMissionText('HEIST5')
+    cutscene_name='HEIST6A'
+case 112
+    Char.SetHeading(PLAYER_PED, 278.4092)
+    Text.LoadMissionText('HEIST9')
+    Streaming.LoadScene(2028.9316, 1023.2923, 9.813)
+    Camera.SetFadingColor(0, 0, 0)
+    Streaming.SetAreaVisible(0)
+    set_char_coordinates_dont_warp_gang PLAYER_PED, 2028.9316, 1023.2923, 9.813
+    World.ClearArea(1908.4333, 957.3687, 9.8203, 40.0, True)
+    cutscene_name='HEIST8A'
+case 113
+    Char.SetHeading(PLAYER_PED, 90.0)
+    Text.LoadMissionText('MAN_1')
+    Streaming.SetAreaVisible(11)
+    Char.SetCoordinates(PLAYER_PED, 2175.4116, 1681.5483, 9.8203)
+    cutscene_name='BHILL1'
+case 114
+    Streaming.LoadSceneInDirection(-1439.5457, 489.3506, 3.8546, 300.0)
+    Streaming.SetAreaVisible(5)
+    World.ClearArea(-1403.1462, 509.5356, 17.2266, 1.0, False)
+    Clock.SetTimeOfDay(20, 0)
+    Char.SetCoordinates(PLAYER_PED, -1403.1462, 509.5356, 17.2266)
+    force_weather_now {type} WeatherType.SunnySf
+    Char.SetHeading(PLAYER_PED, 78.0)
+    Text.LoadMissionText('MAN_2')
+    Camera.SetFadingColor(0, 0, 0)
+    Hud.SwitchWidescreen(False)
+    cutscene_name='BHILL2'
+case 115
+    Streaming.SetAreaVisible(5)
+    Text.LoadMissionText('MAN_3')
+    force_weather_now {type} WeatherType.SunnyLa
+    Camera.SetFadingColor(0, 0, 0)
+    cutscene_name='BHILL3A'
+case 116
+    Streaming.SetAreaVisible(0)
+    World.ClearArea(1542.7299, -1675.6971, 12.5551, 60.0, True)
+    Streaming.LoadSceneInDirection(1251.5413, -808.7633, 83.1484, 109.0044)
+    Char.SetCoordinates(PLAYER_PED, 1251.5413, -808.7633, 83.1484)
+    Char.SetHeading(PLAYER_PED, 109.0044)
+    Camera.SetFadingColor(0, 0, 0)
+    cutscene_name='BHILL3B'
+case 117
+    World.ClearArea(2492.8887, -1666.564, 12.3438, 60.0, True)
+    Streaming.LoadSceneInDirection(1521.1943, -1671.9128, 12.5625, 0.0)
+    Camera.SetFadingColor(0, 0, 0)
+    cutscene_name='BHILL3C'
+case 118
+    Text.LoadMissionText('MAN_5')
+    Streaming.SetAreaVisible(5)
+    cutscene_name='BHILL5A'
+case 119
+    clear_area_of_cars {leftBottomX} 1071.5037 {leftBottomY} -1195.5579 {leftBottomZ} 18.6451 {rightTopX} 1044.9419 {rightTopY} -1242.4774 {rightTopZ} 14.9051
+    Char.SetCoordinates(PLAYER_PED, 828.7999, -2036.7567, 11.8672)
+    force_weather_now {type} WeatherType.ExtraSunnyLa
+    Streaming.SetAreaVisible(3)
+    World.ClearArea(-12.3019, -1108.9266, 6.837, 500.0, True)
+    Streaming.LoadScene(1252.4712, -805.5187, 83.1484)
+    Hud.SwitchWidescreen(true)
+    Char.SetHeading(PLAYER_PED, 129.8786)
+    cutscene_name='BHILL5B'
+case 120
+    Streaming.SetAreaVisible(3)
+    Text.LoadMissionText('GROVE1')
+    cutscene_name='GROVE1A'
+case 121
+    Hud.SwitchWidescreen(False)
+    Camera.SetFadingColor(0, 0, 0)
+    Streaming.LoadScene(2497.324, -1684.744, 12.44)
+    Char.SetHeading(PLAYER_PED, 270.0)
+    Char.SetCoordinates(PLAYER_PED, 2294.323, -1797.048, 12.586)
+    World.ClearArea(2299.2429, -1784.5649, 12.591, 3.0, False)
+    Streaming.SetAreaVisible(3)
+    cutscene_name='GROVE1B'
+case 122
+    Char.SetHeading(PLAYER_PED, 56.5)
+    Streaming.LoadScene(2038.184, -1143.772, 23.455)
+    Camera.SetFadingColor(0, 0, 0)
+    Hud.SwitchWidescreen(False)
+    Streaming.LoadSceneInDirection(1994.668, -1119.022, 25.813, 56.5)
+    World.ClearArea(2014.7679, -1111.447, 25.235, 2.0, False)
+    Streaming.SetAreaVisible(2)
+    Char.SetCoordinates(PLAYER_PED, 1044.8799, -1334.3197, 12.55)
+    cutscene_name='GROVE1C'
+case 123
+    Camera.SetFadingColor(0, 0, 0)
+    force_weather_now {type} WeatherType.SunnyLa
+    Streaming.SetAreaVisible(1)
+    Text.LoadMissionText('GROVE2')
+    cutscene_name='GROVE2'
+case 124
+    Text.LoadMissionText('RIOT1')
+    Streaming.SetAreaVisible(5)
+    cutscene_name='RIOT_1A'
+case 125
+    cutscene_name='RIOT_1B'
+case 126
+    Text.LoadMissionText('RIOT2')
+    Streaming.SetAreaVisible(1)
+    cutscene_name='RIOT_2'
+case 127
+    Streaming.SetAreaVisible(1)
+    Text.LoadMissionText('RIOT4')
+    cutscene_name='RIOT_4A'
+case 128
+    Char.SetCoordinates(PLAYER_PED, 2514.7451, -1673.838, 12.8)
+    World.ClearArea(2536.709, -1278.2531, 100.0, 100.0, True)
+    Clock.SetTimeOfDay(21, 30)
+    Streaming.SetAreaVisible(0)
+    Camera.SetFadingColor(0, 0, 0)
+    Streaming.LoadScene(2511.75, -1672.15, 14.0)
+    Hud.SwitchWidescreen(False)
+    Char.SetHeading(PLAYER_PED, 60.891)
+    cutscene_name='RIOT_4B'
+case 129
+    Char.SetCoordinates(PLAYER_PED, 2525.0786, -1301.891, 1047.2969)
+    World.ClearArea(2578.0, -1306.0, 200.0, 200.0, True)
+    Streaming.SetAreaVisible(2)
+    Camera.SetFadingColor(0, 0, 0)
+    Streaming.LoadScene(2541.8101, -1311.3199, 1028.22)
+    Hud.SwitchWidescreen(False)
+    Char.SetHeading(PLAYER_PED, 0.0)
+    cutscene_name='RIOT_4C'
+case 130
+    Streaming.SetAreaVisible(2)
+    Text.LoadMissionText('RIOT4')
+    Camera.SetFadingColor(0, 0, 0)
+    Hud.SwitchWidescreen(False)
+    cutscene_name='RIOT_4D'
+case 131
+    World.ClearArea(2453.8613, -1651.519, 11.6415, 100.0, True)
+    Clock.SetTimeOfDay(17, 0)
+    Streaming.LoadSceneInDirection(2445.6399, -1650.53, 14.63, 0.0)
+    Char.SetCoordinates(PLAYER_PED, 2422.97, -1607.87, 25.55)
+    Char.SetHeading(PLAYER_PED, 144.159)
+    Text.LoadMissionText('RIOT4')
+    Camera.SetFadingColor(0, 0, 0)
+    Hud.SwitchWidescreen(true)
+    cutscene_name='RIOT4E1'
+case 132
+    cutscene_name='RIOT4E2'
+case 133
+    Streaming.SetAreaVisible(3)
+    Camera.SetFadingColor(0, 0, 0)
+    cutscene_name='EPILOG'
+case 134
+    Hud.SwitchWidescreen(False)
+    set_extra_colours 4, False
+    Streaming.SetAreaVisible(0)
+    cutscene_name='DATE1A'
+case 135
+    cutscene_name='DATE1B'
+case 136
+    set_extra_colours 4, False
+    cutscene_name='DATE5A'
+case 137
+    cutscene_name='DATE5B'
+case 138
+    set_extra_colours 4, False
+    cutscene_name='DATE5A'
+case 139
+    cutscene_name='DATE5B'
+case 140
+    set_extra_colours 4, False
+    cutscene_name='DATE2A'
+case 141
+    cutscene_name='DATE2B'
+case 142
+    set_extra_colours 4, False
+    cutscene_name='DATE1A'
+case 143
+    cutscene_name='DATE1B'
+case 144
+    set_extra_colours 5, False
+    cutscene_name='DATE6A'
+case 145
+    cutscene_name='DATE6B'
+case 146
+    set_extra_colours 6, False
+    cutscene_name='DATE6A'
+case 147
+    cutscene_name='DATE6B'
+case 148
+    set_extra_colours 4, False
+    cutscene_name='DATE3A'
+case 149
+    cutscene_name='DATE3B'
+
+end // switch
+
+switch
+case 150
+    set_extra_colours 4, False
+    cutscene_name='DATE3A'
+case 151
+    cutscene_name='DATE3B'
+case 152
+    set_extra_colours 4, False
+    cutscene_name='DATE4A'
+case 153
+    cutscene_name='DATE4B'
+case 154
+    set_extra_colours 4, False
+    cutscene_name='DATE6A'
+case 155
+    cutscene_name='DATE6B'
+
+end // switch
+
+return
+
+terminate_this_custom_script
