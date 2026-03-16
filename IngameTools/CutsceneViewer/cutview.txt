@@ -13,74 +13,71 @@ set_text_background False
 set_text_colour 255 255 255 255
 add_text_label 'CTVCT' {text} "Cutscene time: ~1~"
 add_text_label 'CTVID' {text} "Cutscene ID: ~1~"
-add_text_label 'CTVSN' {text} "Cutscene name: ~1~"
+add_text_label 'CTVSN' {text} "Cutscene name: ???"
 
 :ready
 wait 0
 
-while not is_key_pressed 115 // F4
+while not Pad.IsKeyPressed(KeyCode.F4)
     wait 100
 end
 
-// MAX VALUE NOT INCLUDED!!! Use 0 156 to get range 0..155 
+// MAX VALUE NOT INCLUDED!!! Use 0 156 to get range 0..155
+// Cutscenes with dating not working properly, so low max value to 134 
 cutscene_id=generate_random_int_in_range 0 135
 
-//switch_world_processing {state} True
 make_player_safe_for_cutscene $2
 hide_char_weapon_for_scripted_cutscene $3 True
 clear_char_tasks_immediately $3
 
 switch_widescreen {state} True
-//load_cutscene {name} 'RIOT4E2'
-//04BB: set_area_visible {areaId} 2
-//load_cutscene {name} 'CAS_11A'
 
 gosub @prepare_cutscene
 add_text_label 'CTVSN' {text} cutscene_name
 
 load_cutscene {name} cutscene_name
-//02E8: get_cutscene_time {var_time} $129
-//+02E9:   has_cutscene_finished 
-//02EA: clear_cutscene 
-//056A:   was_cutscene_skipped
-//06B9:   has_cutscene_loaded 
-//0701: skip_cutscene_end
-//08D0:   is_skip_cutscene_button_pressed 
-//08F0: append_to_next_cutscene {objectName} 'BURG_GA' {animName} 'GFPIZ2'
   
-0707: skip_cutscene_start_internal @finish
+0707: skip_cutscene_start_internal @on_skip
+
+while not Cutscene.HasLoaded()
+    wait 100
+end // while
 
 
-:check_load
-00D6: if
-86B9:   not has_cutscene_loaded
-004D: goto_if_false @do_start
-0001: wait {time} 0
-0002: goto @check_load
 
-:do_start
+set_fading_colour 0 0 0
+0A2C: draw_subtitles_before_fade {state} False
+0A2D: draw_oddjob_title_before_fade {state} False
+03E0: set_text_draw_before_fade {state} False
+03E3: set_sprites_draw_before_fade {state} False
+043C: set_music_does_fade {state} False
+00BB: print {key} 'GUNS123' {time} 5000 {flag} 1
+
 02E7: start_cutscene
-//016A: do_fade {time} 1000 {direction} Fade.In
-//print_string_now "Welcome to RIOT4E2" 2000
+while not Cutscene.HasFinished()
 
-:wait_for_end
-0001: wait {time} 0
 get_cutscene_time curtime
 display_text_WITH_NUMBER {leftTopX} 10.0 {leftTopY} 50.0 {key} 'CTVCT' {value} curtime
 display_text_WITH_NUMBER {leftTopX} 10.0 {leftTopY} 60.0 {key} 'CTVID' {value} cutscene_id
 display_text 10.0 70.0 'CTVSN'
+wait 0
+
+//02E9:   has_cutscene_finished 
+//056A:   was_cutscene_skipped
+//08D0:   is_skip_cutscene_button_pressed 
+end
 
 
-
-//DISPLAY_ONSCREEN_COUNTER_WITH_STRING curtime  CounterDisplay.Number 'CTVCT'
-0002: goto @wait_for_end
+:on_skip
+SKIP_CUTSCENE_END
+set_up_skip_after_mission 2510.05 -1666.61 12.57 53.89
 
 :finish
 
-SKIP_CUTSCENE_END
 stop_beat_track
 clear_cutscene
-//do_fade {time} 100 {direction} Fade.Out
+
+do_fade {time} 3000 {direction} Fade.In
 clear_extra_colours {withFade} False
 set_fading_colour {r} 0 {g} 0 {b} 0
 set_area_visible {areaId} 0
@@ -96,10 +93,6 @@ clear_wanted_level $2
 clear_help
 
 goto @ready
-
-terminate_this_custom_script
-
-
 
 :prepare_cutscene
 
@@ -1274,3 +1267,6 @@ return
 :prepare_156
 cutscene_name='DATE6B';
 return
+
+// make future compilers happy
+terminate_this_custom_script
