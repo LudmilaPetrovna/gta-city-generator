@@ -1,0 +1,45 @@
+{$CLEO .cs}
+script_name 'intswtc'
+nop
+
+int current_world=0
+int current_world_old=0
+
+:init
+use_text_commands True
+clear_prints 
+set_text_background False
+set_text_colour 255 255 255 255
+add_text_label 'ISWTCID' {text} "Current world: ~1~"
+
+:loop
+wait 0
+display_text_WITH_NUMBER {leftTopX} 10.0 {leftTopY} 300.0 {key} 'ISWTCID' {value} current_world
+
+if Pad.IsKeyPressed(KeyCode.F7)
+then
+    current_world-=1
+end
+
+if Pad.IsKeyPressed(KeyCode.F8)
+then
+    current_world+=1
+end
+
+if not current_world==current_world_old
+then 
+     gosub @update_world
+end
+
+goto @loop
+
+:update_world
+if current_world < 0
+then
+current_world=0
+end
+
+set_area_visible current_world
+current_world_old=current_world
+wait 2
+return

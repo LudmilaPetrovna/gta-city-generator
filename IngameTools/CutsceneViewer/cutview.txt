@@ -4,27 +4,36 @@ nop
 
 int curtime=0
 int cutscene_id=0
+int cutscene_dur=0
 string cutscene_name=''
+
+int ba=70
+
 
 :init
 use_text_commands True
 clear_prints 
 set_text_background False
 set_text_colour 255 255 255 255
+add_text_label 'CTVID' {text} "Cutscene ID: ~1~, duration: ~1~"
 add_text_label 'CTVCT' {text} "Cutscene time: ~1~"
-add_text_label 'CTVID' {text} "Cutscene ID: ~1~"
 add_text_label 'CTVSN' {text} "Cutscene name: ???"
+add_text_label 'CTVSN2' {text} "JUST TEXT"
+
 
 :ready
 wait 0
+
+display_nth_onscreen_counter_with_string ba CounterDisplay.Bar 1 'CTVSN2'
 
 while not Pad.IsKeyPressed(KeyCode.F4)
     wait 100
 end
 
-// MAX VALUE NOT INCLUDED!!! Use 0 156 to get range 0..155
-// Cutscenes with dating not working properly, so low max value to 134 
-cutscene_id=generate_random_int_in_range 0 135
+
+
+// MAX VALUE NOT INCLUDED!!! Use 0 148 to get range 0..147
+cutscene_id=generate_random_int_in_range 0 148
 
 make_player_safe_for_cutscene $2
 hide_char_weapon_for_scripted_cutscene $3 True
@@ -44,7 +53,6 @@ while not Cutscene.HasLoaded()
 end // while
 
 
-
 set_fading_colour 0 0 0
 0A2C: draw_subtitles_before_fade {state} False
 0A2D: draw_oddjob_title_before_fade {state} False
@@ -57,9 +65,12 @@ set_fading_colour 0 0 0
 while not Cutscene.HasFinished()
 
 get_cutscene_time curtime
-display_text_WITH_NUMBER {leftTopX} 10.0 {leftTopY} 50.0 {key} 'CTVCT' {value} curtime
-display_text_WITH_NUMBER {leftTopX} 10.0 {leftTopY} 60.0 {key} 'CTVID' {value} cutscene_id
+DISPLAY_TEXT_WITH_2_NUMBERS {leftTopX} 10.0 {leftTopY} 50.0 {key} 'CTVID' {value} cutscene_id cutscene_dur
+display_text_WITH_NUMBER {leftTopX} 10.0 {leftTopY} 60.0 {key} 'CTVCT' {value} curtime
 display_text 10.0 70.0 'CTVSN'
+display_text 10.0 170.0 'GF_0017'
+
+//display_onscreen_counter_with_string ba CounterDisplay.Bar 'CTVSN'
 wait 0
 
 //02E9:   has_cutscene_finished 
@@ -76,6 +87,7 @@ set_up_skip_after_mission 2510.05 -1666.61 12.57 53.89
 
 stop_beat_track
 clear_cutscene
+set_time_scale {scale} 1.0
 
 do_fade {time} 3000 {direction} Fade.In
 clear_extra_colours {withFade} False
@@ -118,1155 +130,1523 @@ int cutscene_id_ms=cutscene_id/64
 0872: switch_continued  117 @prepare_118 118 @prepare_119 119 @prepare_120 120 @prepare_121 121 @prepare_122 122 @prepare_123 123 @prepare_124 124 @prepare_125 125 @prepare_126
 0872: switch_continued  126 @prepare_127 127 @prepare_128 -1 @prepare_1 -1 @prepare_1 -1 @prepare_1 -1 @prepare_1 -1 @prepare_1 -1 @prepare_1 -1 @prepare_1
 :my_switch_2
-0871: switch_start cutscene_id 28  128 @prepare_129 129 @prepare_130 130 @prepare_131 131 @prepare_132 132 @prepare_133 133 @prepare_134 134 @prepare_135 135 @prepare_136
+0871: switch_start cutscene_id 20  128 @prepare_129 129 @prepare_130 130 @prepare_131 131 @prepare_132 132 @prepare_133 133 @prepare_134 134 @prepare_135 135 @prepare_136
 0872: switch_continued  136 @prepare_137 137 @prepare_138 138 @prepare_139 139 @prepare_140 140 @prepare_141 141 @prepare_142 142 @prepare_143 143 @prepare_144 144 @prepare_145
-0872: switch_continued  145 @prepare_146 146 @prepare_147 147 @prepare_148 148 @prepare_149 149 @prepare_150 150 @prepare_151 151 @prepare_152 152 @prepare_153 153 @prepare_154
-0872: switch_continued  154 @prepare_155 155 @prepare_156 -1 @prepare_1 -1 @prepare_1 -1 @prepare_1 -1 @prepare_1 -1 @prepare_1 -1 @prepare_1 -1 @prepare_1
+0872: switch_continued  145 @prepare_146 146 @prepare_147 147 @prepare_148 -1 @prepare_1 -1 @prepare_1 -1 @prepare_1 -1 @prepare_1 -1 @prepare_1 -1 @prepare_1
 
-
-
+// 0 prolog1
 :prepare_1
-load_mission_text {tableName} 'INTRO1'
 set_area_visible {areaId} 14
-cutscene_name='PROLOG1';
-return
-
-:prepare_2
-force_weather_now {type} WeatherType.SunnyCountryside
-clear_area {x} 2482.5815 {y} -1729.6418 {z} 12.3906 {radius} 500.0 {clearParticles} True
-set_area_visible {areaId} 0
-set_time_of_day {hours} 6 {minutes} 30
-load_scene_in_direction {x} 2493.3623 {y} -1734.295 {z} 12.3828 {heading} 258.7583
-cutscene_name='PROLOG3';
-return
-
-:prepare_3
 load_mission_text {tableName} 'INTRO1'
-set_area_visible {areaId} 3
-set_time_of_day {hours} 9 {minutes} 0
-cutscene_name='INTRO1A';
+load_scene -1833.640015 18.857000 1060.170044
+cutscene_name='PROLOG1'
+cutscene_dur=22333
 return
 
+// 1 prolog3
+:prepare_2
+set_area_visible {areaId} 0
+clear_area {x} 2482.5815 {y} -1729.6418 {z} 12.3906 {radius} 500.0 {clearParticles} True
+force_weather_now {type} WeatherType.SunnyCountryside
+load_scene_in_direction {x} 2493.3623 {y} -1734.295 {z} 12.3828 {heading} 258.7583
+set_time_of_day {hours} 6 {minutes} 30
+cutscene_name='PROLOG3'
+cutscene_dur=80000
+return
+
+// 2 intro1a
+:prepare_3
+set_area_visible {areaId} 3
+load_mission_text {tableName} 'INTRO1'
+load_scene 2496.729980 -1691.670044 1013.760010
+set_time_of_day {hours} 9 {minutes} 0
+cutscene_name='INTRO1A'
+cutscene_dur=100700
+return
+
+// 3 intro1b
 :prepare_4
-set_char_coordinates $3 {x} 910.78 {y} -1075.26 {z} 23.29
-load_scene_in_direction {x} 910.78 {y} -1075.26 {z} 23.29 {heading} 265.0
 set_area_visible {areaId} 0
 clear_area {x} 2494.9099 {y} -1682.17 {z} 12.32 {radius} 50.0 {clearParticles} True
-switch_widescreen {state} True
-set_fading_colour {r} 0 {g} 0 {b} 0
+load_scene_in_direction {x} 910.78 {y} -1075.26 {z} 23.29 {heading} 265.0
+set_char_coordinates $3 {x} 910.78 {y} -1075.26 {z} 23.29
 set_char_heading $3 {heading} 265.0
-cutscene_name='INTRO1B';
+set_fading_colour {r} 0 {g} 0 {b} 0
+switch_widescreen {state} True
+cutscene_name='INTRO1B'
+cutscene_dur=80633
 return
 
+// 4 intro2a
 :prepare_5
-load_mission_text {tableName} 'INTRO2'
 set_area_visible {areaId} 2
-cutscene_name='INTRO2A';
+load_mission_text {tableName} 'INTRO2'
+load_scene 2469.22 -1697.03 1012.51
+cutscene_name='INTRO2A'
+cutscene_dur=34500
 return
 
+// 5 sweet1a
 :prepare_6
 clear_area {x} 2527.8999 {y} -1667.7 {z} 14.1 {radius} 10.0 {clearParticles} True
 load_mission_text {tableName} 'SWEET1'
-cutscene_name='SWEET1A';
+load_scene 2534.479980 -1668.329956 14.162000
+cutscene_name='SWEET1A'
+cutscene_dur=33200
 return
 
+// 6 sweet1b
 :prepare_7
 set_area_visible {areaId} 1
 load_mission_text {tableName} 'SWEET1B'
-cutscene_name='SWEET1B';
+load_scene 2523.750000 -1680.219971 1014.500000
+cutscene_name='SWEET1B'
+cutscene_dur=60400
 return
 
+// 7 sweet1c
 :prepare_8
+set_area_visible {areaId} 3
+clear_area {x} 2301.0701 {y} -1754.4 {z} 12.54 {radius} 20.0 {clearParticles} True
 load_scene {x} 2509.8101 {y} -1670.89 {z} 12.39
 set_char_coordinates $3 {x} 2516.95 {y} -1675.23 {z} 13.05
-switch_widescreen {state} True
 set_char_heading $3 {heading} 56.0
-clear_area {x} 2301.0701 {y} -1754.4 {z} 12.54 {radius} 20.0 {clearParticles} True
-set_area_visible {areaId} 3
-cutscene_name='SWEET1C';
+switch_widescreen {state} True
+cutscene_name='SWEET1C'
+cutscene_dur=82666
 return
 
+// 8 sweet2a
 :prepare_9
-load_mission_text {tableName} 'SWEET3'
 clear_area {x} 2508.7949 {y} -1671.7073 {z} 12.3892 {radius} 15.0 {clearParticles} True
-cutscene_name='SWEET2A';
+load_mission_text {tableName} 'SWEET3'
+load_scene 2523.750000 -1680.219971 14.497000
+cutscene_name='SWEET2A'
+cutscene_dur=31333
 return
 
+// 9 sweet2b
 :prepare_10
-set_char_heading $3 {heading} 81.2
-load_scene_in_direction {x} 2397.6443 {y} -1880.2762 {z} 23.8686 {heading} 160.0
 clear_area {x} 2404.1001 {y} -1891.5 {z} 12.3 {radius} 120.0 {clearParticles} True
-switch_widescreen {state} True
-set_fading_colour {r} 0 {g} 0 {b} 0
+load_scene_in_direction {x} 2397.6443 {y} -1880.2762 {z} 23.8686 {heading} 160.0
 set_char_coordinates $3 {x} 2364.1926 {y} -1914.0768 {z} 12.4235
-cutscene_name='SWEET2B';
+set_char_heading $3 {heading} 81.2
+set_fading_colour {r} 0 {g} 0 {b} 0
+switch_widescreen {state} True
+cutscene_name='SWEET2B'
+cutscene_dur=83199
 return
 
+// 10 sweet3a
 :prepare_11
-load_mission_text {tableName} 'SWEET2'
 set_area_visible {areaId} 1
-cutscene_name='SWEET3A';
+load_mission_text {tableName} 'SWEET2'
+load_scene 2523.750000 -1680.219971 1014.500000
+cutscene_name='SWEET3A'
+cutscene_dur=50466
 return
 
+// 11 sweet3b
 :prepare_12
+set_area_visible {areaId} 0
+clear_area {x} 2448.7344 {y} -1976.1932 {z} 12.5469 {radius} 200.0 {clearParticles} False
+force_weather_now {type} WeatherType.SunnyLa
+load_scene {x} 2516.54 {y} -1671.2 {z} 12.87
+set_char_coordinates $3 {x} 2515.28 {y} -1673.4399 {z} 12.73
 set_char_heading $3 {heading} 81.2
 switch_widescreen {state} True
-load_scene {x} 2516.54 {y} -1671.2 {z} 12.87
-clear_area {x} 2448.7344 {y} -1976.1932 {z} 12.5469 {radius} 200.0 {clearParticles} False
-set_area_visible {areaId} 0
-set_char_coordinates $3 {x} 2515.28 {y} -1673.4399 {z} 12.73
-force_weather_now {type} WeatherType.SunnyLa
-cutscene_name='SWEET3B';
+cutscene_name='SWEET3B'
+cutscene_dur=38799
 return
 
+// 12 sweet4a
 :prepare_13
 clear_area {x} 2518.0 {y} -1673.0 {z} 14.0 {radius} 50.0 {clearParticles} False
 load_mission_text {tableName} 'SWEET4'
-cutscene_name='SWEET4A';
+load_scene 2523.750000 -1680.219971 14.497000
+cutscene_name='SWEET4A'
+cutscene_dur=39333
 return
 
+// 13 sweet5a
 :prepare_14
+set_area_visible {areaId} 1
 load_mission_text {tableName} 'SWEET5'
-set_area_visible {areaId} 1
+load_scene 2523.750000 -1680.219971 1014.500000
 set_char_coordinates $3 {x} 2769.4922 {y} -1967.3292 {z} 12.3834
-cutscene_name='SWEET5A';
+cutscene_name='SWEET5A'
+cutscene_dur=21200
 return
 
+// 14 sweet6a
 :prepare_15
-load_mission_text {tableName} 'SWEET6'
 set_area_visible {areaId} 1
-cutscene_name='SWEET6A';
+load_mission_text {tableName} 'SWEET6'
+load_scene 2523.750000 -1680.219971 1014.500000
+cutscene_name='SWEET6A'
+cutscene_dur=57299
 return
 
+// 15 sweet6b
 :prepare_16
-switch_widescreen {state} True
-load_scene {x} 1791.5741 {y} -1911.4371 {z} 12.4378
-set_char_heading $3 {heading} 181.4479
-set_char_coordinates $3 {x} 2642.6584 {y} -2015.291 {z} 12.5947
-clear_area {x} 1784.757 {y} -1890.923 {z} 12.399 {radius} 25.0 {clearParticles} True
 set_area_visible {areaId} 0
-cutscene_name='SWEET6B';
-return
-
-:prepare_17
-force_weather_now {type} WeatherType.SunnyLa
-set_fading_colour {r} 0 {g} 0 {b} 0
-clear_area {x} 2508.9753 {y} -1671.5371 {z} 12.3853 {radius} 500.0 {clearParticles} True
-load_mission_text {tableName} 'SWEET7'
-cutscene_name='SWEET7A';
-return
-
-:prepare_18
+clear_area {x} 1784.757 {y} -1890.923 {z} 12.399 {radius} 25.0 {clearParticles} True
+load_scene {x} 1791.5741 {y} -1911.4371 {z} 12.4378
+set_char_coordinates $3 {x} 2642.6584 {y} -2015.291 {z} 12.5947
+set_char_heading $3 {heading} 181.4479
 switch_widescreen {state} True
-set_fading_colour {r} 0 {g} 0 {b} 0
-load_scene {x} 2311.2341 {y} -1150.6134 {z} 25.8027
-set_char_heading $3 {heading} 0.0
-load_mission_text {tableName} 'CRASH1'
-set_current_char_weapon $3 {weaponType} WeaponType.Unarmed
-set_char_coordinates $3 {x} 1038.1704 {y} -1335.2207 {z} 12.5493
-clear_area {x} 2419.1685 {y} -1718.1705 {z} 12.7866 {radius} 0.5 {clearParticles} False
-set_area_visible {areaId} 17
-cutscene_name='CRASH1A';
+cutscene_name='SWEET6B'
+cutscene_dur=117766
 return
 
-:prepare_19
-load_mission_text {tableName} 'CRASH3'
-clear_area {x} 1036.86 {y} -1336.49 {z} 20.0 {radius} 20.0 {clearParticles} False
-cutscene_name='CRASH3A';
-return
-
-:prepare_20
+// 16 sweet7a
+:prepare_17
+clear_area {x} 2508.9753 {y} -1671.5371 {z} 12.3853 {radius} 500.0 {clearParticles} True
 force_weather_now {type} WeatherType.SunnyLa
+load_mission_text {tableName} 'SWEET7'
+load_scene 2508.979980 -1671.540039 12.385300
 set_fading_colour {r} 0 {g} 0 {b} 0
-load_mission_text {tableName} 'RYDER1'
+cutscene_name='SWEET7A'
+cutscene_dur=33632
+return
+
+// 17 crash1a
+:prepare_18
+set_area_visible {areaId} 17
+clear_area {x} 2419.1685 {y} -1718.1705 {z} 12.7866 {radius} 0.5 {clearParticles} False
+load_mission_text {tableName} 'CRASH1'
+load_scene {x} 2311.2341 {y} -1150.6134 {z} 25.8027
+set_char_coordinates $3 {x} 1038.1704 {y} -1335.2207 {z} 12.5493
+set_char_heading $3 {heading} 0.0
+set_current_char_weapon $3 {weaponType} WeaponType.Unarmed
+set_fading_colour {r} 0 {g} 0 {b} 0
+switch_widescreen {state} True
+cutscene_name='CRASH1A'
+cutscene_dur=76633
+return
+
+// 18 crash3a
+:prepare_19
+clear_area {x} 1036.86 {y} -1336.49 {z} 20.0 {radius} 20.0 {clearParticles} False
+load_mission_text {tableName} 'CRASH3'
+load_scene 1039.800049 -1337.000000 12.960000
+cutscene_name='CRASH3A'
+cutscene_dur=97641
+return
+
+// 19 ryder1a
+:prepare_20
 clear_area {x} 2464.0 {y} -1714.0 {z} 14.0 {radius} 100.0 {clearParticles} True
-cutscene_name='RYDER1A';
-return
-
-:prepare_21
-load_mission_text {tableName} 'RYDER3'
-set_area_visible {areaId} 2
+force_weather_now {type} WeatherType.SunnyLa
+load_mission_text {tableName} 'RYDER1'
+load_scene 2469.449951 -1696.489990 12.495000
 set_fading_colour {r} 0 {g} 0 {b} 0
-cutscene_name='RYDER3A';
+cutscene_name='RYDER1A'
+cutscene_dur=60533
 return
 
+// 20 ryder3a
+:prepare_21
+set_area_visible {areaId} 2
+load_mission_text {tableName} 'RYDER3'
+load_scene 2469.219971 -1697.030029 1012.510010
+set_fading_colour {r} 0 {g} 0 {b} 0
+cutscene_name='RYDER3A'
+cutscene_dur=85966
+return
+
+// 21 ryder2a
 :prepare_22
 clear_area {x} 2463.4751 {y} -1713.4281 {z} 12.5025 {radius} 20.0 {clearParticles} True
 load_mission_text {tableName} 'RYDER2'
-cutscene_name='RYDER2A';
+load_scene 2469.449951 -1696.489990 12.497200
+cutscene_name='RYDER2A'
+cutscene_dur=74432
 return
 
+// 22 smoke1a
 :prepare_23
 clear_area {x} 2072.3 {y} -1695.2 {z} 12.5 {radius} 80.0 {clearParticles} True
 load_mission_text {tableName} 'SMOKE1'
-cutscene_name='SMOKE1A';
+load_scene 2064.750000 -1702.780029 13.350000
+cutscene_name='SMOKE1A'
+cutscene_dur=29000
 return
 
+// 23 smoke1b
 :prepare_24
-set_char_heading $3 {heading} 33.0
 clear_area {x} 1532.8 {y} -1672.9 {z} 12.4 {radius} 300.0 {clearParticles} True
+load_scene 1537.160034 -1672.260010 12.610000
 set_char_coordinates $3 {x} 1496.5 {y} -1672.6 {z} 13.2
+set_char_heading $3 {heading} 33.0
 set_fading_colour {r} 0 {g} 0 {b} 0
 switch_widescreen {state} False
-cutscene_name='SMOKE1B';
+cutscene_name='SMOKE1B'
+cutscene_dur=53265
 return
 
+// 24 smoke2a
 :prepare_25
-set_fading_colour {r} 0 {g} 0 {b} 0
-load_mission_text {tableName} 'SMOKE2'
 clear_area {x} 2069.8999 {y} -1702.73 {z} 12.59 {radius} 100.0 {clearParticles} False
-cutscene_name='SMOKE2A';
+load_mission_text {tableName} 'SMOKE2'
+load_scene 2064.750000 -1702.780029 13.350000
+set_fading_colour {r} 0 {g} 0 {b} 0
+cutscene_name='SMOKE2A'
+cutscene_dur=40333
 return
 
+// 25 smoke2b
 :prepare_26
 clear_area {x} 2069.8999 {y} -1702.73 {z} 12.59 {radius} 100.0 {clearParticles} False
-set_char_heading $3 {heading} 0.0
-set_char_coordinates $3 {x} 2070.8701 {y} -1703.01 {z} 12.55
-set_fading_colour {r} 0 {g} 0 {b} 0
 load_scene {x} 2069.8999 {y} -1702.73 {z} 12.59
-cutscene_name='SMOKE2B';
-return
-
-:prepare_27
-force_weather_now {type} WeatherType.SunnyLa
+set_char_coordinates $3 {x} 2070.8701 {y} -1703.01 {z} 12.55
+set_char_heading $3 {heading} 0.0
 set_fading_colour {r} 0 {g} 0 {b} 0
-load_mission_text {tableName} 'SMOKE3'
-clear_area {x} 2077.5801 {y} -1695.929 {z} 150.0 {radius} 150.0 {clearParticles} True
-cutscene_name='SMOKE3A';
+cutscene_name='SMOKE2B'
+cutscene_dur=57666
 return
 
+// 26 smoke3a
+:prepare_27
+clear_area {x} 2077.5801 {y} -1695.929 {z} 150.0 {radius} 150.0 {clearParticles} True
+force_weather_now {type} WeatherType.SunnyLa
+load_mission_text {tableName} 'SMOKE3'
+load_scene 2064.750000 -1702.780029 13.350000
+set_fading_colour {r} 0 {g} 0 {b} 0
+cutscene_name='SMOKE3A'
+cutscene_dur=49033
+return
+
+// 27 smoke4a
 :prepare_28
-load_mission_text {tableName} 'SMOKE4'
 clear_area {x} 2060.0 {y} -1694.0 {z} 50.0 {radius} 50.0 {clearParticles} True
 force_weather_now {type} WeatherType.SunnyLa
-cutscene_name='SMOKE4A';
+load_mission_text {tableName} 'SMOKE4'
+load_scene 2064.750000 -1702.780029 13.350000
+cutscene_name='SMOKE4A'
+cutscene_dur=23333
 return
 
+// 28 strap1a
 :prepare_29
-set_fading_colour {r} 0 {g} 0 {b} 0
-load_scene {x} 809.5818 {y} -1630.5734 {z} 12.5469
 clear_area {x} 809.5818 {y} -1630.5734 {z} 12.5469 {radius} 100.0 {clearParticles} False
 load_mission_text {tableName} 'STRAP1'
-cutscene_name='STRAP1A';
+load_scene {x} 809.5818 {y} -1630.5734 {z} 12.5469
+set_fading_colour {r} 0 {g} 0 {b} 0
+cutscene_name='STRAP1A'
+cutscene_dur=72932
 return
 
+// 29 strap2a
 :prepare_30
 set_area_visible {areaId} 10
 load_mission_text {tableName} 'STRAP2'
+load_scene 363.96 -76.14 1000.51
 set_fading_colour {r} 0 {g} 0 {b} 0
-cutscene_name='STRAP2A';
+cutscene_name='STRAP2A'
+cutscene_dur=83033
 return
 
+// 30 strap3a
 :prepare_31
 set_area_visible {areaId} 10
 load_mission_text {tableName} 'STRAP3'
+load_scene 363.959991 -76.139999 1000.520020
 set_fading_colour {r} 0 {g} 0 {b} 0
-cutscene_name='STRAP3A';
+cutscene_name='STRAP3A'
+cutscene_dur=108633
 return
 
+// 31 strap4a
 :prepare_32
+load_scene 795.406 -1625.47 12.4
+cutscene_name='STRAP4A'
+cutscene_dur=51000
+return
+
+// 32 strp4b1
+:prepare_33
 set_area_visible {areaId} 3
 clear_area {x} 2484.8999 {y} -1649.2 {z} 12.5 {radius} 160.0 {clearParticles} False
 load_mission_text {tableName} 'STRAP4'
+load_scene 518.546021 -20.740999 999.765015
 set_fading_colour {r} 0 {g} 0 {b} 0
-cutscene_name='STRP4B1';
+cutscene_name='STRP4B1'
+cutscene_dur=29762
 return
 
-:prepare_33
-clear_area {x} 2503.0 {y} -1658.8 {z} 12.3 {radius} 5.0 {clearParticles} True
-set_area_visible {areaId} 0
-set_fading_colour {r} 0 {g} 0 {b} 0
-cutscene_name='STRP4B2';
-return
-
+// 33 strp4b2
 :prepare_34
-load_mission_text {tableName} 'CESAR1'
-clear_area {x} 1796.0 {y} -2118.0 {z} 14.0 {radius} 25.0 {clearParticles} True
-cutscene_name='CESAR1A';
+set_area_visible {areaId} 0
+clear_area {x} 2503.0 {y} -1658.8 {z} 12.3 {radius} 5.0 {clearParticles} True
+load_scene 2491.209961 -1648.859985 12.560000
+set_fading_colour {r} 0 {g} 0 {b} 0
+cutscene_name='STRP4B2'
+cutscene_dur=30666
 return
 
+// 34 cesar1a
 :prepare_35
+clear_area {x} 1796.0 {y} -2118.0 {z} 14.0 {radius} 25.0 {clearParticles} True
+load_mission_text {tableName} 'CESAR1'
+load_scene 1801.709961 -2147.709961 12.716000
+cutscene_name='CESAR1A'
+cutscene_dur=39077
+return
+
+// 35 final1a
+:prepare_36
 set_area_visible {areaId} 1
 load_mission_text {tableName} 'LAFIN1'
-cutscene_name='FINAL1A';
+load_scene 2523.750000 -1680.219971 1014.500000
+cutscene_name='FINAL1A'
+cutscene_dur=52900
 return
 
-:prepare_36
+// 36 final2a
+:prepare_37
+set_area_visible {areaId} 1
+load_mission_text {tableName} 'LAFIN2'
+load_scene 2523.750000 -1680.219971 1014.500000
 set_char_coordinates $3 {x} 1624.5371 {y} -1863.4377 {z} 12.5549
 switch_widescreen {state} True
-load_mission_text {tableName} 'LAFIN2'
-set_area_visible {areaId} 1
-cutscene_name='FINAL2A';
+cutscene_name='FINAL2A'
+cutscene_dur=66666
 return
 
-:prepare_37
-set_area_visible {areaId} 0
-set_char_coordinates $3 {x} 2519.8254 {y} -1677.7141 {z} 13.7425
-clear_area_of_cars {leftBottomX} 1626.6332 {leftBottomY} -1876.4004 {leftBottomZ} 16.8284 {rightTopX} 1601.1116 {rightTopY} -1902.1034 {rightTopZ} 10.6931
-set_char_heading $3 {heading} 67.0
-switch_widescreen {state} False
-clear_area_of_chars {leftBottomX} 1626.6332 {leftBottomY} -1876.4004 {leftBottomZ} 16.8284 {rightTopX} 1601.1116 {rightTopY} -1902.1034 {rightTopZ} 10.6931
-set_fading_colour {r} 0 {g} 0 {b} 0
-load_scene {x} 2518.7893 {y} -1677.2203 {z} 13.5079
-cutscene_name='FINAL2B';
-return
-
+// 37 final2b
 :prepare_38
-set_current_char_weapon $3 {weaponType} WeaponType.Unarmed
-set_char_coordinates $3 {x} -2011.4375 {y} -2501.2871 {z} 34.0624
-load_scene_in_direction {x} 1584.2905 {y} -1143.8766 {z} 23.8226 {heading} 180.0
-clear_area {x} -2011.4375 {y} -2501.2871 {z} 34.0624 {radius} 100.0 {clearParticles} True
-load_scene {x} -2011.4375 {y} -2501.2871 {z} 34.0624
-switch_widescreen {state} True
-load_mission_text {tableName} 'BCRASH1'
-set_char_heading $3 {heading} 80.0
-cutscene_name='BCRAS1';
+set_area_visible {areaId} 0
+clear_area_of_cars {leftBottomX} 1626.6332 {leftBottomY} -1876.4004 {leftBottomZ} 16.8284 {rightTopX} 1601.1116 {rightTopY} -1902.1034 {rightTopZ} 10.6931
+clear_area_of_chars {leftBottomX} 1626.6332 {leftBottomY} -1876.4004 {leftBottomZ} 16.8284 {rightTopX} 1601.1116 {rightTopY} -1902.1034 {rightTopZ} 10.6931
+load_scene {x} 2518.7893 {y} -1677.2203 {z} 13.5079
+set_char_coordinates $3 {x} 2519.8254 {y} -1677.7141 {z} 13.7425
+set_char_heading $3 {heading} 67.0
+set_fading_colour {r} 0 {g} 0 {b} 0
+switch_widescreen {state} False
+cutscene_name='FINAL2B'
+cutscene_dur=75833
 return
 
+// 38 bcras1
 :prepare_39
-cutscene_name='BCRAS2';
+clear_area {x} -2011.4375 {y} -2501.2871 {z} 34.0624 {radius} 100.0 {clearParticles} True
+load_mission_text {tableName} 'BCRASH1'
+load_scene {x} -2011.4375 {y} -2501.2871 {z} 34.0624
+load_scene_in_direction {x} 1584.2905 {y} -1143.8766 {z} 23.8226 {heading} 180.0
+set_char_coordinates $3 {x} -2011.4375 {y} -2501.2871 {z} 34.0624
+set_char_heading $3 {heading} 80.0
+set_current_char_weapon $3 {weaponType} WeaponType.Unarmed
+switch_widescreen {state} True
+cutscene_name='BCRAS1'
+cutscene_dur=71066
 return
 
+// 39 bcras2
 :prepare_40
-load_mission_text {tableName} 'CAT'
-set_area_visible {areaId} 1
-cutscene_name='CAT_1';
+load_scene -2011.500000 -2502.739990 31.799999
+cutscene_name='BCRAS2'
+cutscene_dur=90599
 return
 
+// 40 cat_1
 :prepare_41
-set_char_coordinates $3 {x} 681.1634 {y} -478.1859 {z} 15.3281
-force_weather_now {type} WeatherType.ExtraSunnyCountryside
-set_area_visible {areaId} 0
-clear_area {x} 868.521 {y} -30.0862 {z} 63.1875 {radius} 5.8 {clearParticles} False
-load_scene {x} 681.1634 {y} -478.1859 {z} 15.3281
-set_char_heading $3 {heading} 177.0008
-cutscene_name='CAT_2';
+set_area_visible {areaId} 1
+load_mission_text {tableName} 'CAT'
+load_scene 679.286011 -454.026001 -26.620001
+cutscene_name='CAT_1'
+cutscene_dur=23033
 return
 
+// 41 cat_2
 :prepare_42
-set_char_heading $3 {heading} 157.9281
 set_area_visible {areaId} 0
 clear_area {x} 868.521 {y} -30.0862 {z} 63.1875 {radius} 5.8 {clearParticles} False
-set_char_coordinates $3 {x} 868.4825 {y} -29.6753 {z} 62.1875
-load_scene {x} 868.4825 {y} -29.6753 {z} 62.1875
-cutscene_name='CAT_3';
+force_weather_now {type} WeatherType.ExtraSunnyCountryside
+load_scene {x} 681.1634 {y} -478.1859 {z} 15.3281
+set_char_coordinates $3 {x} 681.1634 {y} -478.1859 {z} 15.3281
+set_char_heading $3 {heading} 177.0008
+cutscene_name='CAT_2'
+cutscene_dur=126333
 return
 
+// 42 cat_3
 :prepare_43
+set_area_visible {areaId} 0
+clear_area {x} 868.521 {y} -30.0862 {z} 63.1875 {radius} 5.8 {clearParticles} False
 load_scene {x} 868.4825 {y} -29.6753 {z} 62.1875
 set_char_coordinates $3 {x} 868.4825 {y} -29.6753 {z} 62.1875
 set_char_heading $3 {heading} 157.9281
-set_area_visible {areaId} 0
-clear_area {x} 868.521 {y} -30.0862 {z} 63.1875 {radius} 5.8 {clearParticles} False
-cutscene_name='CAT_4';
+cutscene_name='CAT_3'
+cutscene_dur=80150
 return
 
+// 43 cat_4
 :prepare_44
+set_area_visible {areaId} 0
+clear_area {x} 868.521 {y} -30.0862 {z} 63.1875 {radius} 5.8 {clearParticles} False
+load_scene {x} 868.4825 {y} -29.6753 {z} 62.1875
+set_char_coordinates $3 {x} 868.4825 {y} -29.6753 {z} 62.1875
+set_char_heading $3 {heading} 157.9281
+cutscene_name='CAT_4'
+cutscene_dur=44666
+return
+
+// 44 bcesar2
+:prepare_45
 set_area_visible {areaId} 2
 load_mission_text {tableName} 'BCESAR2'
-cutscene_name='BCESAR2';
+load_scene -1.748000 -4.178000 998.772003
+cutscene_name='BCESAR2'
+cutscene_dur=80699
 return
 
-:prepare_45
-load_mission_text {tableName} 'TRU1'
-set_area_visible {areaId} 12
-cutscene_name='TRUTH_1';
-return
-
+// 45 truth_1
 :prepare_46
-load_mission_text {tableName} 'TRU2'
-clear_area {x} -1110.2 {y} -1638.5 {z} 76.0 {radius} 20.0 {clearParticles} True
-cutscene_name='TRUTH_2';
+set_area_visible {areaId} 12
+load_mission_text {tableName} 'TRU1'
+load_scene 442.820007 506.291992 1000.419983
+cutscene_name='TRUTH_1'
+cutscene_dur=150000
 return
 
+// 46 truth_2
 :prepare_47
-load_mission_text {tableName} 'BCESAR4'
-clear_area {x} 1557.1616 {y} 24.305 {z} 22.7313 {radius} 100.0 {clearParticles} True
-cutscene_name='BCESAR4';
+clear_area {x} -1110.2 {y} -1638.5 {z} 76.0 {radius} 20.0 {clearParticles} True
+load_mission_text {tableName} 'TRU2'
+load_scene -1103.339966 -1640.500000 75.359001
+cutscene_name='TRUTH_2'
+cutscene_dur=69000
 return
 
+// 47 bcesar4
 :prepare_48
-load_mission_text {tableName} 'BCESAR4'
-clear_area {x} -526.7778 {y} -189.0571 {z} 76.9917 {radius} 100.0 {clearParticles} True
-switch_widescreen {state} False
-cutscene_name='BCESA4W';
-return
-
-:prepare_49
-set_char_coordinates $3 {x} -495.9034 {y} -196.2218 {z} 77.3986
-clear_area {x} -526.7778 {y} -189.0571 {z} 76.9917 {radius} 100.0 {clearParticles} True
-set_char_heading $3 {heading} 53.0
-load_mission_text {tableName} 'BCESAR4'
-cutscene_name='BCESAR5';
-return
-
-:prepare_50
-load_mission_text {tableName} 'BCESAR4'
 clear_area {x} 1557.1616 {y} 24.305 {z} 22.7313 {radius} 100.0 {clearParticles} True
-cutscene_name='BCESA5W';
+load_mission_text {tableName} 'BCESAR4'
+load_scene 1559.739990 13.645000 23.162001
+cutscene_name='BCESAR4'
+cutscene_dur=73365
 return
 
+// 48 bcesa4w
+:prepare_49
+clear_area {x} -526.7778 {y} -189.0571 {z} 76.9917 {radius} 100.0 {clearParticles} True
+load_mission_text {tableName} 'BCESAR4'
+load_scene -544.632996 -184.792999 77.403000
+switch_widescreen {state} False
+cutscene_name='BCESA4W'
+cutscene_dur=56150
+return
+
+// 49 bcesar5
+:prepare_50
+clear_area {x} -526.7778 {y} -189.0571 {z} 76.9917 {radius} 100.0 {clearParticles} True
+load_mission_text {tableName} 'BCESAR4'
+load_scene -544.632996 -184.792999 77.403000
+set_char_coordinates $3 {x} -495.9034 {y} -196.2218 {z} 77.3986
+set_char_heading $3 {heading} 53.0
+cutscene_name='BCESAR5'
+cutscene_dur=92199
+return
+
+// 50 bcesa5w
 :prepare_51
-set_area_visible {areaId} 1
-load_mission_text {tableName} 'GARAGE1'
-force_weather_now {type} WeatherType.SunnySf
-cutscene_name='GARAG1B';
+clear_area {x} 1557.1616 {y} 24.305 {z} 22.7313 {radius} 100.0 {clearParticles} True
+load_mission_text {tableName} 'BCESAR4'
+load_scene 1559.739990 13.645000 23.162001
+cutscene_name='BCESA5W'
+cutscene_dur=65833
 return
 
+// 51 garag1b
 :prepare_52
-set_char_heading $3 {heading} 267.0
-switch_widescreen {state} True
-set_fading_colour {r} 0 {g} 0 {b} 0
-clear_area {x} -1659.92 {y} 751.31 {z} 17.29 {radius} 1000.0 {clearParticles} True
 set_area_visible {areaId} 1
-set_current_char_weapon $3 {weaponType} WeaponType.Unarmed
-set_char_coordinates $3 {x} -2028.0 {y} 177.0 {z} 28.2
-cutscene_name='GARAG1C';
+force_weather_now {type} WeatherType.SunnySf
+load_mission_text {tableName} 'GARAGE1'
+load_scene -2057.07 150.74 27.8378
+cutscene_name='GARAG1B'
+cutscene_dur=103333
 return
 
+// 52 garag1c
 :prepare_53
 set_area_visible {areaId} 1
-load_mission_text {tableName} 'GARAGE2'
+clear_area {x} -1659.92 {y} 751.31 {z} 17.29 {radius} 1000.0 {clearParticles} True
+load_scene -2057.070068 150.740005 27.837999
+set_char_coordinates $3 {x} -2028.0 {y} 177.0 {z} 28.2
+set_char_heading $3 {heading} 267.0
+set_current_char_weapon $3 {weaponType} WeaponType.Unarmed
 set_fading_colour {r} 0 {g} 0 {b} 0
-load_scene {x} -2031.0 {y} 149.0 {z} 29.0
-cutscene_name='GARAG3A';
+switch_widescreen {state} True
+cutscene_name='GARAG1C'
+cutscene_dur=63366
 return
 
+// 53 garag3a
 :prepare_54
 set_area_visible {areaId} 1
-load_mission_text {tableName} 'VALET1'
+load_mission_text {tableName} 'GARAGE2'
+load_scene {x} -2031.0 {y} 149.0 {z} 29.0
 set_fading_colour {r} 0 {g} 0 {b} 0
-cutscene_name='SCRASH1';
+cutscene_name='GARAG3A'
+cutscene_dur=30433
 return
 
+// 54 scrash1
 :prepare_55
 set_area_visible {areaId} 1
-clear_area {x} 383.3648 {y} -1930.4478 {z} 6.8301 {radius} 5.0 {clearParticles} True
-set_char_coordinates $3 {x} 383.3648 {y} -1930.4478 {z} 6.8301
-load_mission_text {tableName} 'SCRASH2'
-set_char_heading $3 {heading} 88.4042
-load_scene {x} -2031.0 {y} 149.0 {z} 29.0
-cutscene_name='SCRASH2';
-return
-
-:prepare_56
-load_mission_text {tableName} 'WUZI1'
-set_char_heading $3 {heading} 270.0
-load_scene_in_direction {x} -2155.2659 {y} 645.0895 {z} 51.3516 {heading} 270.0
-set_area_visible {areaId} 1
-load_scene {x} -2155.2659 {y} 645.0895 {z} 51.3
-set_char_coordinates $3 {x} -2155.2659 {y} 645.0895 {z} 51.3516
-cutscene_name='WOOZI1A';
-return
-
-:prepare_57
-cutscene_name='WOOZI1B';
-return
-
-:prepare_58
+load_mission_text {tableName} 'VALET1'
+load_scene -2057.070068 150.740005 27.837999
 set_fading_colour {r} 0 {g} 0 {b} 0
+cutscene_name='SCRASH1'
+cutscene_dur=45599
+return
+
+// 55 scrash2
+:prepare_56
+set_area_visible {areaId} 1
+clear_area {x} 383.3648 {y} -1930.4478 {z} 6.8301 {radius} 5.0 {clearParticles} True
+load_mission_text {tableName} 'SCRASH2'
+load_scene {x} -2031.0 {y} 149.0 {z} 29.0
+set_char_coordinates $3 {x} 383.3648 {y} -1930.4478 {z} 6.8301
+set_char_heading $3 {heading} 88.4042
+cutscene_name='SCRASH2'
+cutscene_dur=87333
+return
+
+// 56 woozi1a
+:prepare_57
+set_area_visible {areaId} 1
+load_mission_text {tableName} 'WUZI1'
+load_scene {x} -2155.2659 {y} 645.0895 {z} 51.3
+load_scene_in_direction {x} -2155.2659 {y} 645.0895 {z} 51.3516 {heading} 270.0
+set_char_coordinates $3 {x} -2155.2659 {y} 645.0895 {z} 51.3516
+set_char_heading $3 {heading} 270.0
+cutscene_name='WOOZI1A'
+cutscene_dur=59866
+return
+
+// 57 woozi1b
+:prepare_58
+load_scene -2172.010010 635.036011 1051.380005
+cutscene_name='WOOZI1B'
+cutscene_dur=69266
+return
+
+// 58 farl_4a
+:prepare_59
 set_area_visible {areaId} 1
 load_mission_text {tableName} 'FARLIE4'
-cutscene_name='FARL_4A';
-return
-
-:prepare_59
+load_scene -2171.709961 635.036011 1051.380005
 set_fading_colour {r} 0 {g} 0 {b} 0
-set_area_visible {areaId} 1
-load_mission_text {tableName} 'FARLIE5'
-cutscene_name='FARL_5A';
+cutscene_name='FARL_4A'
+cutscene_dur=80300
 return
 
+// 59 farl_5a
 :prepare_60
 set_area_visible {areaId} 1
-load_mission_text {tableName} 'WUZI2'
-cutscene_name='W2_ALT';
+load_mission_text {tableName} 'FARLIE5'
+load_scene -2171.709961 635.036011 1051.380005
+set_fading_colour {r} 0 {g} 0 {b} 0
+cutscene_name='FARL_5A'
+cutscene_dur=49466
 return
 
+// 60 w2_alt
 :prepare_61
 set_area_visible {areaId} 1
-cutscene_name='WOOZIE2';
+load_mission_text {tableName} 'WUZI2'
+load_scene -2171.709961 635.036011 1051.380005
+cutscene_name='W2_ALT'
+cutscene_dur=27749
 return
 
+// 61 woozie2
 :prepare_62
 set_area_visible {areaId} 1
-load_mission_text {tableName} 'WUZI4'
-cutscene_name='WOOZIE4';
+load_scene -2171.709961 635.036011 1051.380005
+cutscene_name='WOOZIE2'
+cutscene_dur=101333
 return
 
+// 62 woozie4
 :prepare_63
-load_mission_text {tableName} 'SYN2'
 set_area_visible {areaId} 1
-cutscene_name='SYND_2A';
+load_mission_text {tableName} 'WUZI4'
+load_scene -2171.709961 635.036011 1051.380005
+cutscene_name='WOOZIE4'
+cutscene_dur=58132
 return
 
+// 63 synd_2a
 :prepare_64
-set_char_coordinates $3 {x} -2031.2542 {y} 161.408 {z} 28.0391
-set_area_visible {areaId} 3
-set_char_heading $3 {heading} 270.0
-cutscene_name='SYND_2B';
+set_area_visible {areaId} 1
+load_mission_text {tableName} 'SYN2'
+load_scene -2057.070068 150.740005 27.837999
+cutscene_name='SYND_2A'
+cutscene_dur=65199
 return
 
+// 64 synd_2b
 :prepare_65
+set_area_visible {areaId} 3
+load_scene -2676.739990 1423.869995 905.458008
+set_char_coordinates $3 {x} -2031.2542 {y} 161.408 {z} 28.0391
+set_char_heading $3 {heading} 270.0
+cutscene_name='SYND_2B'
+cutscene_dur=93300
+return
+
+// 65 synd_3a
+:prepare_66
 clear_area {x} -1665.27 {y} 412.923 {z} 6.192 {radius} 50.0 {clearParticles} False
+load_mission_text {tableName} 'SYN3'
+load_scene {x} -2030.4 {y} 148.83 {z} 27.84
 set_char_coordinates $3 {x} -2030.4 {y} 148.83 {z} 27.84
 set_char_heading $3 {heading} 270.0
-load_mission_text {tableName} 'SYN3'
-switch_widescreen {state} False
-load_scene {x} -2030.4 {y} 148.83 {z} 27.84
 set_fading_colour {r} 0 {g} 0 {b} 0
-cutscene_name='SYND_3A';
+switch_widescreen {state} False
+cutscene_name='SYND_3A'
+cutscene_dur=83900
 return
 
-:prepare_66
-load_mission_text {tableName} 'SYN4'
+// 66 synd_4a
+:prepare_67
 set_area_visible {areaId} 1
+load_mission_text {tableName} 'SYN4'
 load_scene {x} -2031.0 {y} 149.0 {z} 29.0
 set_fading_colour {r} 0 {g} 0 {b} 0
-cutscene_name='SYND_4A';
+cutscene_name='SYND_4A'
+cutscene_dur=56666
 return
 
-:prepare_67
-set_fading_colour {r} 0 {g} 0 {b} 0
-set_char_heading $3 {heading} 197.6688
+// 67 synd_4b
+:prepare_68
 set_area_visible {areaId} 0
 clear_area {x} -2624.5486 {y} 1412.1306 {z} 6.1094 {radius} 10.0 {clearParticles} True
-set_char_coordinates_dont_warp_gang $3 {x} -2661.0549 {y} 1416.0194 {z} 921.1953
 load_scene_in_direction {x} -2031.1965 {y} 161.1839 {z} 27.8359 {heading} 268.0468
-cutscene_name='SYND_4B';
+set_char_coordinates_dont_warp_gang $3 {x} -2661.0549 {y} 1416.0194 {z} 921.1953
+set_char_heading $3 {heading} 197.6688
+set_fading_colour {r} 0 {g} 0 {b} 0
+cutscene_name='SYND_4B'
+cutscene_dur=79000
 return
 
-:prepare_68
+// 68 synd_7
+:prepare_69
+set_area_visible {areaId} 1
+load_mission_text {tableName} 'SYN7'
 load_scene {x} -2031.0 {y} 149.0 {z} 29.0
 set_fading_colour {r} 0 {g} 0 {b} 0
-load_mission_text {tableName} 'SYN7'
-set_area_visible {areaId} 1
-cutscene_name='SYND_7';
+cutscene_name='SYND_7'
+cutscene_dur=63366
 return
 
-:prepare_69
-set_fading_colour {r} 0 {g} 0 {b} 0
+// 69 farl_2a
+:prepare_70
 set_area_visible {areaId} 3
 load_mission_text {tableName} 'FARLIE2'
-cutscene_name='FARL_2A';
-return
-
-:prepare_70
+load_scene -2676.739990 1423.869995 905.458008
 set_fading_colour {r} 0 {g} 0 {b} 0
-load_mission_text {tableName} 'FARLIE3'
-set_area_visible {areaId} 3
-cutscene_name='FARL_3A';
+cutscene_name='FARL_2A'
+cutscene_dur=84666
 return
 
+// 70 farl_3a
 :prepare_71
-switch_widescreen {state} True
+set_area_visible {areaId} 3
+load_mission_text {tableName} 'FARLIE3'
+load_scene -2676.739990 1423.869995 905.458008
+set_fading_colour {r} 0 {g} 0 {b} 0
+cutscene_name='FARL_3A'
+cutscene_dur=54800
+return
+
+// 71 farl_3b
+:prepare_72
 set_area_visible {areaId} 0
 load_scene_in_direction {x} -2623.6399 {y} 1403.9 {z} 6.2 {heading} 214.0
 set_char_heading $3 {heading} 214.0
-cutscene_name='FARL_3B';
+switch_widescreen {state} True
+cutscene_name='FARL_3B'
+cutscene_dur=36166
 return
 
-:prepare_72
-force_weather_now {type} WeatherType.SunnySf
-set_area_visible {areaId} 1
-load_mission_text {tableName} 'STEAL1'
-cutscene_name='STEAL_1';
-return
-
+// 72 steal_1
 :prepare_73
-load_scene {x} -2031.0 {y} 149.0 {z} 29.0
-load_mission_text {tableName} 'STEAL2'
 set_area_visible {areaId} 1
-cutscene_name='STEAL_2';
+force_weather_now {type} WeatherType.SunnySf
+load_mission_text {tableName} 'STEAL1'
+load_scene -2057.070068 150.740005 27.837999
+cutscene_name='STEAL_1'
+cutscene_dur=48833
 return
 
+// 73 steal_2
 :prepare_74
-load_mission_text {tableName} 'STEAL4'
 set_area_visible {areaId} 1
+load_mission_text {tableName} 'STEAL2'
 load_scene {x} -2031.0 {y} 149.0 {z} 29.0
-cutscene_name='STEAL_4';
+cutscene_name='STEAL_2'
+cutscene_dur=23000
 return
 
+// 74 steal_4
 :prepare_75
+set_area_visible {areaId} 1
+load_mission_text {tableName} 'STEAL4'
+load_scene {x} -2031.0 {y} 149.0 {z} 29.0
+cutscene_name='STEAL_4'
+cutscene_dur=98265
+return
+
+// 75 steal_5
+:prepare_76
 set_area_visible {areaId} 1
 load_mission_text {tableName} 'STEAL5'
 load_scene {x} -2031.0 {y} 149.0 {z} 29.0
-cutscene_name='STEAL_5';
+cutscene_name='STEAL_5'
+cutscene_dur=56349
 return
 
-:prepare_76
-set_char_coordinates $3 {x} -2214.4363 {y} 123.9208 {z} 56.4219
-set_fading_colour {r} 0 {g} 0 {b} 0
-set_area_visible {areaId} 6
-load_mission_text {tableName} 'ZERO1'
-cutscene_name='ZERO_1';
-return
-
+// 76 zero_1
 :prepare_77
 set_area_visible {areaId} 6
-load_mission_text {tableName} 'ZERO2'
+load_mission_text {tableName} 'ZERO1'
+load_scene -2241.129883 127.357002 1034.420044
+set_char_coordinates $3 {x} -2214.4363 {y} 123.9208 {z} 56.4219
 set_fading_colour {r} 0 {g} 0 {b} 0
-force_weather_now {type} WeatherType.SunnySf
-cutscene_name='ZERO_2';
+cutscene_name='ZERO_1'
+cutscene_dur=91666
 return
 
+// 77 zero_2
 :prepare_78
 set_area_visible {areaId} 6
-load_mission_text {tableName} 'ZERO4'
-cutscene_name='ZERO_4';
-return
-
-:prepare_79
-clear_area {x} -694.4335 {y} 964.9288 {z} 11.2431 {radius} 100.0 {clearParticles} True
-load_mission_text {tableName} 'TORENO1'
-force_weather_now {type} WeatherType.SunnyCountryside
+force_weather_now {type} WeatherType.SunnySf
+load_mission_text {tableName} 'ZERO2'
+load_scene -2241.129883 127.357002 1034.417358
 set_fading_colour {r} 0 {g} 0 {b} 0
-cutscene_name='DESERT1';
+cutscene_name='ZERO_2'
+cutscene_dur=65833
 return
 
+// 78 zero_4
+:prepare_79
+set_area_visible {areaId} 6
+load_mission_text {tableName} 'ZERO4'
+load_scene -2241.129883 127.357002 1034.417358
+cutscene_name='ZERO_4'
+cutscene_dur=53333
+return
+
+// 79 desert1
 :prepare_80
-force_weather_now {type} WeatherType.ExtraSunnyVegas
-clear_area {x} -692.2 {y} 948.0 {z} 11.2 {radius} 100.0 {clearParticles} True
-load_mission_text {tableName} 'TORENO2'
-cutscene_name='DESERT2';
+clear_area {x} -694.4335 {y} 964.9288 {z} 11.2431 {radius} 100.0 {clearParticles} True
+force_weather_now {type} WeatherType.SunnyCountryside
+load_mission_text {tableName} 'TORENO1'
+load_scene -689.281006 930.515015 12.629300
+set_fading_colour {r} 0 {g} 0 {b} 0
+cutscene_name='DESERT1'
+cutscene_dur=25425
 return
 
+// 80 desert2
 :prepare_81
-load_mission_text {tableName} 'DSERT3'
-clear_area {x} -691.0 {y} 941.0 {z} 13.0 {radius} 10.0 {clearParticles} True
-cutscene_name='DESERT3';
+clear_area {x} -692.2 {y} 948.0 {z} 11.2 {radius} 100.0 {clearParticles} True
+force_weather_now {type} WeatherType.ExtraSunnyVegas
+load_mission_text {tableName} 'TORENO2'
+load_scene -689.281 930.515 12.629
+cutscene_name='DESERT2'
+cutscene_dur=128565
 return
 
+// 81 desert3
 :prepare_82
-load_mission_text {tableName} 'DSERT4'
+clear_area {x} -691.0 {y} 941.0 {z} 13.0 {radius} 10.0 {clearParticles} True
+load_mission_text {tableName} 'DSERT3'
+load_scene -689.281 930.515 12.629
+cutscene_name='DESERT3'
+cutscene_dur=118566
+return
+
+// 82 desert4
+:prepare_83
 clear_area {x} -688.1717 {y} 937.9888 {z} 12.6328 {radius} 10.0 {clearParticles} True
 force_weather_now {type} WeatherType.ExtraSunnyDesert
-cutscene_name='DESERT4';
+load_mission_text {tableName} 'DSERT4'
+load_scene -689.281 930.515 12.629
+cutscene_name='DESERT4'
+cutscene_dur=83333
 return
 
-:prepare_83
-load_mission_text {tableName} 'DSERT6'
-set_char_heading $3 {heading} 7.1386
-clear_area {x} 335.0 {y} 2529.0 {z} 16.0 {radius} 20.0 {clearParticles} True
-set_fading_colour {r} 0 {g} 0 {b} 0
-set_char_coordinates $3 {x} 384.4035 {y} 2449.3503 {z} 15.4921
-cutscene_name='DESERT6';
-return
-
+// 83 desert6
 :prepare_84
-set_char_coordinates $3 {x} 403.0466 {y} 2522.1899 {z} 15.4843
-clear_area_of_cars {leftBottomX} -120.5297 {leftBottomY} 2593.665 {leftBottomZ} 69.1939 {rightTopX} 502.5016 {rightTopY} 2365.4182 {rightTopZ} -1.2447
-load_scene_in_direction {x} 404.7372 {y} 2524.8567 {z} 15.5671 {heading} 300.0
-clear_area_of_chars {leftBottomX} -120.5297 {leftBottomY} 2593.665 {leftBottomZ} 69.1939 {rightTopX} 502.5016 {rightTopY} 2365.4182 {rightTopZ} -1.2447
+clear_area {x} 335.0 {y} 2529.0 {z} 16.0 {radius} 20.0 {clearParticles} True
+load_mission_text {tableName} 'DSERT6'
+load_scene 315.0 2533.0 15.7
+set_char_coordinates $3 {x} 384.4035 {y} 2449.3503 {z} 15.4921
+set_char_heading $3 {heading} 7.1386
 set_fading_colour {r} 0 {g} 0 {b} 0
-set_char_coordinates_no_offset $3 {x} 222.7755 {y} 2508.9717 {z} 15.5214
-load_mission_text {tableName} 'DSERT9'
-set_char_heading $3 {heading} 136.0
-cutscene_name='DESERT9';
+cutscene_name='DESERT6'
+cutscene_dur=73766
 return
 
+// 84 desert9
 :prepare_85
-clear_area {x} 405.2136 {y} 2525.9004 {z} 16.4918 {radius} 7.5 {clearParticles} False
-load_mission_text {tableName} 'DSERT8'
-force_weather_now {type} WeatherType.SunnyDesert
-cutscene_name='D8_ALT';
+clear_area_of_cars {leftBottomX} -120.5297 {leftBottomY} 2593.665 {leftBottomZ} 69.1939 {rightTopX} 502.5016 {rightTopY} 2365.4182 {rightTopZ} -1.2447
+clear_area_of_chars {leftBottomX} -120.5297 {leftBottomY} 2593.665 {leftBottomZ} 69.1939 {rightTopX} 502.5016 {rightTopY} 2365.4182 {rightTopZ} -1.2447
+load_mission_text {tableName} 'DSERT9'
+load_scene_in_direction {x} 404.7372 {y} 2524.8567 {z} 15.5671 {heading} 300.0
+set_char_coordinates $3 {x} 403.0466 {y} 2522.1899 {z} 15.4843
+set_char_coordinates_no_offset $3 {x} 222.7755 {y} 2508.9717 {z} 15.5214
+set_char_heading $3 {heading} 136.0
+set_fading_colour {r} 0 {g} 0 {b} 0
+cutscene_name='DESERT9'
+cutscene_dur=95000
 return
 
+// 85 d8_alt
 :prepare_86
-clear_area {x} 419.4488 {y} 2529.9143 {z} 15.6219 {radius} 0.5 {clearParticles} False
-set_char_heading $3 {heading} 180.0
-set_char_coordinates $3 {x} 419.4488 {y} 2529.9143 {z} 15.6219
-load_scene {x} 419.4488 {y} 2529.9143 {z} 15.6219
-cutscene_name='DESERT8';
-return
-
-:prepare_87
-force_weather_now {type} WeatherType.ExtraSunnyDesert
 clear_area {x} 405.2136 {y} 2525.9004 {z} 16.4918 {radius} 7.5 {clearParticles} False
-load_mission_text {tableName} 'DSERT10'
-cutscene_name='D10_ALT';
+force_weather_now {type} WeatherType.SunnyDesert
+load_mission_text {tableName} 'DSERT8'
+load_scene 339.987000 2449.080078 15.302000
+cutscene_name='D8_ALT'
+cutscene_dur=51333
 return
 
+// 86 desert8
+:prepare_87
+clear_area {x} 419.4488 {y} 2529.9143 {z} 15.6219 {radius} 0.5 {clearParticles} False
+load_scene {x} 419.4488 {y} 2529.9143 {z} 15.6219
+set_char_coordinates $3 {x} 419.4488 {y} 2529.9143 {z} 15.6219
+set_char_heading $3 {heading} 180.0
+cutscene_name='DESERT8'
+cutscene_dur=83333
+return
+
+// 87 d10_alt
 :prepare_88
-load_scene {x} 419.4488 {y} 2529.9143 {z} 15.6219
-set_char_coordinates $3 {x} 419.4488 {y} 2529.9143 {z} 15.6219
-set_char_heading $3 {heading} 180.0
-clear_area {x} 419.6919 {y} 2529.9143 {z} 16.6612 {radius} 6.86 {clearParticles} False
-cutscene_name='DES_10A';
+clear_area {x} 405.2136 {y} 2525.9004 {z} 16.4918 {radius} 7.5 {clearParticles} False
+force_weather_now {type} WeatherType.ExtraSunnyDesert
+load_mission_text {tableName} 'DSERT10'
+load_scene 404.292 2528.83 15.4
+cutscene_name='D10_ALT'
+cutscene_dur=64199
 return
 
+// 88 des_10a
 :prepare_89
+clear_area {x} 419.6919 {y} 2529.9143 {z} 16.6612 {radius} 6.86 {clearParticles} False
 load_scene {x} 419.4488 {y} 2529.9143 {z} 15.6219
 set_char_coordinates $3 {x} 419.4488 {y} 2529.9143 {z} 15.6219
 set_char_heading $3 {heading} 180.0
-clear_area {x} 398.7038 {y} 2529.7346 {z} 16.563 {radius} 7.35 {clearParticles} False
-cutscene_name='DES_10B';
+cutscene_name='DES_10A'
+cutscene_dur=67666
 return
 
+// 89 des_10b
 :prepare_90
+clear_area {x} 398.7038 {y} 2529.7346 {z} 16.563 {radius} 7.35 {clearParticles} False
+load_scene {x} 419.4488 {y} 2529.9143 {z} 15.6219
+set_char_coordinates $3 {x} 419.4488 {y} 2529.9143 {z} 15.6219
+set_char_heading $3 {heading} 180.0
+cutscene_name='DES_10B'
+cutscene_dur=33066
+return
+
+// 90 cas_1a
+:prepare_91
 set_area_visible {areaId} 11
 load_mission_text {tableName} 'CASINO1'
-cutscene_name='CAS_1A';
+load_scene 2006.589966 1021.059998 30.670000
+cutscene_name='CAS_1A'
+cutscene_dur=116166
 return
 
-:prepare_91
-load_mission_text {tableName} 'CASINO2'
-set_area_visible {areaId} 11
-set_fading_colour {r} 0 {g} 0 {b} 0
-cutscene_name='CAS_2';
-return
-
+// 91 cas_2
 :prepare_92
-set_char_coordinates $3 {x} 2027.3912 {y} 1008.0874 {z} 9.8203
 set_area_visible {areaId} 11
-set_char_heading $3 {heading} 297.1696
-load_mission_text {tableName} 'CASINO3'
-cutscene_name='CAS_3';
+load_mission_text {tableName} 'CASINO2'
+load_scene 2006.589966 1021.059998 30.673000
+set_fading_colour {r} 0 {g} 0 {b} 0
+cutscene_name='CAS_2'
+cutscene_dur=75000
 return
 
+// 92 cas_3
 :prepare_93
-load_mission_text {tableName} 'CASINO7'
 set_area_visible {areaId} 11
-cutscene_name='CAS_7B';
+load_mission_text {tableName} 'CASINO3'
+load_scene 2006.589966 1021.059998 30.673000
+set_char_coordinates $3 {x} 2027.3912 {y} 1008.0874 {z} 9.8203
+set_char_heading $3 {heading} 297.1696
+cutscene_name='CAS_3'
+cutscene_dur=72066
 return
 
+// 93 cas_7b
 :prepare_94
-set_char_heading $3 {heading} 265.5486
-load_mission_text {tableName} 'CASINO4'
+set_area_visible {areaId} 11
+load_mission_text {tableName} 'CASINO7'
+load_scene 2006.589966 1021.059998 30.670000
+cutscene_name='CAS_7B'
+cutscene_dur=33139
+return
+
+// 94 cas_4a
+:prepare_95
 clear_area {x} 2027.3585 {y} 1007.738 {z} 9.8127 {radius} 10.0 {clearParticles} True
 force_weather_now {type} WeatherType.SunnyVegas
-set_fading_colour {r} 0 {g} 0 {b} 0
-cutscene_name='CAS_4A';
-return
-
-:prepare_95
-clear_area {x} -738.0978 {y} 2391.5923 {z} 127.9015 {radius} 100.0 {clearParticles} True
+load_mission_text {tableName} 'CASINO4'
+load_scene 2027.400024 1003.219971 9.822000
 set_char_heading $3 {heading} 265.5486
-switch_widescreen {state} True
-force_weather_now {type} WeatherType.SunnyDesert
-set_char_coordinates $3 {x} 2062.0 {y} 1362.0 {z} 10.7
 set_fading_colour {r} 0 {g} 0 {b} 0
-cutscene_name='CAS_4B';
+cutscene_name='CAS_4A'
+cutscene_dur=56966
 return
 
+// 95 cas_4b
 :prepare_96
-set_char_heading $3 {heading} 269.249
-switch_widescreen {state} True
+clear_area {x} -738.0978 {y} 2391.5923 {z} 127.9015 {radius} 100.0 {clearParticles} True
+force_weather_now {type} WeatherType.SunnyDesert
+load_scene -735.000000 2442.000000 126.000000
+set_char_coordinates $3 {x} 2062.0 {y} 1362.0 {z} 10.7
+set_char_heading $3 {heading} 265.5486
 set_fading_colour {r} 0 {g} 0 {b} 0
+switch_widescreen {state} True
+cutscene_name='CAS_4B'
+cutscene_dur=87666
+return
+
+// 96 cas_4c
+:prepare_97
 set_area_visible {areaId} 2
 clear_area {x} -25.7433 {y} 2334.6292 {z} 23.1328 {radius} 100.0 {clearParticles} True
 force_weather_now {type} WeatherType.SunnyVegas
+load_scene 2186.399902 1627.439941 1042.420044
 set_char_coordinates $3 {x} 2187.0 {y} 1680.0 {z} 11.4
-cutscene_name='CAS_4C';
+set_char_heading $3 {heading} 269.249
+set_fading_colour {r} 0 {g} 0 {b} 0
+switch_widescreen {state} True
+cutscene_name='CAS_4C'
+cutscene_dur=94666
 return
 
-:prepare_97
-set_char_coordinates $3 {x} 2175.4116 {y} 1681.5483 {z} 9.8203
-load_mission_text {tableName} 'CASINO5'
-set_char_heading $3 {heading} 90.0
-set_area_visible {areaId} 2
-cutscene_name='CAS_5A';
-return
-
+// 97 cas_5a
 :prepare_98
-load_mission_text {tableName} 'CASINO6'
-set_char_heading $3 {heading} 108.0825
 set_area_visible {areaId} 2
-set_char_coordinates $3 {x} 2179.9343 {y} 1684.1483 {z} 10.0533
-cutscene_name='CAS_6A';
+load_mission_text {tableName} 'CASINO5'
+load_scene 2186.399902 1627.939941 1042.420044
+set_char_coordinates $3 {x} 2175.4116 {y} 1681.5483 {z} 9.8203
+set_char_heading $3 {heading} 90.0
+cutscene_name='CAS_5A'
+cutscene_dur=95000
 return
 
+// 98 cas_6a
 :prepare_99
-load_scene_in_direction {x} 2179.9343 {y} 1684.1483 {z} 10.0533 {heading} 108.0825
-set_char_coordinates_dont_warp_gang $3 {x} 963.7808 {y} 2165.3496 {z} 1010.0312
+set_area_visible {areaId} 2
+load_mission_text {tableName} 'CASINO6'
+load_scene 2186.399902 1627.439941 1042.420044
+set_char_coordinates $3 {x} 2179.9343 {y} 1684.1483 {z} 10.0533
+set_char_heading $3 {heading} 108.0825
+cutscene_name='CAS_6A'
+cutscene_dur=63666
+return
+
+// 99 cas6b_1
+:prepare_100
 set_area_visible {areaId} 1
 clear_area_of_chars {leftBottomX} 930.0 {leftBottomY} 2178.0 {leftBottomZ} 1008.0 {rightTopX} 964.0 {rightTopY} 2095.0 {rightTopZ} 1014.0
-cutscene_name='CAS6B_1';
+load_scene_in_direction {x} 2179.9343 {y} 1684.1483 {z} 10.0533 {heading} 108.0825
+set_char_coordinates_dont_warp_gang $3 {x} 963.7808 {y} 2165.3496 {z} 1010.0312
+cutscene_name='CAS6B_1'
+cutscene_dur=40299
 return
 
-:prepare_100
-cutscene_name='CAS6B_2';
-return
-
+// 100 cas6b_2
 :prepare_101
-set_char_coordinates $3 {x} 2175.4116 {y} 1681.5483 {z} 9.8203
-set_area_visible {areaId} 2
-set_char_heading $3 {heading} 90.0
-load_mission_text {tableName} 'CASINO9'
-cutscene_name='CAS_9A1';
+load_scene 943.937012 2113.550049 1010.020020
+cutscene_name='CAS6B_2'
+cutscene_dur=66266
 return
 
+// 101 cas_9a1
 :prepare_102
-cutscene_name='CAS_9A2';
+set_area_visible {areaId} 2
+load_mission_text {tableName} 'CASINO9'
+load_scene 2186.399902 1627.439941 1042.420044
+set_char_coordinates $3 {x} 2175.4116 {y} 1681.5483 {z} 9.8203
+set_char_heading $3 {heading} 90.0
+cutscene_name='CAS_9A1'
+cutscene_dur=44833
 return
 
+// 102 cas_9a2
 :prepare_103
+load_scene 2186.399902 1627.439941 1042.420044
+cutscene_name='CAS_9A2'
+cutscene_dur=56033
+return
+
+// 103 cas_11a
+:prepare_104
+set_area_visible {areaId} 2
+clear_area {x} 2163.5891 {y} 1682.2469 {z} 9.86 {radius} 1.0 {clearParticles} True
 load_mission_text {tableName} 'CASIN10'
+load_scene 2186.399902 1627.439941 1042.420044
+set_char_coordinates $3 {x} 2163.5891 {y} 1682.2469 {z} 9.86
 set_char_heading $3 {heading} 80.0
 set_current_char_weapon $3 {weaponType} WeaponType.Unarmed
-set_char_coordinates $3 {x} 2163.5891 {y} 1682.2469 {z} 9.86
-clear_area {x} 2163.5891 {y} 1682.2469 {z} 9.86 {radius} 1.0 {clearParticles} True
-set_area_visible {areaId} 2
-cutscene_name='CAS_11A';
+cutscene_name='CAS_11A'
+cutscene_dur=64833
 return
 
-:prepare_104
-load_mission_text {tableName} 'VCR1'
-force_weather_now {type} WeatherType.ExtraSunnyVegas
-cutscene_name='CRASHV1';
-return
-
+// 104 crashv1
 :prepare_105
-force_weather_now {type} WeatherType.ExtraSunnyDesert
-load_mission_text {tableName} 'VCR2'
-clear_area {x} -359.5421 {y} 2225.5249 {z} 42.4562 {radius} 30.9 {clearParticles} False
-cutscene_name='CRASV2A';
+force_weather_now {type} WeatherType.ExtraSunnyVegas
+load_mission_text {tableName} 'VCR1'
+load_scene 1661.380005 2653.000000 9.830000
+cutscene_name='CRASHV1'
+cutscene_dur=94366
 return
 
+// 105 crasv2a
 :prepare_106
 clear_area {x} -359.5421 {y} 2225.5249 {z} 42.4562 {radius} 30.9 {clearParticles} False
 force_weather_now {type} WeatherType.ExtraSunnyDesert
-cutscene_name='CRASV2B';
+load_mission_text {tableName} 'VCR2'
+load_scene -378.535004 2239.679932 41.487000
+cutscene_name='CRASV2A'
+cutscene_dur=63266
 return
 
+// 106 crasv2b
 :prepare_107
-set_fading_colour {r} 0 {g} 0 {b} 0
-load_mission_text {tableName} 'DOC2'
-clear_area {x} 2159.8992 {y} 1443.0424 {z} 9.8203 {radius} 40.0 {clearParticles} True
-cutscene_name='DOC_2';
+clear_area {x} -359.5421 {y} 2225.5249 {z} 42.4562 {radius} 30.9 {clearParticles} False
+force_weather_now {type} WeatherType.ExtraSunnyDesert
+load_scene -378.535004 2239.679932 41.487000
+cutscene_name='CRASV2B'
+cutscene_dur=30666
 return
 
+// 107 doc_2
 :prepare_108
-force_weather_now {type} WeatherType.RainyCountryside
-set_char_coordinates $3 {x} 2026.2247 {y} 1007.4234 {z} 9.8203
-set_time_of_day {hours} 0 {minutes} 0
-set_area_visible {areaId} 10
-load_mission_text {tableName} 'HEIST1'
-set_char_heading $3 {heading} 307.0
-cutscene_name='HEIST1A';
-return
-
-:prepare_109
+clear_area {x} 2159.8992 {y} 1443.0424 {z} 9.8203 {radius} 40.0 {clearParticles} True
+load_mission_text {tableName} 'DOC2'
+load_scene 2137.179932 1443.229980 9.822000
 set_fading_colour {r} 0 {g} 0 {b} 0
-force_weather_now {type} WeatherType.SunnyVegas
-set_area_visible {areaId} 10
-load_mission_text {tableName} 'HEIST3'
-cutscene_name='HEIST2A';
+cutscene_name='DOC_2'
+cutscene_dur=78865
 return
 
+// 108 heist1a
+:prepare_109
+set_area_visible {areaId} 10
+force_weather_now {type} WeatherType.RainyCountryside
+load_mission_text {tableName} 'HEIST1'
+load_scene 1890.540039 1019.080017 30.983999
+set_char_coordinates $3 {x} 2026.2247 {y} 1007.4234 {z} 9.8203
+set_char_heading $3 {heading} 307.0
+set_time_of_day {hours} 0 {minutes} 0
+cutscene_name='HEIST1A'
+cutscene_dur=50000
+return
+
+// 109 heist2a
 :prepare_110
 set_area_visible {areaId} 10
-load_mission_text {tableName} 'HEIST2'
 force_weather_now {type} WeatherType.SunnyVegas
+load_mission_text {tableName} 'HEIST3'
+load_scene 1890.540039 1019.080017 30.983999
 set_fading_colour {r} 0 {g} 0 {b} 0
-cutscene_name='HEIST4A';
+cutscene_name='HEIST2A'
+cutscene_dur=68333
 return
 
+// 110 heist4a
 :prepare_111
-set_char_heading $3 {heading} 288.0
-load_mission_text {tableName} 'HEIST4'
 set_area_visible {areaId} 10
-set_char_coordinates $3 {x} 2033.9742 {y} 1017.2899 {z} 9.8203
-cutscene_name='HEIST5A';
+force_weather_now {type} WeatherType.SunnyVegas
+load_mission_text {tableName} 'HEIST2'
+load_scene 1890.540039 1019.080017 30.983999
+set_fading_colour {r} 0 {g} 0 {b} 0
+cutscene_name='HEIST4A'
+cutscene_dur=52000
 return
 
+// 111 heist5a
 :prepare_112
-set_char_coordinates $3 {x} 2030.108 {y} 1007.929 {z} 9.852
+set_area_visible {areaId} 10
+load_mission_text {tableName} 'HEIST4'
+load_scene 1890.540039 1019.080017 30.983999
+set_char_coordinates $3 {x} 2033.9742 {y} 1017.2899 {z} 9.8203
+set_char_heading $3 {heading} 288.0
+cutscene_name='HEIST5A'
+cutscene_dur=36666
+return
+
+// 112 heist6a
+:prepare_113
 set_area_visible {areaId} 10
 clear_area {x} 2030.108 {y} 1007.929 {z} 9.852 {radius} 1.0 {clearParticles} False
-set_char_heading $3 {heading} 270.0
 load_mission_text {tableName} 'HEIST5'
-cutscene_name='HEIST6A';
+load_scene 1890.540039 1019.080017 30.983999
+set_char_coordinates $3 {x} 2030.108 {y} 1007.929 {z} 9.852
+set_char_heading $3 {heading} 270.0
+cutscene_name='HEIST6A'
+cutscene_dur=54000
 return
 
-:prepare_113
-set_char_heading $3 {heading} 278.4092
+// 113 heist8a
+:prepare_114
+set_area_visible {areaId} 0
+clear_area {x} 1908.4333 {y} 957.3687 {z} 9.8203 {radius} 40.0 {clearParticles} True
 load_mission_text {tableName} 'HEIST9'
 load_scene {x} 2028.9316 {y} 1023.2923 {z} 9.813
-set_fading_colour {r} 0 {g} 0 {b} 0
-set_area_visible {areaId} 0
 set_char_coordinates_dont_warp_gang $3 {x} 2028.9316 {y} 1023.2923 {z} 9.813
-clear_area {x} 1908.4333 {y} 957.3687 {z} 9.8203 {radius} 40.0 {clearParticles} True
-cutscene_name='HEIST8A';
-return
-
-:prepare_114
-set_char_heading $3 {heading} 90.0
-load_mission_text {tableName} 'MAN_1'
-set_area_visible {areaId} 11
-set_char_coordinates $3 {x} 2175.4116 {y} 1681.5483 {z} 9.8203
-cutscene_name='BHILL1';
-return
-
-:prepare_115
-load_scene_in_direction {x} -1439.5457 {y} 489.3506 {z} 3.8546 {heading} 300.0
-set_area_visible {areaId} 5
-clear_area {x} -1403.1462 {y} 509.5356 {z} 17.2266 {radius} 1.0 {clearParticles} False
-set_time_of_day {hours} 20 {minutes} 0
-set_char_coordinates $3 {x} -1403.1462 {y} 509.5356 {z} 17.2266
-force_weather_now {type} WeatherType.SunnySf
-set_char_heading $3 {heading} 78.0
-load_mission_text {tableName} 'MAN_2'
+set_char_heading $3 {heading} 278.4092
 set_fading_colour {r} 0 {g} 0 {b} 0
-switch_widescreen {state} False
-cutscene_name='BHILL2';
+cutscene_name='HEIST8A'
+cutscene_dur=13933
 return
 
+// 114 bhill1
+:prepare_115
+set_area_visible {areaId} 11
+load_mission_text {tableName} 'MAN_1'
+load_scene 2006.589966 1021.059998 30.673000
+set_char_coordinates $3 {x} 2175.4116 {y} 1681.5483 {z} 9.8203
+set_char_heading $3 {heading} 90.0
+cutscene_name='BHILL1'
+cutscene_dur=160000
+return
+
+// 115 bhill2
 :prepare_116
 set_area_visible {areaId} 5
-load_mission_text {tableName} 'MAN_3'
-force_weather_now {type} WeatherType.SunnyLa
+clear_area {x} -1403.1462 {y} 509.5356 {z} 17.2266 {radius} 1.0 {clearParticles} False
+force_weather_now {type} WeatherType.SunnySf
+load_mission_text {tableName} 'MAN_2'
+load_scene_in_direction {x} -1439.5457 {y} 489.3506 {z} 3.8546 {heading} 300.0
+set_char_coordinates $3 {x} -1403.1462 {y} 509.5356 {z} 17.2266
+set_char_heading $3 {heading} 78.0
 set_fading_colour {r} 0 {g} 0 {b} 0
-cutscene_name='BHILL3A';
+set_time_of_day {hours} 20 {minutes} 0
+switch_widescreen {state} False
+cutscene_name='BHILL2'
+cutscene_dur=89599
 return
 
+// 116 bhill3a
 :prepare_117
+set_area_visible {areaId} 5
+force_weather_now {type} WeatherType.SunnyLa
+load_mission_text {tableName} 'MAN_3'
+load_scene 1260.239990 -805.786987 1083.010010
+set_fading_colour {r} 0 {g} 0 {b} 0
+cutscene_name='BHILL3A'
+cutscene_dur=70000
+return
+
+// 117 bhill3b
+:prepare_118
 set_area_visible {areaId} 0
 clear_area {x} 1542.7299 {y} -1675.6971 {z} 12.5551 {radius} 60.0 {clearParticles} True
 load_scene_in_direction {x} 1251.5413 {y} -808.7633 {z} 83.1484 {heading} 109.0044
 set_char_coordinates $3 {x} 1251.5413 {y} -808.7633 {z} 83.1484
 set_char_heading $3 {heading} 109.0044
 set_fading_colour {r} 0 {g} 0 {b} 0
-cutscene_name='BHILL3B';
+cutscene_name='BHILL3B'
+cutscene_dur=74466
 return
 
-:prepare_118
+// 118 bhill3c
+:prepare_119
 clear_area {x} 2492.8887 {y} -1666.564 {z} 12.3438 {radius} 60.0 {clearParticles} True
 load_scene_in_direction {x} 1521.1943 {y} -1671.9128 {z} 12.5625 {heading} 0.0
 set_fading_colour {r} 0 {g} 0 {b} 0
-cutscene_name='BHILL3C';
+cutscene_name='BHILL3C'
+cutscene_dur=25666
 return
 
-:prepare_119
-load_mission_text {tableName} 'MAN_5'
-set_area_visible {areaId} 5
-cutscene_name='BHILL5A';
-return
-
+// 119 bhill5a
 :prepare_120
-clear_area_of_cars {leftBottomX} 1071.5037 {leftBottomY} -1195.5579 {leftBottomZ} 18.6451 {rightTopX} 1044.9419 {rightTopY} -1242.4774 {rightTopZ} 14.9051
-set_char_coordinates $3 {x} 828.7999 {y} -2036.7567 {z} 11.8672
-force_weather_now {type} WeatherType.ExtraSunnyLa
-set_area_visible {areaId} 3
-clear_area {x} -12.3019 {y} -1108.9266 {z} 6.837 {radius} 500.0 {clearParticles} True
-load_scene {x} 1252.4712 {y} -805.5187 {z} 83.1484
-switch_widescreen {state} True
-set_char_heading $3 {heading} 129.8786
-cutscene_name='BHILL5B';
+set_area_visible {areaId} 5
+load_mission_text {tableName} 'MAN_5'
+load_scene 1260.239990 -805.786987 1083.010010
+cutscene_name='BHILL5A'
+cutscene_dur=75000
 return
 
+// 120 bhill5b
 :prepare_121
 set_area_visible {areaId} 3
-load_mission_text {tableName} 'GROVE1'
-cutscene_name='GROVE1A';
+clear_area {x} -12.3019 {y} -1108.9266 {z} 6.837 {radius} 500.0 {clearParticles} True
+clear_area_of_cars {leftBottomX} 1071.5037 {leftBottomY} -1195.5579 {leftBottomZ} 18.6451 {rightTopX} 1044.9419 {rightTopY} -1242.4774 {rightTopZ} 14.9051
+force_weather_now {type} WeatherType.ExtraSunnyLa
+load_scene {x} 1252.4712 {y} -805.5187 {z} 83.1484
+set_char_coordinates $3 {x} 828.7999 {y} -2036.7567 {z} 11.8672
+set_char_heading $3 {heading} 129.8786
+switch_widescreen {state} True
+cutscene_name='BHILL5B'
+cutscene_dur=63766
 return
 
+// 121 grove1a
 :prepare_122
-switch_widescreen {state} False
-set_fading_colour {r} 0 {g} 0 {b} 0
-load_scene {x} 2497.324 {y} -1684.744 {z} 12.44
-set_char_heading $3 {heading} 270.0
-set_char_coordinates $3 {x} 2294.323 {y} -1797.048 {z} 12.586
-clear_area {x} 2299.2429 {y} -1784.5649 {z} 12.591 {radius} 3.0 {clearParticles} False
 set_area_visible {areaId} 3
-cutscene_name='GROVE1B';
+load_mission_text {tableName} 'GROVE1'
+load_scene 2496.729980 -1691.670044 1013.760010
+cutscene_name='GROVE1A'
+cutscene_dur=70000
 return
 
+// 122 grove1b
 :prepare_123
-set_char_heading $3 {heading} 56.5
-load_scene {x} 2038.184 {y} -1143.772 {z} 23.455
+set_area_visible {areaId} 3
+clear_area {x} 2299.2429 {y} -1784.5649 {z} 12.591 {radius} 3.0 {clearParticles} False
+load_scene {x} 2497.324 {y} -1684.744 {z} 12.44
+set_char_coordinates $3 {x} 2294.323 {y} -1797.048 {z} 12.586
+set_char_heading $3 {heading} 270.0
 set_fading_colour {r} 0 {g} 0 {b} 0
 switch_widescreen {state} False
-load_scene_in_direction {x} 1994.668 {y} -1119.022 {z} 25.813 {heading} 56.5
-clear_area {x} 2014.7679 {y} -1111.447 {z} 25.235 {radius} 2.0 {clearParticles} False
-set_area_visible {areaId} 2
-set_char_coordinates $3 {x} 1044.8799 {y} -1334.3197 {z} 12.55
-cutscene_name='GROVE1C';
+cutscene_name='GROVE1B'
+cutscene_dur=56000
 return
 
+// 123 grove1c
 :prepare_124
+set_area_visible {areaId} 2
+clear_area {x} 2014.7679 {y} -1111.447 {z} 25.235 {radius} 2.0 {clearParticles} False
+load_scene {x} 2038.184 {y} -1143.772 {z} 23.455
+load_scene_in_direction {x} 1994.668 {y} -1119.022 {z} 25.813 {heading} 56.5
+set_char_coordinates $3 {x} 1044.8799 {y} -1334.3197 {z} 12.55
+set_char_heading $3 {heading} 56.5
 set_fading_colour {r} 0 {g} 0 {b} 0
-force_weather_now {type} WeatherType.SunnyLa
-set_area_visible {areaId} 1
-load_mission_text {tableName} 'GROVE2'
-cutscene_name='GROVE2';
+switch_widescreen {state} False
+cutscene_name='GROVE1C'
+cutscene_dur=57400
 return
 
+// 124 grove2
 :prepare_125
-load_mission_text {tableName} 'RIOT1'
-set_area_visible {areaId} 5
-cutscene_name='RIOT_1A';
-return
-
-:prepare_126
-cutscene_name='RIOT_1B';
-return
-
-:prepare_127
-load_mission_text {tableName} 'RIOT2'
 set_area_visible {areaId} 1
-cutscene_name='RIOT_2';
+force_weather_now {type} WeatherType.SunnyLa
+load_mission_text {tableName} 'GROVE2'
+load_scene 2523.750000 -1680.219971 1014.500000
+set_fading_colour {r} 0 {g} 0 {b} 0
+cutscene_name='GROVE2'
+cutscene_dur=76666
 return
 
+// 125 riot_1a
+:prepare_126
+set_area_visible {areaId} 5
+load_mission_text {tableName} 'RIOT1'
+load_scene 1260.239990 -805.786987 1083.010010
+cutscene_name='RIOT_1A'
+cutscene_dur=46500
+return
+
+// 126 riot_1b
+:prepare_127
+load_scene 1260.239990 -805.786987 1083.010010
+cutscene_name='RIOT_1B'
+cutscene_dur=52866
+return
+
+// 127 riot_2
 :prepare_128
 set_area_visible {areaId} 1
-load_mission_text {tableName} 'RIOT4'
-cutscene_name='RIOT_4A';
+load_mission_text {tableName} 'RIOT2'
+load_scene 2523.750000 -1680.219971 1014.500000
+cutscene_name='RIOT_2'
+cutscene_dur=86400
 return
 
+// 128 riot_4a
 :prepare_129
-set_char_coordinates $3 {x} 2514.7451 {y} -1673.838 {z} 12.8
-clear_area {x} 2536.709 {y} -1278.2531 {z} 100.0 {radius} 100.0 {clearParticles} True
-set_time_of_day {hours} 21 {minutes} 30
-set_area_visible {areaId} 0
-set_fading_colour {r} 0 {g} 0 {b} 0
-load_scene {x} 2511.75 {y} -1672.15 {z} 14.0
-switch_widescreen {state} False
-set_char_heading $3 {heading} 60.891
-cutscene_name='RIOT_4B';
+set_area_visible {areaId} 1
+load_mission_text {tableName} 'RIOT4'
+load_scene 2523.750000 -1680.219971 1014.500000
+cutscene_name='RIOT_4A'
+cutscene_dur=10000
 return
 
+// 129 riot_4b
 :prepare_130
-set_char_coordinates $3 {x} 2525.0786 {y} -1301.891 {z} 1047.2969
-clear_area {x} 2578.0 {y} -1306.0 {z} 200.0 {radius} 200.0 {clearParticles} True
-set_area_visible {areaId} 2
+set_area_visible {areaId} 0
+clear_area {x} 2536.709 {y} -1278.2531 {z} 100.0 {radius} 100.0 {clearParticles} True
+load_scene {x} 2511.75 {y} -1672.15 {z} 14.0
+set_char_coordinates $3 {x} 2514.7451 {y} -1673.838 {z} 12.8
+set_char_heading $3 {heading} 60.891
 set_fading_colour {r} 0 {g} 0 {b} 0
-load_scene {x} 2541.8101 {y} -1311.3199 {z} 1028.22
+set_time_of_day {hours} 21 {minutes} 30
 switch_widescreen {state} False
-set_char_heading $3 {heading} 0.0
-cutscene_name='RIOT_4C';
+cutscene_name='RIOT_4B'
+cutscene_dur=45333
 return
 
+// 130 riot_4c
 :prepare_131
 set_area_visible {areaId} 2
-load_mission_text {tableName} 'RIOT4'
+clear_area {x} 2578.0 {y} -1306.0 {z} 200.0 {radius} 200.0 {clearParticles} True
+load_scene {x} 2541.8101 {y} -1311.3199 {z} 1028.22
+set_char_coordinates $3 {x} 2525.0786 {y} -1301.891 {z} 1047.2969
+set_char_heading $3 {heading} 0.0
 set_fading_colour {r} 0 {g} 0 {b} 0
 switch_widescreen {state} False
-cutscene_name='RIOT_4D';
+cutscene_name='RIOT_4C'
+cutscene_dur=69699
 return
 
+// 131 riot_4d
 :prepare_132
+set_area_visible {areaId} 2
+load_mission_text {tableName} 'RIOT4'
+load_scene 2551.909912 -1293.630005 1069.760010
+set_fading_colour {r} 0 {g} 0 {b} 0
+switch_widescreen {state} False
+cutscene_name='RIOT_4D'
+cutscene_dur=139666
+return
+
+// 132 riot4e1
+:prepare_133
 clear_area {x} 2453.8613 {y} -1651.519 {z} 11.6415 {radius} 100.0 {clearParticles} True
-set_time_of_day {hours} 17 {minutes} 0
+load_mission_text {tableName} 'RIOT4'
 load_scene_in_direction {x} 2445.6399 {y} -1650.53 {z} 14.63 {heading} 0.0
 set_char_coordinates $3 {x} 2422.97 {y} -1607.87 {z} 25.55
 set_char_heading $3 {heading} 144.159
-load_mission_text {tableName} 'RIOT4'
 set_fading_colour {r} 0 {g} 0 {b} 0
+set_time_of_day {hours} 17 {minutes} 0
 switch_widescreen {state} True
-cutscene_name='RIOT4E1';
+cutscene_name='RIOT4E1'
+cutscene_dur=60933
 return
 
-:prepare_133
-cutscene_name='RIOT4E2';
-return
-
+// 133 riot4e2
 :prepare_134
-set_area_visible {areaId} 3
-set_fading_colour {r} 0 {g} 0 {b} 0
-cutscene_name='EPILOG';
+load_scene 2474.149902 -1644.359985 12.595000
+cutscene_name='RIOT4E2'
+cutscene_dur=84433
 return
 
+// 134 epilog
 :prepare_135
-switch_widescreen {state} False
-set_extra_colours {color} 4 {fade} False
-set_area_visible {areaId} 0
-cutscene_name='DATE1A';
+set_area_visible {areaId} 3
+load_scene 2497.229980 -1691.670044 1013.760010
+set_fading_colour {r} 0 {g} 0 {b} 0
+cutscene_name='EPILOG'
+cutscene_dur=64666
 return
 
+// 135 date1a
 :prepare_136
-cutscene_name='DATE1B';
+set_area_visible 10 //! Broken scene??
+load_scene 367.891 -67.591 1002.52
+cutscene_name='DATE1A'
+cutscene_dur=12000
 return
 
+// 136 date1b
 :prepare_137
-set_extra_colours {color} 4 {fade} False
-cutscene_name='DATE5A';
+set_area_visible 5 // !
+load_scene 370.0 -125.0 1001.52
+cutscene_name='DATE1B'
+cutscene_dur=15000
 return
 
+// 137 date5a
 :prepare_138
-cutscene_name='DATE5B';
+set_area_visible 6 //??
+load_scene 441.871 -60.839 1000.67
+cutscene_name='DATE5A'
+cutscene_dur=16662
 return
 
+// 138 date5b
 :prepare_139
-set_extra_colours {color} 4 {fade} False
-cutscene_name='DATE5A';
+set_area_visible 6 //!
+load_scene 441.871 -60.839 1000.67
+cutscene_name='DATE5B'
+cutscene_dur=14662
 return
 
+// 139 date2a
 :prepare_140
-cutscene_name='DATE5B';
+set_area_visible 9 //???
+load_scene 374.478 -8.415 1002.86
+cutscene_name='DATE2A'
+cutscene_dur=12000
 return
 
+// 140 date2b
 :prepare_141
-set_extra_colours {color} 4 {fade} False
-cutscene_name='DATE2A';
+set_area_visible 9 //!
+load_scene 374.478 -8.415 1002.86
+cutscene_name='DATE2B'
+cutscene_dur=15000
 return
 
+// 141 date6a
 :prepare_142
-cutscene_name='DATE2B';
+set_area_visible 3 //??? broken scene??
+load_scene 508.662 -17.811 1000.65
+cutscene_name='DATE6A'
+cutscene_dur=14000
 return
 
+// 142 date6b
 :prepare_143
+set_area_visible 17 //!
+load_scene 498.536 -18.2 1000.65
 set_extra_colours {color} 4 {fade} False
-cutscene_name='DATE1A';
+switch_widescreen {state} False
+cutscene_name='DATE6B'
+cutscene_dur=16662
 return
 
+// 143 date3a
 :prepare_144
-cutscene_name='DATE1B';
+set_area_visible 4
+load_scene 449.41 -86.83 1000.53
+cutscene_name='DATE3A'
+cutscene_dur=12000
 return
 
+// 144 date3b
 :prepare_145
-set_extra_colours {color} 5 {fade} False
-cutscene_name='DATE6A';
+set_area_visible 4 //!
+load_scene 449.41 -86.83 1000.53
+cutscene_name='DATE3B'
+cutscene_dur=15000
 return
 
+// 145 date4a
 :prepare_146
-cutscene_name='DATE6B';
+set_area_visible 5 // !
+load_scene 449.41 -108.24 1000.53
+cutscene_name='DATE4A'
+cutscene_dur=12000
 return
 
+// 146 date4b
 :prepare_147
-set_extra_colours {color} 6 {fade} False
-cutscene_name='DATE6A';
+set_area_visible 5 //!
+load_scene 449.41 -108.24 1000.53
+cutscene_name='DATE4B'
+cutscene_dur=15000
 return
 
+// 147 cuttest
 :prepare_148
-cutscene_name='DATE6B';
+load_scene 0.000000 0.000000 50.000000
+cutscene_name='CUTTEST'
+cutscene_dur=16666
 return
 
-:prepare_149
-set_extra_colours {color} 4 {fade} False
-cutscene_name='DATE3A';
-return
-
-:prepare_150
-cutscene_name='DATE3B';
-return
-
-:prepare_151
-set_extra_colours {color} 4 {fade} False
-cutscene_name='DATE3A';
-return
-
-:prepare_152
-cutscene_name='DATE3B';
-return
-
-:prepare_153
-set_extra_colours {color} 4 {fade} False
-cutscene_name='DATE4A';
-return
-
-:prepare_154
-cutscene_name='DATE4B';
-return
-
-:prepare_155
-set_extra_colours {color} 4 {fade} False
-cutscene_name='DATE6A';
-return
-
-:prepare_156
-cutscene_name='DATE6B';
-return
-
-// make future compilers happy
-terminate_this_custom_script
