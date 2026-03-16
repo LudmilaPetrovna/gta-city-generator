@@ -7,9 +7,6 @@ int cutscene_id=0
 int cutscene_dur=0
 string cutscene_name=''
 
-int ba=70
-
-
 :init
 use_text_commands True
 clear_prints 
@@ -18,19 +15,15 @@ set_text_colour 255 255 255 255
 add_text_label 'CTVID' {text} "Cutscene ID: ~1~, duration: ~1~"
 add_text_label 'CTVCT' {text} "Cutscene time: ~1~"
 add_text_label 'CTVSN' {text} "Cutscene name: ???"
-add_text_label 'CTVSN2' {text} "JUST TEXT"
-
+add_text_label 'CTVHLP' {text} "Press F4 to view random cutscene"
 
 :ready
 wait 0
 
-display_nth_onscreen_counter_with_string ba CounterDisplay.Bar 1 'CTVSN2'
-
 while not Pad.IsKeyPressed(KeyCode.F4)
-    wait 100
+    DISPLAY_TEXT 10.0 50.0 'CTVHLP'
+    wait 0
 end
-
-
 
 // MAX VALUE NOT INCLUDED!!! Use 0 148 to get range 0..147
 cutscene_id=generate_random_int_in_range 0 148
@@ -62,16 +55,14 @@ set_fading_colour 0 0 0
 00BB: print {key} 'GUNS123' {time} 5000 {flag} 1
 
 02E7: start_cutscene
-while not Cutscene.HasFinished()
 
+while not Cutscene.HasFinished()
+wait 0
 get_cutscene_time curtime
 DISPLAY_TEXT_WITH_2_NUMBERS {leftTopX} 10.0 {leftTopY} 50.0 {key} 'CTVID' {value} cutscene_id cutscene_dur
 display_text_WITH_NUMBER {leftTopX} 10.0 {leftTopY} 60.0 {key} 'CTVCT' {value} curtime
 display_text 10.0 70.0 'CTVSN'
-display_text 10.0 170.0 'GF_0017'
 
-//display_onscreen_counter_with_string ba CounterDisplay.Bar 'CTVSN'
-wait 0
 
 //02E9:   has_cutscene_finished 
 //056A:   was_cutscene_skipped
