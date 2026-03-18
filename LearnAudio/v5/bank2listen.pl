@@ -1,0 +1,71 @@
+use File::Slurp;
+use Data::Dumper;
+use File::Path qw(make_path remove_tree);
+
+
+$audio_root='/dev/shm/t/gta/Grand Theft Auto - San Andreas/audio';
+%to_listen=();
+$prefix="listen_bank-ambient-";
+$speed=2;
+$tmpdir='tmp'; # for resampling
+
+$banks_text=<<BANKS;
+
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41
+42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80
+81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114
+115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143
+144 145 146
+
+BANKS
+
+
+map{$to_listen{$_}++}split(/\D+/s,$banks_text);
+
+$cur_package="";
+$cur_bank=-1;
+make_path($tmpdir);
+open(dd,"sounds.txt") or die "Can't open list: $!";
+while(<dd>){
+@p=split(/\t\|/,$_);
+if(!exists $to_listen{$p[0]}){next;}
+($bank_id,$package_name,$bank_offset,$bank_size,$buffer_offset,$buffer_len,$loop_offset,$sample_rate,$headroom,$ourfilename,$modloader,$sound_id)=@p;
+
+if($cur_bank!=$bank_id){
+$cur_bank=$bank_id;
+close(oo);
+open(oo,"|ffmpeg -v 0 -f s16le -ar 48000 -ac 1 -i - -af atempo=$speed -acodec libmp3lame -b:a 64k -y ${prefix}${bank_id}.mp3");
+print "Opening new bank: ${prefix}${bank_id}.mp3\n";
+}
+
+if($cur_package ne $package_name){
+close(ii);
+open(ii,$audio_root.'/SFX/'.$package_name) or die $!;
+binmode(ii);
+}
+
+seek(ii,$buffer_offset,0);
+if(read(ii,$buf,$buffer_len)!=$buffer_len){
+die "Can't read sound pcm";
+}
+print "converting $ourfilename\n";
+$tmp2=$tmpdir.'/tmp-resample-'.rand().'.pcm';
+open(tt,"|ffmpeg -v 0 -f s16le -ac 1 -ar $sample_rate -i - -f s16le -ar 48000 -ac 1 -y \"$tmp2\"");
+print tt $buf;
+close(tt);
+$buf=read_file($tmp2);
+$buf_size=length($buf);
+$buf_samples=length($buf)/2;
+unlink($tmp2);
+if($buf_size&1){die "Buffer size must be 16 bit aligned!";}
+if($buf_size<100){die "file too short!";}
+print oo $buf;
+
+#todo: add cue/srt
+
+}
+
+close(dd);
+
+
+
