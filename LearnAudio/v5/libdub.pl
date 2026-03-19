@@ -7,16 +7,18 @@ use Data::Dumper;
 
 binmode(STDOUT,":utf8");
 
-my $src_lang="en";
+my $src_lang="es";
 
 
 
-my($status,$debug,$join)=calc_status('atlas-0');
+my($status,$debug,$join)=calc_status('atlas_spa_0');
 
 # cut out wavs and flacs
-open(ii,"ffmpeg -v 0 -nostdin -i atlas-0-ru-live.mp3 -ar 48000 -ac 1 -f s16le -|");
+open(ii,"ffmpeg -v 0 -nostdin -i atlas_spa_0-ru.mp3 -ar 48000 -ac 1 -f s16le -|");
+#open(ii,"ffmpeg -v 0 -nostdin -i atlas-0-ru-live.mp3 -ar 48000 -ac 1 -f s16le -|");
 my $cursamplepos=0;
 my $cuts=[];
+my $is_first=1;
 foreach(keys %{$join}){
 my($st,$en,$eng,$rus)=@{$join->{$_}};
 push(@{$cuts},[$_,$st,$en]);
@@ -43,10 +45,44 @@ print "we now at $cursamplepos\n";
 $len*=2;
 if(read(ii,$buf,$len)!=$len){die "Can't read $len usable bytes!";}
 
-print "opening out\n";
-open(oo,"|ffmpeg -v 0 -f s16le -ar 48000 -ac 1 -i - -y $outname");
+my $pcmname=$outname;
+$pcmname=~s/\.flac/.pcm/s;
+write_file($pcmname,$buf);
+
+my $pcmname2=$outname;
+$pcmname2=~s/\.flac/.wav/s;
+open(oo,"|ffmpeg -v 0 -f s16le -ar 48000 -ac 1 -i - -y $pcmname2");
 print oo $buf;
 close(oo);
+
+
+my($total_samples,$leading_zeros,$trailing_zeros,$first_nonzero,$useful_length,$silence_flag)=split(/\s/s,`./calc_duration "$pcmname"`);
+print "anal ($total_samples,$leading_zeros,$trailing_zeros,$first_nonzero,$useful_length,$silence_flag)\n";
+if(($leading_zeros<50 && !$is_first) || $trailing_zeros<50){
+print STDERR "$pcmname: File may be trimmed!";
+next;
+die "$pcmname: File may be trimmed!";
+}
+if($silence_flag){
+print STDERR "$pcmname: Too much silence inside file!";
+next;
+}
+
+if($useful_length<24000){
+print STDERR "$pcmname: File too short!";
+next;
+}
+
+unlink($pcmname);
+unlink($pcmname2);
+
+print "opening out\n";
+open(oo,"|ffmpeg -v 0 -f s16le -ar 48000 -ac 1 -i - -y $outname");
+print oo substr($buf,$leading_zeros*2,$useful_length*2);
+close(oo);
+
+$is_first=0;
+
 }
 close(ii);
 
