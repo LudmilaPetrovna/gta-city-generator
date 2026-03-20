@@ -1,3 +1,5 @@
+$flac_repo='flac_repo';
+
 $audio_root='/dev/shm/t/gta/Grand Theft Auto - San Andreas/audio';
 
 $banks_no_speech=<<BANKS;
