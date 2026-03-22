@@ -19,7 +19,10 @@ $trans_sounds->{"$bank_id-$sound_id"}=$File::Find::name;
 
 my $use_gap=0;
 my $use_intro=1;
-my $use_shuffle=0;
+my $use_shuffle=1;
+my $use_copy=10;
+my $use_downspeed=1;
+my $out_bitrate='256k';
 
 my $lang='spa';
 my %is_spanish=();
@@ -50,28 +53,25 @@ my $intro_size=0;
 if($use_intro){
 unlink('intro.bin');
 print STDERR "Generating intro file using $intro_file and speed $intro_speed...\n";
-`ffmpeg -nostdin -v 0 -ss 55 -i $intro_file -af atempo=$intro_speed -ar 48000 -ac 1 -f s16le -t 300 -y intro.bin`;
+$ss=int(55+rand()*60);
+`ffmpeg -nostdin -v 0 -ss $ss -i $intro_file -af atempo=$intro_speed -ar 48000 -ac 1 -f s16le -t 300 -y intro.bin`;
 $intro_data=read_file('intro.bin');
 $intro_data.="\x00" x ($samplerate*5*2);
 $intro_size=length($intro_data)/2;
 }
 
 
-print STDERR "Parsing sounds list...\n";
 
-my $atlas_id=0;
-my $cur_atlas_id=-1;
-my $cur_package='';
-my $outsamlpos=0;
-my $srtnum=1;
-my $cur_bank_id=-1;
+@newlist=();
+print STDERR "Parsing sounds list...\n";
 open(sd,"sounds.txt");
 while(<sd>){
 chomp;
 ($bank_id,$package_name,$bank_offset,$bank_size,$buffer_offset,$buffer_len,$loop_offset,$sound_sample_rate,$headroom,$ourfilename,$modloader)=split(/\t\|/);
-print "($bank_id,$package_name,$bank_offset,$bank_size,$buffer_offset,$buffer_len,$loop_offset,$sound_sample_rate,$headroom,$ourfilename\n";
+if($lang eq 'spa'){
 if(!exists $is_spanish{$bank_id}){next;}
 print "IS_SPANISH\n";
+}
 if($ourfilename=~/sound_sfx\/[^\/]+\/bank(\d+)\/sound_(\d+).wav/){
 ($fname_bank,$fname_sound)=($1|0,$2|0);
 if($fname_bank!=$bank_id){die "Error in sounds database!";}
@@ -79,6 +79,41 @@ if($fname_bank!=$bank_id){die "Error in sounds database!";}
 if(exists $trans_sounds->{"${fname_bank}-${fname_sound}"}){
 print "SOUND $ourfilename already translated!\n";
 next;
+}
+if($use_shuffle && $use_copy>1){
+for($q=0;$q<$use_copy;$q++){
+push(@newlist,[$bank_id,$package_name,$bank_offset,$bank_size,$buffer_offset,$buffer_len,$sound_sample_rate,$ourfilename.'_tryout'.$q]);
+}
+} else {
+push(@newlist,[$bank_id,$package_name,$bank_offset,$bank_size,$buffer_offset,$buffer_len,$sound_sample_rate,$ourfilename]);
+}
+}
+
+
+if($use_shuffle){
+%tmplist=();
+foreach(@newlist){
+$tmplist{$_->[1]}{$_->[0]}{rand()}=$_;
+}
+@newlist=map{$k1=$_;map{values %{$tmplist{$k1}{$_}}}keys %{$tmplist{$k1}}}keys %tmplist;
+}
+
+
+
+my $atlas_id=0;
+my $cur_atlas_id=-1;
+my $cur_package='';
+my $outsamlpos=-100;
+my $srtnum=-100;
+my $cur_bank_id=-1;
+print STDERR "Creating atlas batch...\n";
+
+$cur_bank_id=-1;
+foreach(@newlist){
+($bank_id,$package_name,$bank_offset,$bank_size,$buffer_offset,$buffer_len,$sound_sample_rate,$ourfilename)=@{$_};
+
+if($use_downspeed){
+$sound_sample_rate=int($sound_sample_rate*(.7+rand()*.3));
 }
 
 if($cur_package ne $package_name){
@@ -88,7 +123,6 @@ binmode(dd);
 $cur_package=$package_name;
 }
 
-
 if($cur_bank_id!=$bank_id){
 $cur_bank_id=$bank_id;
 if($outsamlpos/$samplerate>=$atlas_len){
@@ -96,13 +130,12 @@ $atlas_id++;
 }
 }
 
-
 if($cur_atlas_id!=$atlas_id){
 $outsamlpos=0;$srtnum=1;
 close(srt);close(atlas);
 print "OPENING NEW FILE $atlas_prefix$atlas_id.srt\n";
 open(srt,">$atlas_prefix$atlas_id.srt");
-open(atlas,"|ffmpeg -v 0 -f s16le -ar 48000 -ac 1 -i - -acodec libopus -b:a 256k -y $atlas_prefix$atlas_id.mp4");
+open(atlas,"|ffmpeg -v 0 -f s16le -ar 48000 -ac 1 -i - -acodec libopus -b:a $out_bitrate -y $atlas_prefix$atlas_id.mp4");
 $cur_atlas_id=$atlas_id;
 
 if($use_intro){
@@ -118,9 +151,9 @@ $sound_flags='';
 $speedup=0;
 
 # resample
-$tmpfile="tmp-resample-bank${bank_id}_offset${buffer_offset}.wav";
+$tmpfile="tmp-resample-bank${bank_id}_offset${buffer_offset}.pcm";
 unlink($tmpfile);
-open(oo,"|ffmpeg -v 0 -f s16le -ar $sound_sample_rate -ac 1 -i - -ar 48000 -ac 1 -y $tmpfile");
+open(oo,"|ffmpeg -v 0 -f s16le -ar $sound_sample_rate -ac 1 -i - -ar 48000 -ac 1 -f s16le -y $tmpfile");
 binmode(oo);
 print oo $buf;
 close(oo);
@@ -133,7 +166,7 @@ $samples_count=length($resampled)/2;
 
 
 print srt get_srt_line_samples($outsamlpos,$outsamlpos+$samples_count,"$ourfilename ($package_name:$buffer_offset:$buffer_len)$sound_flags",$srtnum++);
-print STDERR "Written $ourfilename ($package_name:$buffer_offset:$buffer_len) (duration:$dur), atlas position: ".s2time($outsamlpos/48000)."\n";
+print STDERR "Written $ourfilename ($package_name:$buffer_offset:$buffer_len), atlas $atlas_id position: ".s2time($outsamlpos/48000)."\n";
 
 print atlas $resampled;
 $outsamlpos+=$samples_count;

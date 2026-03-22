@@ -1,4 +1,4 @@
-$flac_repo='flac_repo';
+$flac_repo='/dev/shm/t/gta/flac_repo/';
 
 $audio_root='/dev/shm/t/gta/Grand Theft Auto - San Andreas/audio';
 

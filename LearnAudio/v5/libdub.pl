@@ -95,6 +95,9 @@ my $rutext=join(" ",@texts);
 
 ###if(length($rutext)<1 || length($entext)<1){next;die "We have empty translation!!!";}
 
+if($rutext!~/[а-яА-Я]/){
+$status->{$srcfile}='norus';
+}
 
 $join->{$srcfile}=[$cap_st,$cap_en,$entext,$rutext];
 

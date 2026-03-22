@@ -11,10 +11,15 @@ require './libdub.pl';
 binmode(STDOUT,":utf8");
 
 my $src_lang="es";
-my $flac_repo="flac_repo";
+my $mode='spa_mult';
+my $use_debug=1;
+my $minimal_len=24000;
+$minimal_len=15000;
 
-$dir='/dev/shm/Rdown/Glovemansion  Video  SiteRip 2012 - 2024/Video/gta-spa-1';
+$dir='/dev/shm/Rdown/Glovemansion  Video  SiteRip 2012 - 2024/Video/gta-spa-11';
 if(!-d($dir)){die "$dir is not directory";}
+
+$extracted_count=0;
 
 @rufiles=grep{/-ru.srt$/}read_dir($dir);
 
@@ -31,7 +36,7 @@ open(ii,"ffmpeg -v 0 -nostdin -i \"$rump3file\" -ar 48000 -ac 1 -f s16le -|");
 my $cursamplepos=0;
 my $cuts=[];
 my $is_first=1;
-foreach(keys %{$join}){
+foreach(grep{$status->{$_} eq 'ok'}keys %{$join}){
 my($st,$en,$eng,$rus)=@{$join->{$_}};
 push(@{$cuts},[$_,$st,$en]);
 }
@@ -40,8 +45,8 @@ my($package_name,$bank_id,$sound_id);
 foreach(sort{$a->[1] <=> $b->[1]}@{$cuts}){
 my($srcfile,$st,$en)=@{$_};
 
-if($srcfile=~/sound_sfx\/([^\/]+)\/bank(\d+)\/sound_(\d+)\.wav/){
-($package_name,$bank_id,$sound_id)=($1,$2|0,$3|0);
+if($srcfile=~/sound_sfx\/([^\/]+)\/bank(\d+)\/sound_(\d+)\.wav(\S*)/){
+($package_name,$bank_id,$sound_id,$tryout)=($1,$2|0,$3|0);
 
 } else {die "wrong format";}
 
@@ -76,25 +81,46 @@ my($total_samples,$leading_zeros,$trailing_zeros,$first_nonzero,$useful_length,$
 print "anal ($total_samples,$leading_zeros,$trailing_zeros,$first_nonzero,$useful_length,$silence_flag)\n";
 
 unlink($pcmname);
-unlink($pcmname2);
 
 
+if($useful_length<24){
+print STDERR "$pcmname: File may be empty!";
+next;
+}
 
 
 if(($leading_zeros<50 && !$is_first) || $trailing_zeros<50){
 print STDERR "$pcmname: File may be trimmed!";
-next;
-die "$pcmname: File may be trimmed!";
+if($use_debug){
+$debug_filename=sprintf("debug_trimmed/%s/%s/bank_%04d/b%04d_s%04d_t%s.wav",$mode,lc($package_name),$bank_id,$bank_id,$sound_id,$tryout?$tryout:rand());
+make_path(dirname($debug_filename));
+`mv "$pcmname2" "$debug_filename"`;
 }
-if($silence_flag){
-print STDERR "$pcmname: Too much silence inside file!";
 next;
 }
 
-if($useful_length<24000){
-print STDERR "$pcmname: File too short!";
+if($silence_flag){
+print STDERR "$pcmname: Too much silence inside file!";
+if($use_debug){
+$debug_filename=sprintf("debug_silence/%s/%s/bank_%04d/b%04d_s%04d_t%s.wav",$mode,lc($package_name),$bank_id,$bank_id,$sound_id,$tryout?$tryout:rand());
+make_path(dirname($debug_filename));
+`mv "$pcmname2" "$debug_filename"`;
+}
 next;
 }
+
+if($useful_length<$minimal_len){
+print STDERR "$pcmname: File too short!";
+if($use_debug){
+$debug_filename=sprintf("debug_short/%s/%s/bank_%04d/b%04d_s%04d_t%s.wav",$mode,lc($package_name),$bank_id,$bank_id,$sound_id,$tryout?$tryout:rand());
+make_path(dirname($debug_filename));
+`mv "$pcmname2" "$debug_filename"`;
+}
+next;
+}
+
+unlink($pcmname2);
+
 
 print "opening out\n";
 open(oo,"|ffmpeg -v 0 -f s16le -ar 48000 -ac 1 -i - -y '$flacname'");
@@ -102,11 +128,13 @@ print oo substr($buf,$leading_zeros*2,$useful_length*2);
 close(oo);
 
 my $flac_encoded=read_file($flacname);
-my $outname=sprintf("%s/raw_trans_voice/%s/bank_%04d/b%04d_s%04d_c%08x.flac",$flac_repo,lc($package_name),$bank_id,$bank_id,$sound_id,crc32($flac_encoded));
+my $outname=sprintf("%s/raw_trans_voice/%s/%s/bank_%04d/b%04d_s%04d_c%08x.flac",$flac_repo,$mode,lc($package_name),$bank_id,$bank_id,$sound_id,crc32($flac_encoded));
 make_path(dirname($outname));
 `mv "$flacname" "$outname"`;
+print "Written $outname\n";
 
 $is_first=0;
+$extracted_count++;
 
 }
 close(ii);
@@ -114,5 +142,8 @@ close(ii);
 
 
 }
+
+
+print "Extracted files: $extracted_count\n";
 
 
