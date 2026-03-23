@@ -16,7 +16,7 @@ my $use_debug=1;
 my $minimal_len=24000;
 $minimal_len=15000;
 
-$dir='/dev/shm/Rdown/Glovemansion  Video  SiteRip 2012 - 2024/Video/gta-spa-11';
+$dir='/dev/shm/Rdown/Glovemansion  Video  SiteRip 2012 - 2024/Video/gta-spa-13';
 if(!-d($dir)){die "$dir is not directory";}
 
 $extracted_count=0;

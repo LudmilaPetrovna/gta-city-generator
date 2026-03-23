@@ -18,7 +18,7 @@ $trans_sounds->{"$bank_id-$sound_id"}=$File::Find::name;
 
 
 my $use_gap=0;
-my $use_intro=1;
+my $use_intro=0;
 my $use_shuffle=1;
 my $use_copy=10;
 my $use_downspeed=1;
@@ -29,7 +29,7 @@ my %is_spanish=();
 map{$is_spanish{$_}++}split(/\s+/i,$banks_spanish);
 
 my $audio_root='/dev/shm/t/gta/Grand Theft Auto - San Andreas/audio';
-my $atlas_len=7200;
+my $atlas_len=4800;
 my $samplerate=48000;
 my $atlas_prefix='atlas_spa_';
 
@@ -113,7 +113,7 @@ foreach(@newlist){
 ($bank_id,$package_name,$bank_offset,$bank_size,$buffer_offset,$buffer_len,$sound_sample_rate,$ourfilename)=@{$_};
 
 if($use_downspeed){
-$sound_sample_rate=int($sound_sample_rate*(.7+rand()*.3));
+$sound_sample_rate=int($sound_sample_rate*(.5+rand()*.6));
 }
 
 if($cur_package ne $package_name){
