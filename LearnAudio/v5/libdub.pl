@@ -274,3 +274,66 @@ my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime($s);
 my $ii=$sec+$min*60+$hour*3600;
 return sprintf("%02d:%02d:%02d,%03d",$hour,$min,$sec,int(($s-$ii)*1000));
 }
+
+
+sub get_srt_line_samples{
+my($st,$en,$text,$num)=@_;
+return(get_str_line($st/48000,$en/48000,$text,$num));
+}
+
+
+sub get_str_line{
+my($st,$en,$text,$num)=@_;
+my $timestart=s2srt($st);
+my $timeend=s2srt($en);
+chomp($text);
+return("$num\n$timestart --> $timeend\n$text\n\n");
+}
+
+
+sub get_ssa_header{
+my $ret="";
+$ret.=<<CODE;
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 384
+PlayResY: 288
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,  Arial,16,&Hffffff,&Hffffff,&H0,&H0,0,0,0,0,100,100,0,0,1,1,0,2,10,10,10,0
+Style: FILEID,   Arial,16,&Hff0000,&Hff0000,&H0,&H0,0,0,0,0,100,100,0,0,1,1,0,2,10,10,10,0
+Style: SPEAKERID,Arial,16,&Hffff00,&Hffff00,&H0,&H0,0,0,0,0,100,100,0,0,1,1,0,2,10,10,10,0
+Style: ENGLISH,  Arial,16,&H00ffff,&H00ffff,&H0,&H0,0,0,0,0,100,100,0,0,1,1,0,2,10,10,10,0
+Style: TOKEN,    Arial,16,&H00ffff,&H00ffff,&H0,&H0,0,0,0,0,100,100,0,0,1,1,0,2,10,10,10,0
+Style: RUSSIAN,  Arial,16,&H00ff00,&H00ff00,&H0,&H0,0,0,0,0,100,100,0,0,1,1,0,2,10,10,10,0
+Style: ORIGFILEOFF, Arial,16,&HFF7777,&H00ff00,&H0,&H0,0,0,0,0,100,100,0,0,1,1,0,2,10,10,10,0
+Style: ORIGFILEON,  Arial,16,&HFFFF77,&H00ff00,&H0,&H0,0,0,0,0,100,100,0,0,1,1,0,2,10,10,10,0
+Style: TRANSFILEOFF,Arial,16,&H00FF00,&H00ff00,&H0,&H0,0,0,0,0,100,100,0,0,1,1,0,2,10,10,10,0
+Style: TRANSFILEON, Arial,16,&H77FF77,&H00ff00,&H0,&H0,0,0,0,0,100,100,0,0,1,1,0,2,10,10,10,0
+Style: DUBFILEOFF,  Arial,16,&H00FFFF,&H00ff00,&H0,&H0,0,0,0,0,100,100,0,0,1,1,0,2,10,10,10,0
+Style: DUBFILEON,   Arial,16,&H0000FF,&H00ff00,&H0,&H0,0,0,0,0,100,100,0,0,1,1,0,2,10,10,10,0
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+CODE
+
+return($ret);
+}
+
+sub get_ssa_event{
+my($st,$en,$style,$offset,$text)=@_;
+$st=s2ssa_time($st);
+$en=s2ssa_time($en);
+return("Dialogue: 0,$st,$en,$style,,0,0,$offset,,$text\n");
+}
+
+sub s2ssa_time{
+my $s=shift;
+#     0    1    2     3     4    5     6     7     8
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime($s);
+my $ii=$sec+$min*60+$hour*3600;
+return sprintf("%d:%02d:%02d.%02d",$hour,$min,$sec,int(($s-$ii)*100));
+}
+

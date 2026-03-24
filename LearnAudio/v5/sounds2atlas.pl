@@ -18,25 +18,34 @@ $trans_sounds->{"$bank_id-$sound_id"}=$File::Find::name;
 
 
 my $use_gap=0;
-my $use_intro=0;
-my $use_shuffle=1;
-my $use_copy=10;
-my $use_downspeed=1;
+my $use_intro=1;
+my $use_shuffle=0;
+my $use_copy=0;
+my $use_downspeed=0;
 my $out_bitrate='256k';
+my $out_dir='/dev/shm/t/gta/atlas';
 
-my $lang='spa';
+my $lang='eng';
+
+my $audio_root='/dev/shm/t/gta/Grand Theft Auto - San Andreas/audio';
+my $atlas_len=7200;
+my $samplerate=48000;
+my $atlas_prefix='atlas_'.$lang.'_';
+
 my %is_spanish=();
 map{$is_spanish{$_}++}split(/\s+/i,$banks_spanish);
 
-my $audio_root='/dev/shm/t/gta/Grand Theft Auto - San Andreas/audio';
-my $atlas_len=4800;
-my $samplerate=48000;
-my $atlas_prefix='atlas_spa_';
+my %is_no_speech=();
+map{$is_no_speech{$_}++}split(/\s+/i,$banks_no_speech);
+map{$is_no_speech{$_}++}split(/\s+/i,$banks_sfx_loops);
+
+
+
 
 my $silence="\x00" x ($samplerate*3*2); # 3 seconds in s16le
 
-my $gap_file='../gap3v2spa.wav';
-my $gap_speed=1.5;
+my $gap_file='../gap3v2-speed.wav';
+my $gap_speed=1;
 unlink('gap.bin');
 print STDERR "Generating gap file using $gap_file and speed $gap_speed...\n";
 `ffmpeg -nostdin -i $gap_file -af atempo=$gap_speed -ar 48000 -ac 1 -f s16le -y gap.bin`;
@@ -46,7 +55,7 @@ my $gap_samples=length($gap_data)/2;
 print STDERR "Using gap with $gap_samples samples (".($gap_samples/$samplerate)." seconds)\n";
 if($gap_samples<500){die "Wrong gap!";}
 
-my $intro_file='../spanish1.mp3';
+my $intro_file='../english1.mp4';
 my $intro_speed=1.1;
 my $intro_data='';
 my $intro_size=0;
@@ -68,10 +77,11 @@ open(sd,"sounds.txt");
 while(<sd>){
 chomp;
 ($bank_id,$package_name,$bank_offset,$bank_size,$buffer_offset,$buffer_len,$loop_offset,$sound_sample_rate,$headroom,$ourfilename,$modloader)=split(/\t\|/);
-if($lang eq 'spa'){
-if(!exists $is_spanish{$bank_id}){next;}
-print "IS_SPANISH\n";
-}
+if(exists $is_no_speech{$bank_id}){next;} # here no speech, skip it
+
+if($lang eq 'spa' && !exists $is_spanish{$bank_id}){next;}
+if($lang eq 'eng' && exists $is_spanish{$bank_id}){next;}
+
 if($ourfilename=~/sound_sfx\/[^\/]+\/bank(\d+)\/sound_(\d+).wav/){
 ($fname_bank,$fname_sound)=($1|0,$2|0);
 if($fname_bank!=$bank_id){die "Error in sounds database!";}
@@ -133,9 +143,9 @@ $atlas_id++;
 if($cur_atlas_id!=$atlas_id){
 $outsamlpos=0;$srtnum=1;
 close(srt);close(atlas);
-print "OPENING NEW FILE $atlas_prefix$atlas_id.srt\n";
-open(srt,">$atlas_prefix$atlas_id.srt");
-open(atlas,"|ffmpeg -v 0 -f s16le -ar 48000 -ac 1 -i - -acodec libopus -b:a $out_bitrate -y $atlas_prefix$atlas_id.mp4");
+print "OPENING NEW FILE $out_dir/$atlas_prefix$atlas_id.srt\n";
+open(srt,">$out_dir/$atlas_prefix$atlas_id.srt");
+open(atlas,"|ffmpeg -v 0 -f s16le -ar 48000 -ac 1 -i - -acodec libopus -b:a $out_bitrate -y $out_dir/$atlas_prefix$atlas_id.mp4");
 $cur_atlas_id=$atlas_id;
 
 if($use_intro){
@@ -160,7 +170,7 @@ close(oo);
 
 $resampled=read_file($tmpfile);
 $resampled_size=-s($tmpfile);
-if($resampled_size<500 || ($resampled_size&1)){die "We found broken sound!!! We got $resampled_size, value must be >500 bytes and aligned to 16 bits";}
+if($resampled_size<500 || ($resampled_size&1)){next;die "We found broken sound!!! We got $resampled_size, value must be >500 bytes and aligned to 16 bits";}
 unlink($tmpfile);
 $samples_count=length($resampled)/2;
 

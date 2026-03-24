@@ -52,7 +52,7 @@ read(dd,$buf,12*$num_sounds);
 for($q=0;$q<$num_sounds;$q++){
 ($buffer_offset,$loop_offset,$sample_rate,$headroom)=unpack("IiSs",substr($buf,$q*12,12));
 $ourfilename=sprintf("sound_sfx/%s/bank%d/sound_%04d.wav",$package_name,$bank_id,$q);
-$modloader=sprintf("audio/%s/bank%d/sound_%04d.wav",$package_name,$bank_id-$modloader_bank_start+1,$q+1);
+$modloader=sprintf("audio/%s/Bank_%d/Sound_%04d.wav",$package_name,$bank_id-$modloader_bank_start+1,$q+1);
 $sounds[$q]=[$bank_id,$package_name,$bank_offset,$bank_size,$buffer_offset,0,$loop_offset,$sample_rate,$headroom,$ourfilename,$modloader,$q];
 }
 

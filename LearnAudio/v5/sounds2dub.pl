@@ -14,7 +14,7 @@ if($bank_id!=$bank_id2){die "Wrong repo layout";}
 $trans_sounds->{"$bank_id-$sound_id"}=$File::Find::name;
 }
 
-}},$flac_repo.'/raw_trans_voice/');
+}},$flac_repo.'/raw_trans_voice/spa_single');
 
 
 my $lang='spa';
@@ -134,20 +134,5 @@ write_file("tmp-trans.pcm",$translated_data.$add);
 
 }
 
-
-
-sub get_srt_line_samples{
-my($st,$en,$text,$num)=@_;
-return(get_str_line($st/48000,$en/48000,$text,$num));
-}
-
-
-sub get_str_line{
-my($st,$en,$text,$num)=@_;
-my $timestart=s2srt($st);
-my $timeend=s2srt($en);
-chomp($text);
-return("$num\n$timestart --> $timeend\n$text\n\n");
-}
 
 

@@ -6,22 +6,34 @@ use Data::Dumper;
 use File::Path qw(make_path remove_tree);
 use File::Basename;
 use Digest::CRC qw(crc64 crc32 crc16 crcccitt crc crc8 crcopenpgparmor);
+use File::Find;
+
 require './libdub.pl';
 
 binmode(STDOUT,":utf8");
 
-my $src_lang="es";
-my $mode='spa_mult';
+my $src_lang="en";
+my $mode='en_old';
 my $use_debug=1;
 my $minimal_len=24000;
 $minimal_len=15000;
 
-$dir='/dev/shm/Rdown/Glovemansion  Video  SiteRip 2012 - 2024/Video/gta-spa-13';
-if(!-d($dir)){die "$dir is not directory";}
+##$dir='/dev/shm/Rdown/Glovemansion  Video  SiteRip 2012 - 2024/Video/gta-spa-13';
+##if(!-d($dir)){die "$dir is not directory";}
+##@rufiles=grep{/-ru.srt$/}read_dir($dir);
+
+$trans_atlas={};
+find({no_chdir=>1,follow=>1,wanted=>sub{
+if($File::Find::name=~/-ru\.srt/s){
+push(@rufiles,$File::Find::name);
+}
+
+}},'/dev/shm/Rdown/Glovemansion  Video  SiteRip 2012 - 2024/Video/gta-sfx/');
+
+
 
 $extracted_count=0;
 
-@rufiles=grep{/-ru.srt$/}read_dir($dir);
 
 foreach $rusrt(@rufiles){
 $fileid=$rusrt;
@@ -49,7 +61,6 @@ if($srcfile=~/sound_sfx\/([^\/]+)\/bank(\d+)\/sound_(\d+)\.wav(\S*)/){
 ($package_name,$bank_id,$sound_id,$tryout)=($1,$2|0,$3|0);
 
 } else {die "wrong format";}
-
 
 
 print_join_entry($join,$status,$srcfile);
@@ -85,6 +96,7 @@ unlink($pcmname);
 
 if($useful_length<24){
 print STDERR "$pcmname: File may be empty!";
+unlink($pcmname2);
 next;
 }
 
