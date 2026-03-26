@@ -8,7 +8,7 @@ require './libdub.pl';
 
 my $out_dir='./';
 
-my $lang='spa';
+my $lang='eng';
 
 my $audio_root='/dev/shm/t/gta/Grand Theft Auto - San Andreas/audio';
 my $atlas_len=7200;
@@ -34,7 +34,7 @@ if($bank_id!=$bank_id2){die "Wrong repo layout";}
 $trans_sounds->{"$bank_id-$sound_id"}=$File::Find::name;
 }
 
-}},$flac_repo.'/raw_trans_voice/spa_single');
+}},$flac_repo.'/raw_trans_voice/');
 
 print STDERR "Processing sounds...\n";
 
@@ -170,7 +170,7 @@ unlink($tmpfile_trans);
 unlink($tmpfile_dub);
 
 
-if($count++>30){last;}
+if($count++>300){last;}
 
 }
 

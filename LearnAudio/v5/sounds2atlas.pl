@@ -18,12 +18,14 @@ $trans_sounds->{"$bank_id-$sound_id"}=$File::Find::name;
 
 
 my $use_gap=0;
-my $use_intro=1;
+my $use_intro=0;
 my $use_shuffle=0;
+my $use_shuffle_total=0;
 my $use_copy=0;
 my $use_downspeed=0;
-my $out_bitrate='256k';
+my $out_bitrate='128k';
 my $out_dir='/dev/shm/t/gta/atlas';
+$out_dir='./';
 
 my $lang='eng';
 
@@ -36,8 +38,9 @@ my %is_spanish=();
 map{$is_spanish{$_}++}split(/\s+/i,$banks_spanish);
 
 my %is_no_speech=();
-map{$is_no_speech{$_}++}split(/\s+/i,$banks_no_speech);
-map{$is_no_speech{$_}++}split(/\s+/i,$banks_sfx_loops);
+map{$is_no_speech{$_}++}split(/\s+/is,$banks_no_speech);
+map{$is_no_speech{$_}++}split(/\s+/is,$banks_sfx_loops);
+map{$is_no_speech{$_}++}split(/\s+/is,$sounds_no_speech);
 
 
 
@@ -86,7 +89,11 @@ if($ourfilename=~/sound_sfx\/[^\/]+\/bank(\d+)\/sound_(\d+).wav/){
 ($fname_bank,$fname_sound)=($1|0,$2|0);
 if($fname_bank!=$bank_id){die "Error in sounds database!";}
 }
-if(exists $trans_sounds->{"${fname_bank}-${fname_sound}"}){
+
+$transkey="${fname_bank}-${fname_sound}";
+if(exists $is_no_speech{$transkey}){next;} # here no speech, skip it too
+
+if(exists $trans_sounds->{$transkey}){
 print "SOUND $ourfilename already translated!\n";
 next;
 }
@@ -106,6 +113,14 @@ foreach(@newlist){
 $tmplist{$_->[1]}{$_->[0]}{rand()}=$_;
 }
 @newlist=map{$k1=$_;map{values %{$tmplist{$k1}{$_}}}keys %{$tmplist{$k1}}}keys %tmplist;
+}
+
+if($use_shuffle_total){
+%tmplist=();
+foreach(@newlist){
+$tmplist{rand()}=$_;
+}
+@newlist=values %tmplist;
 }
 
 
@@ -196,8 +211,10 @@ $outsamlpos+=length($silence)/2;
 } else {
 
 # spit out 5 seconds of silence
-print atlas "\x00" x (48000 * 2 * 5);
-$outsamlpos+=48000*5;;
+$silent_seconds=0.5;
+$silent_samples=int($silent_seconds*48000);
+print atlas "\x00" x (2 * $silent_samples);
+$outsamlpos+=$silent_samples;
 
 }
 

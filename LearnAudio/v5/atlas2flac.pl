@@ -13,7 +13,7 @@ require './libdub.pl';
 binmode(STDOUT,":utf8");
 
 my $src_lang="en";
-my $mode='en_old';
+my $mode='en_tts';
 my $use_debug=1;
 my $minimal_len=24000;
 $minimal_len=15000;
@@ -28,7 +28,7 @@ if($File::Find::name=~/-ru\.srt/s){
 push(@rufiles,$File::Find::name);
 }
 
-}},'/dev/shm/Rdown/Glovemansion  Video  SiteRip 2012 - 2024/Video/gta-sfx/');
+}},'/dev/shm/Rdown/Glovemansion  Video  SiteRip 2012 - 2024/Video/gta-sfx-en-tts-n8/');
 
 
 
@@ -111,7 +111,7 @@ make_path(dirname($debug_filename));
 next;
 }
 
-if($silence_flag){
+if($silence_flag && 0){
 print STDERR "$pcmname: Too much silence inside file!";
 if($use_debug){
 $debug_filename=sprintf("debug_silence/%s/%s/bank_%04d/b%04d_s%04d_t%s.wav",$mode,lc($package_name),$bank_id,$bank_id,$sound_id,$tryout?$tryout:rand());

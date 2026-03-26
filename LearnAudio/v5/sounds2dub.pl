@@ -55,8 +55,6 @@ foreach(@newlist){
 $trans_file=$trans_sounds->{$transkey};
 
 $outfile="$flac_repo/dubbed_voices_wav/$modloader";
-$outfile=~s/(\/bank)(\d+)(\/)/$1_$2$3/s;
-
 if(-s($outfile)){next;}
 
 print "Generating $outfile...\n";
@@ -127,8 +125,16 @@ $add='';
 write_file("tmp-orig.pcm",$resampled.$add);
 write_file("tmp-trans.pcm",$translated_data.$add);
 
+$out_samplerate=22050;
+if($sound_sample_rate>$out_samplerate){
+$out_samplerate=$sound_sample_rate;
+}
 
-`ffmpeg -nostdin -v 0 -f s16le -ar 48000 -ac 1 -i "tmp-orig.pcm" -f s16le -ar 48000 -ac 1 -i "tmp-trans.pcm" -filter_complex "[0:a][1:a]sidechaincompress=threshold=0.05:ratio=5:attack=1:release=50[ducked];[ducked][1:a]amix=inputs=2:duration=longest:dropout_transition=2:normalize=0:weights='1 0.8'[dub]" -map "[dub]" -ac 1 -ar 32000 -map_metadata -1 -y "$outfile"`;
+# freq overlay
+`ffmpeg -nostdin -v 0 -f s16le -ar 48000 -ac 1 -i "tmp-orig.pcm" -f s16le -ar 48000 -ac 1 -i "tmp-trans.pcm" -filter_complex "[0:a]acrossover=200 1200:order=20th[low][r][ducked];[r]anullsink;[1:a]deesser=i=.33,speechnorm[vo];[low][ducked][vo]amix=inputs=3:duration=longest:dropout_transition=2:normalize=0:weights='.6 .7 .8',speechnorm[dub]" -map "[dub]" -ac 1 -ar $out_samplerate -map_metadata -1 -y "$outfile"`;
+
+# classic dubbing
+###`ffmpeg -nostdin -v 0 -f s16le -ar 48000 -ac 1 -i "tmp-orig.pcm" -f s16le -ar 48000 -ac 1 -i "tmp-trans.pcm" -filter_complex "[0:a][1:a]sidechaincompress=threshold=0.05:ratio=5:attack=1:release=50[ducked];[ducked][1:a]amix=inputs=2:duration=longest:dropout_transition=2:normalize=0:weights='1 0.8'[dub]" -map "[dub]" -ac 1 -ar $out_samplerate -map_metadata -1 -y "$outfile"`;
 
 #if($count++>10){die;}
 
