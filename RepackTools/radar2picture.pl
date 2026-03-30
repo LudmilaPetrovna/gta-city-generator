@@ -52,5 +52,5 @@ print `identify $outdir/radar-glued.png`;
 
 
 # clean up
-remove_tree($tempdir);
+#remove_tree($tempdir);
 }
